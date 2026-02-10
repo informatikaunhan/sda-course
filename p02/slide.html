@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 02: Analisis Algoritma dan Kompleksitas - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="../css/unhan-theme.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>📊 Analisis Algoritma<br>dan Kompleksitas</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 02</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment">Menjelaskan pentingnya <span class="highlight">analisis algoritma</span></li>
+                    <li class="fragment">Menghitung kompleksitas waktu menggunakan notasi <span class="highlight">Big-O</span></li>
+                    <li class="fragment">Membedakan notasi <span class="highlight">Big-O, Big-Ω, dan Big-Θ</span></li>
+                    <li class="fragment">Menganalisis <span class="highlight">best case, worst case, dan average case</span></li>
+                    <li class="fragment">Mengidentifikasi <span class="highlight">kelas-kelas kompleksitas umum</span></li>
+                    <li class="fragment">Menganalisis kompleksitas algoritma <span class="highlight">iteratif dan rekursif</span></li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns" style="font-size: 0.85em;">
+                    <div>
+                        <h3>Bagian 1</h3>
+                        <ol>
+                            <li>Mengapa Analisis Penting?</li>
+                            <li>Menghitung Operasi Dasar</li>
+                            <li>Notasi Asimptotik</li>
+                            <li>Aturan Penyederhanaan</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3>Bagian 2</h3>
+                        <ol start="5">
+                            <li>Kelas Kompleksitas Umum</li>
+                            <li>Best/Worst/Average Case</li>
+                            <li>Analisis Iteratif</li>
+                            <li>Analisis Rekursif</li>
+                            <li>Master Theorem</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== BAGIAN 1: PENDAHULUAN ==================== -->
+            <section>
+                <section>
+                    <h2>📖 1. Mengapa Analisis Algoritma Penting?</h2>
+                    <div class="box-definition">
+                        <p><strong>Algoritma</strong> adalah urutan langkah-langkah komputasi yang terdefinisi dengan baik untuk menyelesaikan suatu masalah dalam waktu terbatas.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🎖️ Contoh: Database Personel Militer</h2>
+                    <p style="font-size: 0.9em;">Dua algoritma untuk mencari data dari 1 juta personel:</p>
+                    <div class="two-columns" style="font-size: 0.85em;">
+                        <div class="fragment box-success" style="text-align: center;">
+                            <p><strong>Algoritma A</strong></p>
+                            <p class="large highlight">1 detik</p>
+                            <p class="small">untuk 1 juta data</p>
+                        </div>
+                        <div class="fragment box-danger" style="text-align: center;">
+                            <p><strong>Algoritma B</strong></p>
+                            <p class="large warning">1 jam</p>
+                            <p class="small">untuk 1 juta data</p>
+                        </div>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <blockquote style="font-size: 0.85em;">
+                            Keduanya benar, tapi perbedaan <span class="highlight">3600× lebih lambat</span>!<br>
+                            Dalam operasi pertahanan, keterlambatan = risiko fatal.
+                        </blockquote>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Faktor yang Mempengaruhi Waktu Eksekusi</h2>
+                    <ol style="font-size: 0.85em;">
+                        <li class="fragment">Kecepatan hardware (CPU, RAM, storage)</li>
+                        <li class="fragment">Bahasa pemrograman dan compiler</li>
+                        <li class="fragment">Kualitas implementasi (coding style)</li>
+                        <li class="fragment">Ukuran input (n)</li>
+                        <li class="fragment"><span class="highlight">Algoritma yang digunakan</span> ← Fokus analisis!</li>
+                    </ol>
+                    <div class="fragment box-info" style="margin-top: 1em; font-size: 0.85em;">
+                        <p>Analisis algoritma fokus pada faktor ke-5 karena dapat dikontrol programmer terlepas dari hardware.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Empiris vs Teoritis</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Aspek</th>
+                            <th>Analisis Empiris</th>
+                            <th>Analisis Teoritis</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Metode</strong></td>
+                            <td>Mengukur waktu aktual</td>
+                            <td>Menghitung operasi dasar</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Ketergantungan HW</strong></td>
+                            <td>Tinggi</td>
+                            <td>Tidak ada</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Input</strong></td>
+                            <td>Harus ada data aktual</td>
+                            <td>Untuk semua ukuran n</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Hasil</strong></td>
+                            <td>Waktu (ms/detik)</td>
+                            <td>Fungsi pertumbuhan</td>
+                        </tr>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 2: OPERASI DASAR ==================== -->
+            <section>
+                <section>
+                    <h2>📖 2. Menghitung Operasi Dasar</h2>
+                    <div class="box-definition">
+                        <p><strong>Operasi dasar</strong> adalah instruksi komputasi yang diasumsikan membutuhkan waktu konstan, terlepas dari ukuran input.</p>
+                    </div>
+                    <ul class="fragment" style="font-size: 0.85em; margin-top: 1em;">
+                        <li>Operasi aritmatika: +, -, *, /, %</li>
+                        <li>Operasi perbandingan: <, >, ==, !=</li>
+                        <li>Assignment: =</li>
+                        <li>Akses elemen array dengan indeks</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>💻 Contoh Penghitungan Operasi</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2|3|4|5|7" style="font-size: 0.5em;">
+int findMax(int arr[], int n) {
+    int max = arr[0];           // 2 operasi
+    for (int i = 1; i < n; i++) { // 1 + (n-1) + (n-1) operasi
+        if (arr[i] > max) {     // 2 operasi per iterasi
+            max = arr[i];       // 2 operasi (worst case)
+        }
+    }
+    return max;                 // 1 operasi
+}
+                    </code></pre>
+                    <div class="fragment formula-box" style="font-size: 0.85em;">
+                        <p><strong>Total (worst case):</strong> 2 + 1 + (n-1) + (n-1) + 2(n-1) + 2(n-1) + 1 = <span class="highlight">6n - 2</span></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Hitung Operasi</h2>
+                    <div class="quiz-question">
+                        <pre><code class="cpp" data-trim style="font-size: 0.55em;">
+int sum = 0;
+for (int i = 0; i < n; i++) {
+    sum = sum + arr[i];
+}
+                        </code></pre>
+                        <p><strong>Berapa total operasi dasar?</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer" style="font-size: 0.8em;">
+                        <table style="font-size: 0.7em;">
+                            <tr><td><code>int sum = 0</code></td><td>1</td></tr>
+                            <tr><td><code>i < n</code></td><td>n+1</td></tr>
+                            <tr><td><code>i++</code></td><td>n</td></tr>
+                            <tr><td><code>arr[i]</code>, <code>sum + ...</code>, <code>sum = ...</code></td><td>3n</td></tr>
+                        </table>
+                        <p>Total = 1 + 1 + (n+1) + n + 3n = <span class="highlight">5n + 3</span></p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 3: NOTASI ASIMPTOTIK ==================== -->
+            <section>
+                <section>
+                    <h2>📖 3. Notasi Asimptotik</h2>
+                    <h3>Konsep Pertumbuhan Fungsi</h3>
+                    <p style="font-size: 0.85em;">Untuk n sangat besar, hanya suku dengan pangkat tertinggi yang dominan:</p>
+                    <div class="fragment formula-box" style="font-size: 0.85em;">
+                        <p>T(n) = 3n² + 5n + 100</p>
+                        <p class="small">n = 1000: 3(1.000.000) + 5000 + 100 = <span class="highlight">3.005.100</span></p>
+                        <p class="small">Suku n² mendominasi <span class="highlight">~99.8%</span> dari total!</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Big-O (Upper Bound)</h2>
+                    <div class="box-definition" style="font-size: 0.85em;">
+                        <p><strong>Definisi:</strong> f(n) = O(g(n)) jika terdapat konstanta positif <span class="highlight">c</span> dan <span class="highlight">n₀</span> sehingga f(n) ≤ c·g(n) untuk semua n ≥ n₀</p>
+                    </div>
+                    <img src="images/p02-01-big-o-visualization.png" alt="Big-O Visualization" style="max-height: 280px;">
+                    <p class="small"><em>Gambar 2.1: Visualisasi Big-O — f(n) dibatasi oleh c·g(n) untuk n ≥ n₀</em></p>
+                </section>
+
+                <section>
+                    <h2>Perbandingan Notasi</h2>
+                    <table style="font-size: 0.8em;">
+                        <tr>
+                            <th>Notasi</th>
+                            <th>Analogi</th>
+                            <th>Makna</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">O(g(n))</span></td>
+                            <td>≤</td>
+                            <td>Batas atas (upper bound)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="text-navy">Ω(g(n))</span></td>
+                            <td>≥</td>
+                            <td>Batas bawah (lower bound)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="success">Θ(g(n))</span></td>
+                            <td>=</td>
+                            <td>Batas ketat (tight bound)</td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-info" style="margin-top: 1em; font-size: 0.8em;">
+                        <p>Dalam praktik, <span class="highlight">Big-O</span> paling sering digunakan karena memberikan garansi worst case.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Buktikan Big-O</h2>
+                    <div class="quiz-question">
+                        <p><strong>Buktikan bahwa 3n² + 5n + 100 = O(n²)</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer" style="font-size: 0.75em;">
+                        <p><strong>Langkah:</strong> Untuk n ≥ 1:</p>
+                        <ul>
+                            <li>5n ≤ 5n²</li>
+                            <li>100 ≤ 100n²</li>
+                        </ul>
+                        <p>3n² + 5n + 100 ≤ 3n² + 5n² + 100n² = <span class="highlight">108n²</span></p>
+                        <p>Dengan c = 108 dan n₀ = 1, terbukti. ∎</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 4: ATURAN PENYEDERHANAAN ==================== -->
+            <section>
+                <section>
+                    <h2>📖 4. Aturan Penyederhanaan Big-O</h2>
+                    <div class="two-columns" style="font-size: 0.85em;">
+                        <div class="fragment box-info">
+                            <p><strong>Aturan Konstanta</strong></p>
+                            <p class="small">O(c·f(n)) = O(f(n))</p>
+                            <p class="smaller">Contoh: O(5n) = O(n)</p>
+                        </div>
+                        <div class="fragment box-success">
+                            <p><strong>Aturan Suku Dominan</strong></p>
+                            <p class="small">O(f + g) = O(max(f, g))</p>
+                            <p class="smaller">Contoh: O(n² + n) = O(n²)</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Aturan Penjumlahan (Sum Rule)</h2>
+                    <p style="font-size: 0.85em;">Untuk dua segmen kode <strong>berurutan</strong>:</p>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+// Segmen 1: O(n)
+for (int i = 0; i < n; i++) { /* ... */ }
+
+// Segmen 2: O(n²)
+for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) { /* ... */ }
+}
+// Total: O(n + n²) = O(n²)
+                    </code></pre>
+                    <div class="fragment formula-box" style="font-size: 0.85em;">
+                        <p>T(n) = T₁(n) + T₂(n) → <span class="highlight">O(max(T₁, T₂))</span></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Aturan Perkalian (Product Rule)</h2>
+                    <p style="font-size: 0.85em;">Untuk loop <strong>bersarang</strong>:</p>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+// Loop luar: n kali
+for (int i = 0; i < n; i++) {
+    // Loop dalam: n kali per iterasi
+    for (int j = 0; j < n; j++) {
+        /* O(1) operation */
+    }
+}
+// Total: O(n × n) = O(n²)
+                    </code></pre>
+                    <div class="fragment formula-box" style="font-size: 0.85em;">
+                        <p>T(n) = T₁(n) × T₂(n) → <span class="highlight">O(T₁ × T₂)</span></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Sederhanakan</h2>
+                    <div class="quiz-question">
+                        <p><strong>Sederhanakan: O(3n³ + 100n² + n + 5000)</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <ol style="font-size: 0.8em;">
+                            <li><strong>Identifikasi suku dominan:</strong> 3n³ (tumbuh paling cepat)</li>
+                            <li><strong>Aturan suku dominan:</strong> O(3n³ + 100n² + n + 5000) = O(3n³)</li>
+                            <li><strong>Aturan konstanta:</strong> O(3n³) = <span class="highlight">O(n³)</span></li>
+                        </ol>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 5: KELAS KOMPLEKSITAS ==================== -->
+            <section>
+                <section>
+                    <h2>📖 5. Kelas-Kelas Kompleksitas Umum</h2>
+                    <table style="font-size: 0.6em;">
+                        <tr>
+                            <th>Notasi</th>
+                            <th>Nama</th>
+                            <th>Contoh Algoritma</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>Konstanta</td>
+                            <td>Akses array dengan indeks</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="complexity-badge ologn">O(log n)</span></td>
+                            <td>Logaritmik</td>
+                            <td>Binary search</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                            <td>Linear</td>
+                            <td>Linear search</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="complexity-badge onlogn">O(n log n)</span></td>
+                            <td>Linearitmik</td>
+                            <td>Merge sort, Quick sort</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Kuadratik</td>
+                            <td>Bubble sort</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="complexity-badge on2">O(2ⁿ)</span></td>
+                            <td>Eksponensial</td>
+                            <td>Brute force subset</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Perbandingan Pertumbuhan</h2>
+                    <img src="images/p02-02-complexity-comparison.png" alt="Complexity Comparison" style="max-height: 350px;">
+                    <p class="small"><em>Gambar 2.2: Perbandingan pertumbuhan berbagai kelas kompleksitas</em></p>
+                </section>
+
+                <section>
+                    <h2>Dampak Praktis (10⁹ ops/sec)</h2>
+                    <table style="font-size: 0.55em;">
+                        <tr>
+                            <th>n</th>
+                            <th>O(log n)</th>
+                            <th>O(n)</th>
+                            <th>O(n log n)</th>
+                            <th>O(n²)</th>
+                            <th>O(2ⁿ)</th>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>3 ns</td>
+                            <td>10 ns</td>
+                            <td>33 ns</td>
+                            <td>100 ns</td>
+                            <td>1 μs</td>
+                        </tr>
+                        <tr>
+                            <td>100</td>
+                            <td>7 ns</td>
+                            <td>100 ns</td>
+                            <td>664 ns</td>
+                            <td>10 μs</td>
+                            <td class="warning">10¹⁴ tahun!</td>
+                        </tr>
+                        <tr>
+                            <td>10⁶</td>
+                            <td>20 ns</td>
+                            <td>1 ms</td>
+                            <td>20 ms</td>
+                            <td>17 menit</td>
+                            <td class="warning">∞</td>
+                        </tr>
+                        <tr>
+                            <td>10⁹</td>
+                            <td>30 ns</td>
+                            <td>1 detik</td>
+                            <td>30 detik</td>
+                            <td class="warning">31 tahun</td>
+                            <td class="warning">∞</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 0.5em;">Untuk n besar, algoritma <span class="warning">eksponensial</span> praktis tidak dapat diselesaikan!</p>
+                </section>
+
+                <section>
+                    <h2>🎖️ Analogi Militer</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Kompleksitas</th>
+                            <th>Analogi Verifikasi Identitas</th>
+                        </tr>
+                        <tr>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>Periksa badge ID elektronik — langsung</td>
+                        </tr>
+                        <tr>
+                            <td><span class="complexity-badge ologn">O(log n)</span></td>
+                            <td>Cari di buku registrasi terurut</td>
+                        </tr>
+                        <tr>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                            <td>Panggil absen satu per satu</td>
+                        </tr>
+                        <tr>
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Setiap orang menyalami semua orang lain</td>
+                        </tr>
+                        <tr>
+                            <td><span class="complexity-badge on2">O(2ⁿ)</span></td>
+                            <td>Evaluasi semua kombinasi tim — tidak praktis!</td>
+                        </tr>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 6: BEST/WORST/AVG CASE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 6. Best, Worst, Average Case</h2>
+                    <p style="font-size: 0.85em;">Untuk input berukuran n yang sama, waktu eksekusi bisa berbeda tergantung <span class="highlight">konfigurasi input</span>.</p>
+                    <div class="three-columns fragment" style="font-size: 0.75em; margin-top: 1em;">
+                        <div class="box-success" style="text-align: center; padding: 15px;">
+                            <p><strong>Best Case</strong></p>
+                            <p class="small">Waktu minimum</p>
+                        </div>
+                        <div class="box-danger" style="text-align: center; padding: 15px;">
+                            <p><strong>Worst Case</strong></p>
+                            <p class="small">Waktu maksimum</p>
+                        </div>
+                        <div class="box-warning" style="text-align: center; padding: 15px;">
+                            <p><strong>Average Case</strong></p>
+                            <p class="small">Waktu rata-rata</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Contoh: Linear Search</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+int linearSearch(int arr[], int n, int key) {
+    for (int i = 0; i < n; i++) {
+        if (arr[i] == key) return i;  // Ditemukan
+    }
+    return -1;  // Tidak ditemukan
+}
+                    </code></pre>
+                    <table class="fragment" style="font-size: 0.7em; margin-top: 0.5em;">
+                        <tr>
+                            <th>Case</th>
+                            <th>Kondisi</th>
+                            <th>Kompleksitas</th>
+                        </tr>
+                        <tr>
+                            <td class="success">Best</td>
+                            <td>Key di posisi pertama</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                        </tr>
+                        <tr>
+                            <td class="warning">Worst</td>
+                            <td>Key tidak ada / di akhir</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Average</td>
+                            <td>Key di posisi acak</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Mana yang Paling Penting?</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p>Dalam praktik, <span class="highlight">worst case</span> paling sering digunakan karena memberikan <strong>garansi performa</strong>.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <blockquote style="font-size: 0.85em;">
+                            Kita bisa yakin algoritma <span class="highlight">tidak akan lebih lambat</span> dari batas worst case.
+                        </blockquote>
+                    </div>
+                    <p class="fragment small" style="margin-top: 1em;">Average case berguna untuk algoritma yang worst case-nya jarang terjadi (seperti Quick Sort).</p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 7: ANALISIS ITERATIF ==================== -->
+            <section>
+                <section>
+                    <h2>📖 7. Analisis Algoritma Iteratif</h2>
+                    <h3>Pola Loop Tunggal</h3>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+// Pola 1: Loop linear
+for (int i = 0; i < n; i++) { ... }     // O(n)
+
+// Pola 2: Loop dengan increment konstan
+for (int i = 0; i < n; i += 2) { ... }  // O(n/2) = O(n)
+
+// Pola 3: Loop dengan pengali
+for (int i = 1; i < n; i *= 2) { ... }  // O(log n)
+
+// Pola 4: Loop dengan pembagi
+for (int i = n; i > 0; i /= 2) { ... }  // O(log n)
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Pola Loop Bersarang</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+// Pola 1: Nested linear → O(n²)
+for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) { ... }
+}
+
+// Pola 2: Loop dalam bergantung pada i → O(n²)
+for (int i = 0; i < n; i++) {
+    for (int j = 0; j < i; j++) { ... }
+}
+// Total: 0+1+2+...+(n-1) = n(n-1)/2 = O(n²)
+
+// Pola 3: Loop luar logaritmik → O(n log n)
+for (int i = 1; i < n; i *= 2) {
+    for (int j = 0; j < n; j++) { ... }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Kompleksitas Mystery</h2>
+                    <div class="quiz-question">
+                        <pre><code class="cpp" data-trim style="font-size: 0.55em;">
+void mystery(int n) {
+    for (int i = 1; i < n; i = i * 2) {
+        for (int j = 0; j < n; j++) {
+            cout << i << " " << j << endl;
+        }
+    }
+}
+                        </code></pre>
+                        <p><strong>Tentukan kompleksitas waktu!</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer" style="font-size: 0.8em;">
+                        <ul>
+                            <li><strong>Loop luar:</strong> i dikali 2 → <span class="highlight">O(log n)</span></li>
+                            <li><strong>Loop dalam:</strong> j dari 0 sampai n → <span class="highlight">O(n)</span></li>
+                        </ul>
+                        <p>Total: O(log n) × O(n) = <span class="highlight">O(n log n)</span></p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 8: ANALISIS REKURSIF ==================== -->
+            <section>
+                <section>
+                    <h2>📖 8. Analisis Algoritma Rekursif</h2>
+                    <h3>Recurrence Relation</h3>
+                    <pre><code class="cpp" data-trim style="font-size: 0.55em;">
+void printN(int n) {
+    if (n <= 0) return;        // Base case
+    cout << n << endl;         // O(1)
+    printN(n - 1);             // T(n-1)
+}
+                    </code></pre>
+                    <div class="fragment formula-box" style="font-size: 0.85em;">
+                        <p><strong>Relasi rekurens:</strong></p>
+                        <p>T(0) = 1 (base case)</p>
+                        <p>T(n) = T(n-1) + 1 (untuk n > 0)</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Metode Substitusi</h2>
+                    <p style="font-size: 0.85em;">Selesaikan T(n) = T(n-1) + 1, T(0) = 1:</p>
+                    <div class="fragment" style="font-size: 0.8em; text-align: left; padding-left: 2em;">
+                        <p>T(n) = T(n-1) + 1</p>
+                        <p>T(n) = [T(n-2) + 1] + 1 = T(n-2) + 2</p>
+                        <p>T(n) = [T(n-3) + 1] + 2 = T(n-3) + 3</p>
+                        <p>...</p>
+                        <p>T(n) = T(n-k) + k</p>
+                    </div>
+                    <div class="fragment formula-box" style="font-size: 0.85em;">
+                        <p>Ketika k = n: T(n) = T(0) + n = 1 + n = <span class="highlight">O(n)</span></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Fibonacci Rekursif (Naive)</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.55em;">
+long fib(int n) {
+    if (n <= 1) return n;
+    return fib(n-1) + fib(n-2);  // Dua pemanggilan rekursif!
+}
+                    </code></pre>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;"><strong>Relasi rekurens:</strong> T(n) = T(n-1) + T(n-2) + c</p>
+                        <p class="warning" style="font-size: 0.85em;">Solusi: T(n) ≈ <span class="complexity-badge on2">O(2ⁿ)</span> — Sangat tidak efisien!</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Pohon Rekursi Fibonacci</h2>
+                    <img src="images/p02-03-fibonacci-recursion-tree.png" alt="Fibonacci Recursion Tree" style="max-height: 320px;">
+                    <p class="small"><em>Gambar 2.3: Pohon rekursi Fibonacci — banyak perhitungan redundan</em></p>
+                </section>
+
+                <section>
+                    <h2>Contoh: Binary Search Rekursif</h2>
+                    <div class="formula-box" style="font-size: 0.85em;">
+                        <p><strong>Relasi:</strong> T(n) = T(n/2) + c, T(1) = c</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.8em; text-align: left; padding-left: 2em; margin-top: 1em;">
+                        <p>T(n) = T(n/2) + c</p>
+                        <p>T(n) = T(n/4) + c + c = T(n/4) + 2c</p>
+                        <p>...</p>
+                        <p>T(n) = T(n/2^k) + k·c</p>
+                    </div>
+                    <div class="fragment formula-box" style="font-size: 0.85em;">
+                        <p>Ketika n/2^k = 1 → k = log₂(n):</p>
+                        <p>T(n) = c + c·log₂(n) = <span class="highlight">O(log n)</span></p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 9: MASTER THEOREM ==================== -->
+            <section>
+                <section>
+                    <h2>📖 9. Master Theorem</h2>
+                    <p style="font-size: 0.85em;">Untuk relasi rekurens divide-and-conquer:</p>
+                    <div class="formula-box">
+                        <p><strong>T(n) = aT(n/b) + n<sup>d</sup></strong></p>
+                        <p class="small">a ≥ 1: jumlah subproblem | b > 1: faktor pembagi | d ≥ 0: waktu merge</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Kasus Master Theorem</h2>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Kondisi</th>
+                            <th>Kompleksitas</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>a < b<sup>d</sup></td>
+                            <td><span class="highlight">O(n<sup>d</sup>)</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>a = b<sup>d</sup></td>
+                            <td><span class="highlight">O(n<sup>d</sup> log n)</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>a > b<sup>d</sup></td>
+                            <td><span class="highlight">O(n<sup>log<sub>b</sub>a</sup>)</span></td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Contoh Penerapan</h2>
+                    <div class="two-columns" style="font-size: 0.75em;">
+                        <div class="fragment box-info">
+                            <p><strong>Merge Sort:</strong></p>
+                            <p>T(n) = 2T(n/2) + n</p>
+                            <p class="small">a=2, b=2, d=1 → b<sup>d</sup>=2</p>
+                            <p class="small">a = b<sup>d</sup> → <span class="highlight">O(n log n)</span></p>
+                        </div>
+                        <div class="fragment box-success">
+                            <p><strong>Binary Search:</strong></p>
+                            <p>T(n) = T(n/2) + 1</p>
+                            <p class="small">a=1, b=2, d=0 → b<sup>d</sup>=1</p>
+                            <p class="small">a = b<sup>d</sup> → <span class="highlight">O(log n)</span></p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Master Theorem</h2>
+                    <div class="quiz-question">
+                        <p><strong>Selesaikan: T(n) = 3T(n/2) + n</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer" style="font-size: 0.8em;">
+                        <ul>
+                            <li>a = 3, b = 2, d = 1</li>
+                            <li>b<sup>d</sup> = 2<sup>1</sup> = 2</li>
+                            <li>a = 3 > 2 = b<sup>d</sup> → Kasus ketiga</li>
+                        </ul>
+                        <p>T(n) = O(n<sup>log₂3</sup>) ≈ <span class="highlight">O(n<sup>1.585</sup>)</span></p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Topik</th>
+                        <th>Poin Kunci</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Big-O</span></td>
+                        <td>Batas atas (upper bound): f(n) ≤ c·g(n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Big-Ω</span></td>
+                        <td>Batas bawah (lower bound): f(n) ≥ c·g(n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Big-Θ</span></td>
+                        <td>Batas ketat: Big-O dan Big-Ω sama</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Aturan Sum</span></td>
+                        <td>O(f + g) = O(max(f, g))</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Aturan Product</span></td>
+                        <td>O(f × g) = O(f) × O(g)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Worst Case</span></td>
+                        <td>Memberikan garansi performa maksimum</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Master Theorem</span></td>
+                        <td>T(n) = aT(n/b) + n<sup>d</sup>, bandingkan a dengan b<sup>d</sup></td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== TABEL EFISIENSI ==================== -->
+            <section>
+                <h2>📊 Hierarki Efisiensi</h2>
+                <table style="font-size: 0.65em;">
+                    <tr>
+                        <th>Kompleksitas</th>
+                        <th>Nama</th>
+                        <th>Efisiensi</th>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td>Konstanta</td>
+                        <td>⭐⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge ologn">O(log n)</span></td>
+                        <td>Logaritmik</td>
+                        <td>⭐⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge on">O(n)</span></td>
+                        <td>Linear</td>
+                        <td>⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge onlogn">O(n log n)</span></td>
+                        <td>Linearitmik</td>
+                        <td>⭐⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge on2">O(n²)</span></td>
+                        <td>Kuadratik</td>
+                        <td>⭐⭐</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge on2">O(2ⁿ)</span></td>
+                        <td>Eksponensial</td>
+                        <td>⭐</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge on2">O(n!)</span></td>
+                        <td>Faktorial</td>
+                        <td>☆</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== PERTANYAAN ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.2-3 | Weiss Ch.2 | Goodrich Ch.4
+                </p>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 02</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
