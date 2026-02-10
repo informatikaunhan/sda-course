@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 05: Stack - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme (WAJIB) -->
+    <link rel="stylesheet" href="../css/unhan-theme.css">
+    
+    <!-- Slide-specific styles untuk visualisasi stack -->
+    <style>
+        /* Stack visualization - spesifik untuk topik ini */
+        .stack-container {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            background: rgba(30, 64, 175, 0.2);
+            border: 2px solid var(--unhan-gold);
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 180px;
+            width: 120px;
+            margin: 0 auto;
+        }
+        .stack-item {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 10px 25px;
+            margin: 3px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            width: 80px;
+        }
+        .stack-item.new {
+            background: linear-gradient(135deg, #10b981, #059669);
+            animation: pulse 0.5s;
+        }
+        .stack-item.removing {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .stack-label {
+            color: var(--unhan-gold);
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+        /* Operation arrows */
+        .op-arrow {
+            font-size: 1.5em;
+            color: var(--unhan-gold);
+            margin: 0 10px;
+        }
+        .op-arrow.push { color: var(--color-success); }
+        .op-arrow.pop { color: var(--unhan-red-light); }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>📚 Stack</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 05</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment">Menjelaskan konsep <span class="highlight">LIFO</span> dan karakteristik stack</li>
+                    <li class="fragment">Mengimplementasikan stack dengan <span class="highlight">array</span> dan <span class="highlight">linked list</span></li>
+                    <li class="fragment">Menganalisis <span class="highlight">kompleksitas</span> setiap operasi stack</li>
+                    <li class="fragment">Menerapkan stack untuk <span class="highlight">balanced parentheses</span></li>
+                    <li class="fragment">Menerapkan stack untuk <span class="highlight">konversi dan evaluasi ekspresi</span></li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <ol>
+                    <li class="fragment">Konsep Dasar Stack (LIFO)</li>
+                    <li class="fragment">ADT Stack dan Operasi</li>
+                    <li class="fragment">Implementasi dengan Array</li>
+                    <li class="fragment">Implementasi dengan Linked List</li>
+                    <li class="fragment">Aplikasi: Balanced Parentheses</li>
+                    <li class="fragment">Aplikasi: Konversi & Evaluasi Ekspresi</li>
+                </ol>
+            </section>
+
+            <!-- ==================== BAGIAN 1: KONSEP DASAR ==================== -->
+            <section>
+                <section>
+                    <h2>📖 Apa itu Stack?</h2>
+                    <div class="box-definition">
+                        <p><strong>Stack</strong> adalah struktur data linear yang mengikuti prinsip <strong>LIFO (Last-In-First-Out)</strong> — elemen yang terakhir dimasukkan akan menjadi elemen pertama yang dikeluarkan.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p>🍽️ Bayangkan <span class="highlight">setumpuk piring</span> di dapur — piring terakhir yang diletakkan di atas akan menjadi piring pertama yang diambil.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📖 Ilustrasi Konsep LIFO</h2>
+                    <div class="two-columns">
+                        <div>
+                            <div class="stack-container">
+                                <div class="stack-item">E</div>
+                                <div class="stack-item">D</div>
+                                <div class="stack-item">C</div>
+                                <div class="stack-item">B</div>
+                                <div class="stack-item">A</div>
+                            </div>
+                            <p class="stack-label">TOP ↑</p>
+                        </div>
+                        <div>
+                            <p><strong>Last In = First Out</strong></p>
+                            <ul>
+                                <li class="fragment"><span class="highlight">PUSH</span>: Tambah di TOP</li>
+                                <li class="fragment"><span class="warning">POP</span>: Hapus dari TOP</li>
+                                <li class="fragment">Elemen E masuk terakhir</li>
+                                <li class="fragment">Elemen E keluar pertama</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="small fragment" style="margin-top: 1em;">
+                        <em>Placeholder: images/p05-01-ilustrasi-konsep-lifo.png</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>📊 Analogi Dunia Nyata</h2>
+                    <table>
+                        <tr>
+                            <th>Analogi</th>
+                            <th>Penjelasan</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>🍽️ Tumpukan piring</td>
+                            <td>Piring teratas diambil pertama</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>📚 Tumpukan buku</td>
+                            <td>Buku di atas diambil lebih dulu</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>↩️ Undo di editor</td>
+                            <td>Aksi terakhir di-undo pertama</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>🔙 Browser back</td>
+                            <td>Halaman terakhir dikunjungi kembali</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>📞 Call stack</td>
+                            <td>Fungsi terakhir selesai pertama</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>🎖️ Konteks Militer</h2>
+                    <div class="box-info">
+                        <p>Dalam operasi militer, konsep stack sangat relevan:</p>
+                    </div>
+                    <ul>
+                        <li class="fragment"><strong>Sistem komando darurat</strong>: Perintah terakhir prioritas tertinggi untuk dibatalkan</li>
+                        <li class="fragment"><strong>Log radar</strong>: Data terbaru perlu diakses cepat untuk analisis situasi</li>
+                        <li class="fragment"><strong>Waypoint UAV</strong>: Pilot dapat membatalkan waypoint terakhir</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 2: ADT STACK ==================== -->
+            <section>
+                <section>
+                    <h2>📖 ADT Stack</h2>
+                    <div class="box-definition">
+                        <p><strong>ADT Stack</strong> mendefinisikan stack sebagai kumpulan elemen dengan operasi yang terbatas pada satu ujung yang disebut <strong>TOP</strong>.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Operasi Dasar Stack</h2>
+                    <table>
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Deskripsi</th>
+                            <th>Return</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>push(x)</code></td>
+                            <td>Menambahkan x ke top</td>
+                            <td>void</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>pop()</code></td>
+                            <td>Menghapus & mengembalikan top</td>
+                            <td>elemen</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>peek()</code></td>
+                            <td>Mengembalikan top tanpa hapus</td>
+                            <td>elemen</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>isEmpty()</code></td>
+                            <td>Cek apakah kosong</td>
+                            <td>boolean</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><code>isFull()</code></td>
+                            <td>Cek apakah penuh (array)</td>
+                            <td>boolean</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>📖 Visualisasi Push & Pop</h2>
+                    <div class="two-columns">
+                        <div class="fragment">
+                            <h3 class="success">PUSH(40)</h3>
+                            <div class="stack-container" style="min-height: 150px;">
+                                <div class="stack-item new">40</div>
+                                <div class="stack-item">30</div>
+                                <div class="stack-item">20</div>
+                                <div class="stack-item">10</div>
+                            </div>
+                            <p class="small">↑ Tambah di TOP</p>
+                        </div>
+                        <div class="fragment">
+                            <h3 class="warning">POP()</h3>
+                            <div class="stack-container" style="min-height: 150px;">
+                                <div class="stack-item">30</div>
+                                <div class="stack-item">20</div>
+                                <div class="stack-item">10</div>
+                            </div>
+                            <p class="small">↑ Hapus dari TOP, return 40</p>
+                        </div>
+                    </div>
+                    <p class="small fragment" style="margin-top: 0.5em;">
+                        <em>Placeholder: images/p05-02-push-pop-operations.png</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Trace Operasi Stack</h2>
+                    <div class="quiz-question">
+                        <p><strong>Stack kosong S. Apa hasil setelah operasi berikut?</strong></p>
+                        <pre><code class="plaintext" data-trim>
+push(5), push(10), push(15), pop(), push(20), pop(), pop()
+                        </code></pre>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><span class="highlight">Jawaban:</span></p>
+                        <p>Stack akhir: <code>[5]</code></p>
+                        <p>Return values: <code>15, 20, 10</code></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Trace Langkah per Langkah</h2>
+                    <table class="smaller">
+                        <tr>
+                            <th>Step</th>
+                            <th>Operasi</th>
+                            <th>Stack</th>
+                            <th>Return</th>
+                        </tr>
+                        <tr class="fragment"><td>1</td><td>push(5)</td><td>[5]</td><td>-</td></tr>
+                        <tr class="fragment"><td>2</td><td>push(10)</td><td>[5, 10]</td><td>-</td></tr>
+                        <tr class="fragment"><td>3</td><td>push(15)</td><td>[5, 10, 15]</td><td>-</td></tr>
+                        <tr class="fragment"><td>4</td><td>pop()</td><td>[5, 10]</td><td class="warning">15</td></tr>
+                        <tr class="fragment"><td>5</td><td>push(20)</td><td>[5, 10, 20]</td><td>-</td></tr>
+                        <tr class="fragment"><td>6</td><td>pop()</td><td>[5, 10]</td><td class="warning">20</td></tr>
+                        <tr class="fragment"><td>7</td><td>pop()</td><td>[5]</td><td class="warning">10</td></tr>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 3: IMPLEMENTASI ARRAY ==================== -->
+            <section>
+                <section>
+                    <h2>💻 Implementasi Stack dengan Array</h2>
+                    <div class="box-info">
+                        <p>Menggunakan array dengan ukuran tetap (fixed size)</p>
+                    </div>
+                    <ul>
+                        <li class="fragment"><code>topIndex = -1</code> menandakan stack kosong</li>
+                        <li class="fragment">Push: <code>++topIndex</code>, lalu simpan data</li>
+                        <li class="fragment">Pop: Ambil data, lalu <code>--topIndex</code></li>
+                    </ul>
+                    <p class="small fragment" style="margin-top: 1em;">
+                        <em>Placeholder: images/p05-03-array-memory-layout.png</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>💻 Class StackArray - Struktur</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|1-4|6-7|9-10">
+class StackArray {
+private:
+    static const int MAX_SIZE = 100;
+    int data[MAX_SIZE];
+    int topIndex;  // -1 jika kosong
+    
+public:
+    StackArray() : topIndex(-1) {}
+    
+    bool isEmpty() { return topIndex == -1; }
+    bool isFull()  { return topIndex == MAX_SIZE - 1; }
+};
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>💻 Operasi Push</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-5|6">
+void push(int value) {
+    if (isFull()) {
+        cout << "Error: Stack Overflow!" << endl;
+        return;
+    }
+    data[++topIndex] = value;
+}
+                    </code></pre>
+                    <div class="fragment box-warning" style="margin-top: 1em;">
+                        <p>⚠️ <strong>Stack Overflow</strong>: Terjadi ketika push ke stack yang sudah penuh</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Operasi Pop & Peek</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|1-6|8-12">
+int pop() {
+    if (isEmpty()) {
+        cout << "Error: Stack Underflow!" << endl;
+        return -1;
+    }
+    return data[topIndex--];
+}
+
+int peek() {
+    if (isEmpty()) {
+        cout << "Error: Stack kosong!" << endl;
+        return -1;
+    }
+    return data[topIndex];
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>📊 Kompleksitas Array Stack</h2>
+                    <table>
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Time</th>
+                            <th>Space</th>
+                        </tr>
+                        <tr>
+                            <td>push()</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>O(1)</td>
+                        </tr>
+                        <tr>
+                            <td>pop()</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>O(1)</td>
+                        </tr>
+                        <tr>
+                            <td>peek()</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>O(1)</td>
+                        </tr>
+                        <tr>
+                            <td>isEmpty()</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>O(1)</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small">Total Space: <span class="highlight">O(n)</span> untuk n elemen maksimum</p>
+                </section>
+
+                <section>
+                    <h2>📊 Kelebihan & Kekurangan Array</h2>
+                    <div class="two-columns">
+                        <div>
+                            <h3 class="success">✅ Kelebihan</h3>
+                            <ul>
+                                <li>Implementasi sederhana</li>
+                                <li>Akses O(1) ke top</li>
+                                <li>Cache-friendly</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="warning">❌ Kekurangan</h3>
+                            <ul>
+                                <li>Ukuran tetap</li>
+                                <li>Waste memory</li>
+                                <li>Stack overflow</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💡 Dynamic Array Stack</h2>
+                    <div class="box-info">
+                        <p><strong>Doubling Strategy</strong>: Kapasitas dilipatgandakan saat penuh</p>
+                    </div>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3-4|6-7">
+void resize() {
+    int newCapacity = capacity * 2;
+    int* newData = new int[newCapacity];
+    for (int i = 0; i <= topIndex; i++)
+        newData[i] = data[i];
+    delete[] data;
+    data = newData;
+    capacity = newCapacity;
+}
+                    </code></pre>
+                    <p class="fragment small">Amortized push: <span class="highlight">O(1)</span></p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 4: IMPLEMENTASI LINKED LIST ==================== -->
+            <section>
+                <section>
+                    <h2>💻 Implementasi Stack dengan Linked List</h2>
+                    <div class="box-definition">
+                        <p>Operasi push dan pop dilakukan di <strong>head</strong> (bukan tail) untuk kompleksitas O(1)</p>
+                    </div>
+                    <p class="small fragment" style="margin-top: 1em;">
+                        <em>Placeholder: images/p05-04-linked-list-stack.png</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>💻 Struktur Node</h2>
+                    <pre><code class="cpp" data-trim>
+struct Node {
+    int data;
+    Node* next;
+    
+    Node(int value) : data(value), next(nullptr) {}
+};
+                    </code></pre>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p>Visualisasi: <code>topNode → [40] → [30] → [20] → [10] → NULL</code></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Operasi Push (Linked List)</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2|3|4|5">
+void push(int value) {
+    Node* newNode = new Node(value);
+    newNode->next = topNode;  // Arahkan ke top lama
+    topNode = newNode;        // Update top
+    count++;
+}
+                    </code></pre>
+                    <div class="fragment box-success" style="margin-top: 1em;">
+                        <p>✅ Kompleksitas: <strong>O(1)</strong> - selalu di head</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Operasi Pop (Linked List)</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-5|7-8|9|10-11">
+int pop() {
+    if (isEmpty()) {
+        cout << "Stack Underflow!" << endl;
+        return -1;
+    }
+    
+    Node* temp = topNode;
+    int value = temp->data;
+    topNode = topNode->next;  // Update top
+    delete temp;              // Hapus node lama
+    count--;
+    return value;
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Mengapa di Head?</h2>
+                    <div class="quiz-question">
+                        <p><strong>Mengapa operasi stack di linked list dilakukan di HEAD, bukan TAIL?</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><span class="highlight">Jawaban:</span></p>
+                        <p>Pop di TAIL membutuhkan <span class="warning">O(n)</span> karena harus traverse untuk menemukan node sebelum tail.</p>
+                        <p>Pop di HEAD: <span class="success">O(1)</span> - akses langsung!</p>
+                    </div>
+                    <p class="small fragment">
+                        <em>Placeholder: images/p05-09-pop-tail-on-complexity.png</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>📊 Kelebihan & Kekurangan Linked List</h2>
+                    <div class="two-columns">
+                        <div>
+                            <h3 class="success">✅ Kelebihan</h3>
+                            <ul>
+                                <li>Ukuran fleksibel</li>
+                                <li>Tidak ada waste memory</li>
+                                <li>Tidak perlu resize</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="warning">❌ Kekurangan</h3>
+                            <ul>
+                                <li>Overhead pointer</li>
+                                <li>Tidak cache-friendly</li>
+                                <li>Alokasi per operasi</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 5: PERBANDINGAN ==================== -->
+            <section>
+                <h2>📊 Perbandingan Array vs Linked List</h2>
+                <table class="smaller">
+                    <tr>
+                        <th>Aspek</th>
+                        <th>Array Static</th>
+                        <th>Array Dynamic</th>
+                        <th>Linked List</th>
+                    </tr>
+                    <tr>
+                        <td>Ukuran</td>
+                        <td>Tetap</td>
+                        <td>Fleksibel</td>
+                        <td>Fleksibel</td>
+                    </tr>
+                    <tr>
+                        <td>Push</td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td>O(1)*</td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Pop</td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Cache</td>
+                        <td class="success">Friendly</td>
+                        <td class="success">Friendly</td>
+                        <td class="warning">Tidak</td>
+                    </tr>
+                    <tr>
+                        <td>Overflow</td>
+                        <td class="warning">Mungkin</td>
+                        <td>Tidak</td>
+                        <td>Tidak</td>
+                    </tr>
+                </table>
+                <p class="small">* amortized</p>
+            </section>
+
+            <!-- ==================== BAGIAN 6: BALANCED PARENTHESES ==================== -->
+            <section>
+                <section>
+                    <h2>📖 Aplikasi: Balanced Parentheses</h2>
+                    <div class="box-definition">
+                        <p>Memeriksa apakah tanda kurung <code>() [] {}</code> dalam string sudah <strong>seimbang</strong>.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p><span class="success">✓ Balanced:</span> <code>"([]){}",  "{[()]}"</code></p>
+                        <p><span class="warning">✗ Not Balanced:</span> <code>"([)]",  "((("</code></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📖 Algoritma Balanced Parentheses</h2>
+                    <div class="box-info">
+                        <ol>
+                            <li class="fragment">Untuk setiap karakter:</li>
+                            <li class="fragment">Jika <span class="success">kurung buka</span> → <strong>PUSH</strong></li>
+                            <li class="fragment">Jika <span class="warning">kurung tutup</span> → <strong>POP & CHECK</strong></li>
+                            <li class="fragment">Di akhir: stack harus <strong>kosong</strong></li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi isBalanced()</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3-5|6-14|16">
+bool isBalanced(string expr) {
+    stack&lt;char&gt; s;
+    for (char c : expr) {
+        if (c == '(' || c == '[' || c == '{')
+            s.push(c);
+        else if (c == ')' || c == ']' || c == '}') {
+            if (s.empty()) return false;
+            char top = s.top();
+            s.pop();
+            if (!isMatchingPair(top, c))
+                return false;
+        }
+    }
+    return s.empty();
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>📊 Trace: "{[()]}"</h2>
+                    <table class="smaller">
+                        <tr>
+                            <th>Step</th>
+                            <th>Char</th>
+                            <th>Action</th>
+                            <th>Stack</th>
+                        </tr>
+                        <tr class="fragment"><td>1</td><td class="success">{</td><td>PUSH</td><td>{</td></tr>
+                        <tr class="fragment"><td>2</td><td class="success">[</td><td>PUSH</td><td>{[</td></tr>
+                        <tr class="fragment"><td>3</td><td class="success">(</td><td>PUSH</td><td>{[(</td></tr>
+                        <tr class="fragment"><td>4</td><td class="warning">)</td><td>POP ✓</td><td>{[</td></tr>
+                        <tr class="fragment"><td>5</td><td class="warning">]</td><td>POP ✓</td><td>{</td></tr>
+                        <tr class="fragment"><td>6</td><td class="warning">}</td><td>POP ✓</td><td><em>empty</em></td></tr>
+                    </table>
+                    <p class="fragment highlight">Hasil: BALANCED ✓</p>
+                    <p class="small fragment">
+                        <em>Placeholder: images/p05-05-balanced-parentheses-trace.png</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Trace "[(])"</h2>
+                    <div class="quiz-question">
+                        <p><strong>Trace algoritma untuk string: <code>"[(])"</code></strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <table class="smaller">
+                            <tr><th>Char</th><th>Action</th><th>Stack</th></tr>
+                            <tr><td>[</td><td>PUSH</td><td>[</td></tr>
+                            <tr><td>(</td><td>PUSH</td><td>[(</td></tr>
+                            <tr><td class="warning">]</td><td>POP (</td><td>[</td></tr>
+                        </table>
+                        <p class="warning">( tidak match dengan ] → NOT BALANCED ✗</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 7: KONVERSI EKSPRESI ==================== -->
+            <section>
+                <section>
+                    <h2>📖 Notasi Ekspresi</h2>
+                    <table>
+                        <tr>
+                            <th>Notasi</th>
+                            <th>Format</th>
+                            <th>Contoh</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Infix</strong></td>
+                            <td>operand op operand</td>
+                            <td><code>A + B</code></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Prefix</strong></td>
+                            <td>op operand operand</td>
+                            <td><code>+ A B</code></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Postfix</strong></td>
+                            <td>operand operand op</td>
+                            <td><code>A B +</code></td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>💡 Mengapa Postfix?</h2>
+                    <div class="box-success">
+                        <ul>
+                            <li class="fragment">✅ Tidak memerlukan tanda kurung</li>
+                            <li class="fragment">✅ Tidak perlu aturan prioritas saat evaluasi</li>
+                            <li class="fragment">✅ Mudah dievaluasi dengan stack</li>
+                            <li class="fragment">✅ Digunakan di kalkulator dan compiler</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Prioritas Operator</h2>
+                    <table>
+                        <tr>
+                            <th>Operator</th>
+                            <th>Prioritas</th>
+                            <th>Associativity</th>
+                        </tr>
+                        <tr>
+                            <td><code>^</code></td>
+                            <td>3 (tertinggi)</td>
+                            <td>Right to Left</td>
+                        </tr>
+                        <tr>
+                            <td><code>* /</code></td>
+                            <td>2</td>
+                            <td>Left to Right</td>
+                        </tr>
+                        <tr>
+                            <td><code>+ -</code></td>
+                            <td>1 (terendah)</td>
+                            <td>Left to Right</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>📖 Algoritma Infix ke Postfix</h2>
+                    <div class="box-info small">
+                        <p><strong>Shunting-Yard Algorithm:</strong></p>
+                        <ol>
+                            <li class="fragment">Operand → langsung ke output</li>
+                            <li class="fragment"><code>(</code> → push ke stack</li>
+                            <li class="fragment"><code>)</code> → pop sampai <code>(</code></li>
+                            <li class="fragment">Operator → pop operator dengan prioritas ≥, lalu push</li>
+                            <li class="fragment">Akhir → pop semua sisa operator</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Trace: "(A+B)*C"</h2>
+                    <table class="smaller">
+                        <tr>
+                            <th>Token</th>
+                            <th>Action</th>
+                            <th>Stack</th>
+                            <th>Output</th>
+                        </tr>
+                        <tr class="fragment"><td>(</td><td>PUSH</td><td>(</td><td></td></tr>
+                        <tr class="fragment"><td>A</td><td>Output</td><td>(</td><td>A</td></tr>
+                        <tr class="fragment"><td>+</td><td>PUSH</td><td>(+</td><td>A</td></tr>
+                        <tr class="fragment"><td>B</td><td>Output</td><td>(+</td><td>AB</td></tr>
+                        <tr class="fragment"><td>)</td><td>POP sampai (</td><td></td><td>AB+</td></tr>
+                        <tr class="fragment"><td>*</td><td>PUSH</td><td>*</td><td>AB+</td></tr>
+                        <tr class="fragment"><td>C</td><td>Output</td><td>*</td><td>AB+C</td></tr>
+                        <tr class="fragment"><td>END</td><td>POP all</td><td></td><td class="highlight">AB+C*</td></tr>
+                    </table>
+                    <p class="small fragment">
+                        <em>Placeholder: images/p05-06-infix-to-postfix.png</em>
+                    </p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 8: EVALUASI POSTFIX ==================== -->
+            <section>
+                <section>
+                    <h2>📖 Evaluasi Ekspresi Postfix</h2>
+                    <div class="box-info">
+                        <p><strong>Algoritma:</strong></p>
+                        <ol>
+                            <li class="fragment">Operand → <strong>PUSH</strong> ke stack</li>
+                            <li class="fragment">Operator → <strong>POP</strong> dua operand, hitung, <strong>PUSH</strong> hasil</li>
+                            <li class="fragment">Akhir → nilai di top adalah hasil</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi evaluatePostfix()</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|4-5|7-12">
+int evaluatePostfix(string postfix) {
+    stack&lt;int&gt; operandStack;
+    for (char token : postfix) {
+        if (isdigit(token))
+            operandStack.push(token - '0');
+        else {
+            int op2 = operandStack.top(); operandStack.pop();
+            int op1 = operandStack.top(); operandStack.pop();
+            int result;
+            switch (token) {
+                case '+': result = op1 + op2; break;
+                case '-': result = op1 - op2; break;
+                case '*': result = op1 * op2; break;
+                case '/': result = op1 / op2; break;
+            }
+            operandStack.push(result);
+        }
+    }
+    return operandStack.top();
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>📊 Trace: "23*5+"</h2>
+                    <table>
+                        <tr>
+                            <th>Token</th>
+                            <th>Action</th>
+                            <th>Stack</th>
+                            <th>Calc</th>
+                        </tr>
+                        <tr class="fragment"><td>2</td><td>PUSH</td><td>[2]</td><td>-</td></tr>
+                        <tr class="fragment"><td>3</td><td>PUSH</td><td>[2, 3]</td><td>-</td></tr>
+                        <tr class="fragment"><td>*</td><td>POP, calc, PUSH</td><td>[6]</td><td>2*3=6</td></tr>
+                        <tr class="fragment"><td>5</td><td>PUSH</td><td>[6, 5]</td><td>-</td></tr>
+                        <tr class="fragment"><td>+</td><td>POP, calc, PUSH</td><td class="highlight">[11]</td><td>6+5=11</td></tr>
+                    </table>
+                    <p class="fragment"><strong>Hasil: 11</strong></p>
+                    <p class="small fragment">
+                        <em>Placeholder: images/p05-07-postfix-evaluation-trace.png</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Evaluasi "53+2*4-"</h2>
+                    <div class="quiz-question">
+                        <p><strong>Hitung nilai ekspresi postfix: <code>"53+2*4-"</code></strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p>5+3 = 8 → 8*2 = 16 → 16-4 = <span class="highlight">12</span></p>
+                        <p>Infix: (5+3)*2-4 = 12 ✓</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 9: FUNCTION CALL STACK ==================== -->
+            <section>
+                <section>
+                    <h2>📖 Function Call Stack</h2>
+                    <div class="box-definition">
+                        <p>Setiap fungsi dipanggil → <strong>stack frame</strong> di-push</p>
+                        <p>Fungsi selesai → stack frame di-pop</p>
+                    </div>
+                    <ul class="fragment">
+                        <li>Parameter fungsi</li>
+                        <li>Variabel lokal</li>
+                        <li>Return address</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>💻 Contoh: factorial(4)</h2>
+                    <pre><code class="cpp" data-trim>
+int factorial(int n) {
+    if (n <= 1) return 1;       // Base case
+    return n * factorial(n-1);  // Recursive
+}
+                    </code></pre>
+                    <p class="small fragment">
+                        <em>Placeholder: images/p05-08-function-call-stack.png</em>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>📊 Call Stack factorial(4)</h2>
+                    <div class="two-columns">
+                        <div>
+                            <h3 class="success">PUSH Phase</h3>
+                            <div class="stack-container fragment" style="min-height: 180px;">
+                                <div class="stack-item small">fact(1)</div>
+                                <div class="stack-item small">fact(2)</div>
+                                <div class="stack-item small">fact(3)</div>
+                                <div class="stack-item small">fact(4)</div>
+                                <div class="stack-item small">main()</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="warning">POP Phase</h3>
+                            <ul class="fragment small">
+                                <li>fact(1) → return 1</li>
+                                <li>fact(2) → 2*1 = 2</li>
+                                <li>fact(3) → 3*2 = 6</li>
+                                <li>fact(4) → 4*6 = <span class="highlight">24</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="small fragment">
+                        <em>Placeholder: images/p05-10-factorial-call-stack-trace.png</em>
+                    </p>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table class="smaller">
+                    <tr>
+                        <th>Konsep</th>
+                        <th>Poin Penting</th>
+                    </tr>
+                    <tr>
+                        <td><strong>LIFO</strong></td>
+                        <td>Last-In-First-Out</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Operasi</strong></td>
+                        <td>push(), pop(), peek(), isEmpty()</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Array</strong></td>
+                        <td>O(1) semua operasi, ukuran tetap/dinamis</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linked List</strong></td>
+                        <td>O(1) semua operasi, ukuran fleksibel</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Balanced ()</strong></td>
+                        <td>Push buka, pop & match tutup</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Postfix</strong></td>
+                        <td>Push operand, pop-calc-push operator</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.10.1 | Weiss Ch.3.6 | Hubbard Ch.5
+                </p>
+            </section>
+
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 05: Stack</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+    
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
