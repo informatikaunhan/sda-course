@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 04: Double dan Circular Linked List - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="../css/unhan-theme.css">
+    
+    <!-- Slide-specific styles -->
+    <style>
+        /* Node visualization for linked list */
+        .node-box {
+            display: inline-flex;
+            border: 2px solid var(--unhan-gold);
+            border-radius: 5px;
+            margin: 3px;
+            background: rgba(37, 99, 235, 0.2);
+        }
+        .node-box .prev-ptr,
+        .node-box .next-ptr {
+            padding: 8px 10px;
+            background: rgba(212, 168, 75, 0.3);
+            font-size: 0.7em;
+        }
+        .node-box .data-field {
+            padding: 8px 15px;
+            font-weight: bold;
+            border-left: 1px solid var(--unhan-gold);
+            border-right: 1px solid var(--unhan-gold);
+        }
+        .node-arrow {
+            color: var(--unhan-gold);
+            font-size: 1.3em;
+            margin: 0 5px;
+            vertical-align: middle;
+        }
+        .node-null {
+            color: var(--unhan-red-light);
+            font-weight: bold;
+        }
+        /* Circular visual */
+        .circular-indicator {
+            color: var(--color-success);
+            font-size: 0.9em;
+        }
+        /* Compact code */
+        .reveal pre.compact-code {
+            font-size: 0.48em;
+        }
+        .reveal pre.medium-code {
+            font-size: 0.52em;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🔗 Linked List (Bagian 2)</h1>
+                <h3>Double dan Circular Linked List</h3>
+                <p class="institution">Pertemuan 04</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    Struktur Data dan Algoritma<br>
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment">Mengimplementasikan <span class="highlight">Double Linked List</span> beserta operasinya</li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">Single Circular Linked List</span></li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">Double Circular Linked List</span></li>
+                    <li class="fragment">Memahami konsep <span class="highlight">Sentinel Node</span> dan <span class="highlight">Iterator</span></li>
+                    <li class="fragment">Memilih jenis linked list yang tepat untuk kasus tertentu</li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3 style="color: var(--unhan-gold);">Bagian 1</h3>
+                        <ol>
+                            <li>Double Linked List</li>
+                            <li>Struktur Node DLL</li>
+                            <li>Operasi Insert & Delete</li>
+                            <li>Perbandingan SLL vs DLL</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--unhan-gold);">Bagian 2</h3>
+                        <ol start="5">
+                            <li>Circular Linked List</li>
+                            <li>Double Circular LL</li>
+                            <li>Sentinel Node</li>
+                            <li>Iterator & Studi Kasus</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== DOUBLE LINKED LIST DEFINITION==================== -->
+            <section>
+                <h2>📖 Apa itu Double Linked List?</h2>
+                <div class="box-definition">
+                    <p><strong>Double Linked List (DLL)</strong> adalah struktur data linear di mana setiap node memiliki <span class="highlight">dua pointer</span>: <code>prev</code> (ke node sebelumnya) dan <code>next</code> (ke node berikutnya).</p>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p><strong>Keunggulan utama:</strong> Traversal <span class="highlight">dua arah</span> (bidirectional)</p>
+                </div>
+                <div class="fragment" style="margin-top: 1em; text-align: center;">
+                    <span class="node-null">NULL</span>
+                    <span class="node-arrow">←</span>
+                    <span class="node-box">
+                        <span class="prev-ptr">prev</span>
+                        <span class="data-field">10</span>
+                        <span class="next-ptr">next</span>
+                    </span>
+                    <span class="node-arrow">⇄</span>
+                    <span class="node-box">
+                        <span class="prev-ptr">prev</span>
+                        <span class="data-field">20</span>
+                        <span class="next-ptr">next</span>
+                    </span>
+                    <span class="node-arrow">⇄</span>
+                    <span class="node-box">
+                        <span class="prev-ptr">prev</span>
+                        <span class="data-field">30</span>
+                        <span class="next-ptr">next</span>
+                    </span>
+                    <span class="node-arrow">→</span>
+                    <span class="node-null">NULL</span>
+                </div>
+            </section>
+
+            <!-- ==================== DLL VISUALISASI GAMBAR==================== -->
+            <section>
+                <h2>🖼️ Struktur Double Linked List</h2>
+                <figure>
+                    <img src="images/p04-01-double-linked-list-structure.png" 
+                         alt="Struktur Double Linked List"
+                         style="max-height: 350px;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="img-fallback">
+                        <p class="icon">🔗</p>
+                        <p class="title">p04-01-double-linked-list-structure.png</p>
+                        <p class="description">Double Linked List dengan pointer HEAD, TAIL, dan koneksi bidirectional</p>
+                    </div>
+                    <figcaption style="font-size: 0.7em; margin-top: 10px;">Gambar 1.1: Struktur DLL dengan pointer prev dan next</figcaption>
+                </figure>
+            </section>
+
+            <!-- ==================== APLIKASI DLL==================== -->
+            <section>
+                <h2>💡 Aplikasi Double Linked List</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3 style="color: var(--unhan-gold);">Umum</h3>
+                        <ul>
+                            <li class="fragment">Navigasi browser (back/forward)</li>
+                            <li class="fragment">Playlist musik</li>
+                            <li class="fragment">Undo/Redo editor</li>
+                            <li class="fragment">Manajemen memori OS</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--unhan-gold);">🎖️ Pertahanan</h3>
+                        <ul>
+                            <li class="fragment">History navigasi peta taktis</li>
+                            <li class="fragment">Log komunikasi dua arah</li>
+                            <li class="fragment">Timeline misi (review)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== STRUKTUR NODE DLL==================== -->
+            <section>
+                <h2>💻 Struktur Node DLL</h2>
+                <pre><code class="cpp" data-trim data-line-numbers="|1-4|6-7">
+struct Node {
+    int data;
+    Node* prev;   // Pointer ke node sebelumnya
+    Node* next;   // Pointer ke node berikutnya
+    
+    // Constructor
+    Node(int value) : data(value), prev(nullptr), next(nullptr) {}
+};
+                </code></pre>
+                <div class="fragment box-info" style="margin-top: 1em;">
+                    <p><strong>3 Komponen:</strong> <code>data</code> (nilai), <code>prev</code> (pointer mundur), <code>next</code> (pointer maju)</p>
+                </div>
+            </section>
+
+            <!-- ==================== CLASS DLL==================== -->
+            <section>
+                <h2>💻 Class Double Linked List</h2>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|2-4|7-14">
+class DoublyLinkedList {
+private:
+    Node* head;
+    Node* tail;
+    int size;
+    
+public:
+    DoublyLinkedList() : head(nullptr), tail(nullptr), size(0) {}
+    
+    void insertFront(int value);
+    void insertBack(int value);
+    void deleteFront();
+    void deleteBack();
+    void displayForward();
+    void displayBackward();
+    
+    int getSize() const { return size; }
+    bool isEmpty() const { return size == 0; }
+};
+                </code></pre>
+            </section>
+
+            <!-- ==================== INSERT FRONT DLL==================== -->
+            <section>
+                <h2>➕ Insert di Depan (insertFront)</h2>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|2|4-6|8-12">
+void DoublyLinkedList::insertFront(int value) {
+    Node* newNode = new Node(value);
+    
+    if (head == nullptr) {
+        head = tail = newNode;  // List kosong
+    }
+    else {
+        newNode->next = head;   // Node baru → head lama
+        head->prev = newNode;   // Head lama ← node baru
+        head = newNode;         // Update head
+    }
+    size++;
+}
+                </code></pre>
+                <div class="fragment" style="margin-top: 0.8em;">
+                    <p><span class="complexity-badge o1">O(1)</span> Kompleksitas waktu konstan</p>
+                </div>
+            </section>
+
+            <!-- ==================== INSERT BACK DLL==================== -->
+            <section>
+                <h2>➕ Insert di Belakang (insertBack)</h2>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|4-6|8-12">
+void DoublyLinkedList::insertBack(int value) {
+    Node* newNode = new Node(value);
+    
+    if (tail == nullptr) {
+        head = tail = newNode;  // List kosong
+    }
+    else {
+        newNode->prev = tail;   // Node baru ← tail lama
+        tail->next = newNode;   // Tail lama → node baru
+        tail = newNode;         // Update tail
+    }
+    size++;
+}
+                </code></pre>
+                <div class="fragment box-success" style="margin-top: 0.8em;">
+                    <p><span class="complexity-badge o1">O(1)</span> — Keunggulan DLL dengan <code>tail</code> pointer!</p>
+                </div>
+            </section>
+
+            <!-- ==================== INSERT MIDDLE VISUALISASI==================== -->
+            <section>
+                <h2>🖼️ Insert di Tengah DLL</h2>
+                <figure>
+                    <img src="images/p04-02-dll-insert-middle.png" 
+                         alt="Insert di tengah DLL"
+                         style="max-height: 340px;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="img-fallback">
+                        <p class="icon">➕</p>
+                        <p class="title">p04-02-dll-insert-middle.png</p>
+                        <p class="description">Proses insert node di tengah dengan 4 langkah pointer manipulation</p>
+                    </div>
+                    <figcaption style="font-size: 0.7em; margin-top: 8px;">Gambar 1.2: Langkah-langkah insert di tengah DLL</figcaption>
+                </figure>
+            </section>
+
+            <!-- ==================== INSERT AT POSITION==================== -->
+            <section>
+                <h2>➕ Insert pada Posisi Tertentu</h2>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|4-7|9-15">
+void DoublyLinkedList::insertAt(int value, int position) {
+    if (position < 0 || position > size) return;
+    if (position == 0) { insertFront(value); return; }
+    if (position == size) { insertBack(value); return; }
+    
+    Node* newNode = new Node(value);
+    Node* current;
+    
+    // Traversal optimal: dari depan atau belakang
+    if (position <= size / 2) {
+        current = head;
+        for (int i = 0; i < position; i++) current = current->next;
+    } else {
+        current = tail;
+        for (int i = size - 1; i > position; i--) current = current->prev;
+    }
+    
+    // Insert sebelum current
+    newNode->next = current;
+    newNode->prev = current->prev;
+    current->prev->next = newNode;
+    current->prev = newNode;
+    size++;
+}
+                </code></pre>
+            </section>
+
+            <!-- ==================== DELETE FRONT & BACK==================== -->
+            <section>
+                <h2>➖ Delete di Depan dan Belakang</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3 style="color: var(--unhan-gold); font-size: 0.9em;">deleteFront()</h3>
+                        <pre style="font-size: 0.42em;"><code class="cpp" data-trim>
+void deleteFront() {
+  if (head == nullptr) return;
+  Node* temp = head;
+  
+  if (head == tail) {
+    head = tail = nullptr;
+  } else {
+    head = head->next;
+    head->prev = nullptr;
+  }
+  delete temp;
+  size--;
+}
+                        </code></pre>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--unhan-gold); font-size: 0.9em;">deleteBack()</h3>
+                        <pre style="font-size: 0.42em;"><code class="cpp" data-trim>
+void deleteBack() {
+  if (tail == nullptr) return;
+  Node* temp = tail;
+  
+  if (head == tail) {
+    head = tail = nullptr;
+  } else {
+    tail = tail->prev;
+    tail->next = nullptr;
+  }
+  delete temp;
+  size--;
+}
+                        </code></pre>
+                    </div>
+                </div>
+                <p class="fragment" style="margin-top: 0.8em; text-align: center;">
+                    <span class="complexity-badge o1">O(1)</span> Keduanya konstan — <span class="highlight">deleteBack() DLL lebih cepat dari SLL!</span>
+                </p>
+            </section>
+
+            <!-- ==================== PERBANDINGAN SLL vs DLL==================== -->
+            <section>
+                <h2>📊 Perbandingan SLL vs DLL</h2>
+                <table style="font-size: 0.6em;">
+                    <tr>
+                        <th>Aspek</th>
+                        <th>Single LL</th>
+                        <th>Double LL</th>
+                    </tr>
+                    <tr>
+                        <td>Memori per node</td>
+                        <td>2 field</td>
+                        <td>3 field</td>
+                    </tr>
+                    <tr>
+                        <td>Traversal</td>
+                        <td>Satu arah →</td>
+                        <td class="success">Dua arah ⇄</td>
+                    </tr>
+                    <tr>
+                        <td>Insert depan</td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Delete belakang</td>
+                        <td class="warning"><span class="complexity-badge on">O(n)</span></td>
+                        <td class="success"><span class="complexity-badge o1">O(1)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Delete node (punya ptr)</td>
+                        <td class="warning"><span class="complexity-badge on">O(n)</span></td>
+                        <td class="success"><span class="complexity-badge o1">O(1)</span></td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== CIRCULAR LINKED LIST DEFINITION==================== -->
+            <section>
+                <h2>📖 Circular Linked List</h2>
+                <div class="box-definition">
+                    <p><strong>Circular Linked List</strong> adalah linked list di mana node terakhir <span class="highlight">tidak menunjuk ke NULL</span>, melainkan menunjuk kembali ke node pertama, membentuk <span class="highlight">lingkaran (cycle)</span>.</p>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p><strong>Dua variasi:</strong></p>
+                    <ul>
+                        <li><span class="highlight">Single Circular LL</span> — Satu pointer (next)</li>
+                        <li><span class="highlight">Double Circular LL</span> — Dua pointer (prev & next)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ==================== CIRCULAR LL VISUALISASI==================== -->
+            <section>
+                <h2>🖼️ Visualisasi Circular Linked List</h2>
+                <figure>
+                    <img src="images/p04-03-circular-linked-list.png" 
+                         alt="Circular Linked List"
+                         style="max-height: 340px;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="img-fallback">
+                        <p class="icon">🔄</p>
+                        <p class="title">p04-03-circular-linked-list.png</p>
+                        <p class="description">Single Circular LL (atas) dan Double Circular LL (bawah)</p>
+                    </div>
+                    <figcaption style="font-size: 0.7em; margin-top: 8px;">Gambar 2.1: Perbandingan Single dan Double Circular LL</figcaption>
+                </figure>
+            </section>
+
+            <!-- ==================== APLIKASI CIRCULAR LL==================== -->
+            <section>
+                <h2>💡 Aplikasi Circular Linked List</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3 style="color: var(--unhan-gold);">Umum</h3>
+                        <ul>
+                            <li class="fragment">Round-Robin Scheduling</li>
+                            <li class="fragment">Multiplayer Gaming (giliran)</li>
+                            <li class="fragment">Playlist Loop</li>
+                            <li class="fragment">Circular Buffer</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--unhan-gold);">🎖️ Pertahanan</h3>
+                        <ul>
+                            <li class="fragment">Rotasi Penjagaan 24/7</li>
+                            <li class="fragment">Radar Sweep 360°</li>
+                            <li class="fragment">Convoy Circular Formation</li>
+                            <li class="fragment">Token Ring Network</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SINGLE CIRCULAR LL STRUCTURE==================== -->
+            <section>
+                <h2>💻 Single Circular Linked List</h2>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|2-3|9-10">
+class CircularLinkedList {
+private:
+    Node* tail;   // Menggunakan TAIL untuk efisiensi
+    int size;
+    
+public:
+    CircularLinkedList() : tail(nullptr), size(0) {}
+    
+    // HEAD dapat diakses via tail->next
+    Node* getHead() const {
+        return (tail == nullptr) ? nullptr : tail->next;
+    }
+    
+    void insertFront(int value);
+    void insertBack(int value);
+    void display();
+};
+                </code></pre>
+                <div class="fragment box-info" style="margin-top: 0.8em;">
+                    <p>💡 <strong>Tip:</strong> Simpan <code>tail</code> saja — akses head via <code>tail->next</code> untuk O(1) insert di kedua ujung!</p>
+                </div>
+            </section>
+
+            <!-- ==================== SINGLE CIRCULAR INSERT==================== -->
+            <section>
+                <h2>➕ Insert pada Single Circular LL</h2>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|4-7|8-11|15-17">
+void CircularLinkedList::insertFront(int value) {
+    Node* newNode = new Node(value);
+    
+    if (tail == nullptr) {
+        tail = newNode;
+        newNode->next = newNode;  // Menunjuk ke diri sendiri
+    } else {
+        newNode->next = tail->next;  // Node baru → head lama
+        tail->next = newNode;         // Tail → node baru (head baru)
+    }
+    size++;
+}
+
+void CircularLinkedList::insertBack(int value) {
+    insertFront(value);   // Insert di depan
+    tail = tail->next;    // Geser tail ke node baru
+}
+                </code></pre>
+                <p class="fragment" style="margin-top: 0.5em; text-align: center;">
+                    <span class="complexity-badge o1">O(1)</span> Keduanya konstan berkat penggunaan <code>tail</code>
+                </p>
+            </section>
+
+            <!-- ==================== DISPLAY CIRCULAR LL==================== -->
+            <section>
+                <h2>🔄 Traversal Circular Linked List</h2>
+                <pre class="medium-code"><code class="cpp" data-trim data-line-numbers="|5-11">
+void CircularLinkedList::display() {
+    if (tail == nullptr) { cout << "List kosong!"; return; }
+    
+    Node* current = tail->next;  // Mulai dari head
+    do {
+        cout << current->data;
+        current = current->next;
+        if (current != tail->next) cout << " -> ";
+    } while (current != tail->next);  // Berhenti di head
+    
+    cout << " -> (kembali ke " << tail->next->data << ")" << endl;
+}
+                </code></pre>
+                <div class="fragment box-warning" style="margin-top: 0.8em;">
+                    <p>⚠️ <strong>Penting:</strong> Gunakan <code>do-while</code>, bukan <code>while</code>! Tidak ada NULL untuk stop condition.</p>
+                </div>
+            </section>
+
+            <!-- ==================== DOUBLE CIRCULAR LL==================== -->
+            <section>
+                <h2>💻 Double Circular Linked List</h2>
+                <p>Menggabungkan keuntungan DLL dan Circular LL:</p>
+                <ul>
+                    <li class="fragment">✅ Traversal <span class="highlight">dua arah</span></li>
+                    <li class="fragment">✅ <span class="highlight">Tidak ada NULL</span> pointer</li>
+                    <li class="fragment">✅ Insert/Delete di kedua ujung <span class="complexity-badge o1">O(1)</span></li>
+                </ul>
+                <div class="fragment" style="margin-top: 1em;">
+                    <figure>
+                        <img src="images/p04-04-dcll-operations.png" 
+                             alt="Double Circular LL"
+                             style="max-height: 200px;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="img-fallback" style="padding: 15px;">
+                            <p class="title">p04-04-dcll-operations.png</p>
+                        </div>
+                    </figure>
+                </div>
+            </section>
+
+            <!-- ==================== DCLL INSERT==================== -->
+            <section>
+                <h2>➕ Insert pada Double Circular LL</h2>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|4-8|10-17">
+void DoublyCircularLinkedList::insertFront(int value) {
+    Node* newNode = new Node(value);
+    
+    if (head == nullptr) {
+        head = newNode;
+        newNode->next = newNode;
+        newNode->prev = newNode;  // Circular: menunjuk diri sendiri
+    } else {
+        Node* tail = head->prev;
+        
+        newNode->next = head;
+        newNode->prev = tail;
+        head->prev = newNode;
+        tail->next = newNode;
+        
+        head = newNode;  // Update head
+    }
+    size++;
+}
+                </code></pre>
+            </section>
+
+            <!-- ==================== DCLL DELETE NODE==================== -->
+            <section>
+                <h2>➖ Delete Node pada Double Circular LL</h2>
+                <pre class="medium-code"><code class="cpp" data-trim data-line-numbers="|5-9|11-18">
+void DoublyCircularLinkedList::deleteNode(Node* node) {
+    if (node == nullptr || head == nullptr) return;
+    
+    // Kasus hanya ada satu node
+    if (node->next == node) {
+        head = nullptr;
+        delete node;
+        size--;
+        return;
+    }
+    
+    // Hubungkan tetangga
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    
+    if (node == head) head = node->next;
+    
+    delete node;
+    size--;
+}
+                </code></pre>
+                <p class="fragment" style="margin-top: 0.5em; text-align: center;">
+                    <span class="complexity-badge o1">O(1)</span> Jika sudah punya pointer ke node target!
+                </p>
+            </section>
+
+            <!-- ==================== SENTINEL NODE==================== -->
+            <section>
+                <h2>🛡️ Sentinel Node</h2>
+                <div class="box-definition">
+                    <p><strong>Sentinel Node</strong> (Dummy Node) adalah node khusus yang <span class="highlight">tidak menyimpan data aktual</span>, digunakan untuk menyederhanakan penanganan edge cases.</p>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p><strong>Manfaat:</strong></p>
+                    <ul>
+                        <li>Menghilangkan pengecekan list kosong</li>
+                        <li>Menyederhanakan kode insert/delete</li>
+                        <li>Mengurangi bug pada edge cases</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ==================== SENTINEL NODE VISUAL==================== -->
+            <section>
+                <h2>🖼️ DLL dengan Sentinel Node</h2>
+                <figure>
+                    <img src="images/p04-05-sentinel-node.png" 
+                         alt="Sentinel Node"
+                         style="max-height: 280px;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="img-fallback">
+                        <p class="icon">🛡️</p>
+                        <p class="title">p04-05-sentinel-node.png</p>
+                        <p class="description">Sentinel HEAD dan TAIL mengapit data nodes</p>
+                    </div>
+                    <figcaption style="font-size: 0.7em; margin-top: 8px;">Gambar 3.1: DLL dengan Sentinel di kedua ujung</figcaption>
+                </figure>
+                <div class="fragment" style="margin-top: 0.8em; text-align: center;">
+                    <span style="color: var(--color-warning);">SENTINEL</span>
+                    <span class="node-arrow">⇄</span>
+                    <span class="node-box"><span class="data-field">10</span></span>
+                    <span class="node-arrow">⇄</span>
+                    <span class="node-box"><span class="data-field">20</span></span>
+                    <span class="node-arrow">⇄</span>
+                    <span style="color: var(--color-warning);">SENTINEL</span>
+                </div>
+            </section>
+
+            <!-- ==================== SENTINEL IMPLEMENTATION==================== -->
+            <section>
+                <h2>💻 Implementasi dengan Sentinel</h2>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|3-9|12-18">
+class DoublyLinkedListWithSentinel {
+private:
+    Node* sentinelHead;
+    Node* sentinelTail;
+    
+public:
+    DoublyLinkedListWithSentinel() {
+        sentinelHead = new Node(0);
+        sentinelTail = new Node(0);
+        sentinelHead->next = sentinelTail;
+        sentinelTail->prev = sentinelHead;
+    }
+    
+    void insertAfter(Node* node, int value) {
+        Node* newNode = new Node(value);
+        newNode->next = node->next;
+        newNode->prev = node;
+        node->next->prev = newNode;
+        node->next = newNode;
+    }
+    
+    void insertFront(int value) { insertAfter(sentinelHead, value); }
+    void insertBack(int value) { insertAfter(sentinelTail->prev, value); }
+};
+                </code></pre>
+            </section>
+
+            <!-- ==================== ITERATOR CONCEPT==================== -->
+            <section>
+                <h2>🔄 Iterator pada Linked List</h2>
+                <div class="box-definition">
+                    <p><strong>Iterator</strong> adalah objek yang memungkinkan traversal melalui elemen container <span class="highlight">tanpa mengekspos struktur internal</span>.</p>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p><strong>Operasi Iterator:</strong></p>
+                    <ul>
+                        <li><code>*it</code> — Akses elemen saat ini</li>
+                        <li><code>++it</code> — Pindah ke elemen berikutnya</li>
+                        <li><code>--it</code> — Pindah ke elemen sebelumnya (DLL)</li>
+                        <li><code>it != end</code> — Cek masih ada elemen</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ==================== ITERATOR USAGE==================== -->
+            <section>
+                <h2>💻 Penggunaan Iterator</h2>
+                <pre class="medium-code"><code class="cpp" data-trim data-line-numbers="|2-5|7-10|12-14">
+// Forward traversal
+cout << "Forward: ";
+for (auto it = dll.begin(); it != dll.end(); ++it) {
+    cout << *it << " ";
+}
+
+// Backward traversal
+cout << "Backward: ";
+for (auto it = dll.rbegin(); it != dll.rend(); --it) {
+    cout << *it << " ";
+}
+
+// Modifikasi dengan iterator
+for (auto it = dll.begin(); it != dll.end(); ++it) {
+    *it *= 2;  // Gandakan setiap nilai
+}
+                </code></pre>
+            </section>
+
+            <!-- ==================== STUDI KASUS PLAYLIST==================== -->
+            <section>
+                <h2>🎵 Studi Kasus: Music Playlist</h2>
+                <p>Implementasi playlist dengan <span class="highlight">Double Circular Linked List</span>:</p>
+                <pre class="compact-code"><code class="cpp" data-trim>
+struct Song {
+    string title;
+    string artist;
+    Song* prev;
+    Song* next;
+};
+
+class MusicPlaylist {
+    Song* current;  // Lagu yang sedang diputar
+    
+    void next() { current = current->next; }
+    void previous() { current = current->prev; }
+    void addSong(string title, string artist);
+    void removeCurrent();
+};
+                </code></pre>
+                <p class="fragment" style="margin-top: 0.5em;">
+                    ✅ Loop otomatis | ✅ Prev/Next O(1) | ✅ Ins/Rmv O(1)
+                </p>
+            </section>
+
+            <!-- ==================== FLOYD CYCLE DETECTION==================== -->
+            <section>
+                <h2>🐢🐇 Floyd's Cycle Detection</h2>
+                <p>Mendeteksi cycle dalam linked list dengan <span class="highlight">O(n) waktu</span> dan <span class="highlight">O(1) ruang</span>:</p>
+                <pre class="compact-code"><code class="cpp" data-trim data-line-numbers="|3-4|6-12">
+bool hasCycle(Node* head) {
+    if (head == nullptr) return false;
+    
+    Node* slow = head;        // Tortoise: 1 langkah
+    Node* fast = head->next;  // Hare: 2 langkah
+    
+    while (fast != nullptr && fast->next != nullptr) {
+        if (slow == fast) return true;  // Bertemu = ada cycle
+        
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    return false;  // Tidak ada cycle
+}
+                </code></pre>
+            </section>
+
+            <!-- ==================== FLOYD VISUALISASI==================== -->
+            <section>
+                <h2>🖼️ Floyd's Algorithm Visualized</h2>
+                <figure>
+                    <img src="images/p04-07-floyd-cycle-detection.png" 
+                         alt="Floyd Cycle Detection"
+                         style="max-height: 320px;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="img-fallback">
+                        <p class="icon">🐢🐇</p>
+                        <p class="title">p04-07-floyd-cycle-detection.png</p>
+                        <p class="description">Slow (1 langkah) dan Fast (2 langkah) bertemu dalam cycle</p>
+                    </div>
+                    <figcaption style="font-size: 0.7em; margin-top: 8px;">Gambar 6.2: Tortoise dan Hare bertemu di cycle</figcaption>
+                </figure>
+            </section>
+
+            <!-- ==================== SUMMARY TABLE==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Struktur</th>
+                        <th>Karakteristik</th>
+                        <th>Operasi Utama</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Double LL</strong></td>
+                        <td>prev + next pointer</td>
+                        <td>Insert/Delete ujung: O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Single Circular</strong></td>
+                        <td>Last → First (next)</td>
+                        <td>Insert (tail ptr): O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Double Circular</strong></td>
+                        <td>Circular + bidirectional</td>
+                        <td>Semua ujung: O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sentinel Node</strong></td>
+                        <td>Dummy untuk edge cases</td>
+                        <td>Simplify code</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== KAPAN MENGGUNAKAN==================== -->
+            <section>
+                <h2>🤔 Kapan Menggunakan?</h2>
+                <div class="two-columns" style="font-size: 0.85em;">
+                    <div>
+                        <div class="box-info" style="padding: 12px;">
+                            <p><strong>Single LL</strong></p>
+                            <p class="small">Memori terbatas, hanya perlu forward traversal</p>
+                        </div>
+                        <div class="box-success" style="padding: 12px; margin-top: 10px;">
+                            <p><strong>Double LL</strong></p>
+                            <p class="small">Traversal 2 arah, delete cepat jika punya pointer</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="box-warning" style="padding: 12px;">
+                            <p><strong>Circular LL</strong></p>
+                            <p class="small">Data berputar: playlist, jadwal, buffer</p>
+                        </div>
+                        <div class="box-definition" style="padding: 12px; margin-top: 10px;">
+                            <p><strong>Double Circular</strong></p>
+                            <p class="small">Kombinasi semua kebutuhan di atas</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== QUIZ==================== -->
+            <section>
+                <h2>🧠 Quiz</h2>
+                <div class="quiz-question">
+                    <p><strong>Apa kompleksitas deleteBack() pada Single Linked List TANPA tail pointer?</strong></p>
+                </div>
+                <div class="fragment quiz-answer">
+                    <p><span class="highlight">Jawaban:</span> <span class="complexity-badge on">O(n)</span></p>
+                    <p class="small">Harus traversal dari head untuk menemukan node sebelum tail. Dengan DLL atau tail+prev, menjadi O(1).</p>
+                </div>
+            </section>
+
+            <!-- ==================== POIN PENTING==================== -->
+            <section>
+                <h2>⭐ Poin Penting</h2>
+                <ol>
+                    <li class="fragment">DLL menggunakan <span class="highlight">lebih banyak memori</span> (3 field vs 2)</li>
+                    <li class="fragment">Pada circular list, gunakan <span class="highlight">do-while</span> untuk traversal</li>
+                    <li class="fragment">Sentinel node <span class="highlight">menghilangkan edge case</span> checking</li>
+                    <li class="fragment">Floyd's algorithm: <span class="highlight">O(n) waktu, O(1) ruang</span></li>
+                </ol>
+                <div class="fragment box-info" style="margin-top: 1em;">
+                    <p>📚 <strong>Next:</strong> Pertemuan 05 — <span class="highlight">Stack</span></p>
+                </div>
+            </section>
+
+            <!-- ==================== QUESTIONS==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.10.2 | Weiss Ch.3 | Hubbard Ch.7
+                </p>
+            </section>
+
+            <!-- ==================== THANK YOU==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 04: Double dan Circular Linked List</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
