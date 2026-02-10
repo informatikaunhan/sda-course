@@ -459,7 +459,7 @@ c) **Operasi Delete di Akhir:**
 #### Jawaban Soal 2
 **Jawaban:**
 
-![Proses Insert Node 25 di Tengah Double Linked List](images/p04-08-insert-middle-dll.png)
+![Proses Insert Node 25 di Tengah Double Linked List](images/p04-02-dll-insert-middle.png)
 
 *Gambar: Ilustrasi proses insert node [25] di antara node [20] dan [30] pada Double Linked List*
 
