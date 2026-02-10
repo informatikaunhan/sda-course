@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 06: Queue - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="../css/unhan-theme.css">
+    
+    <!-- Slide-specific styles -->
+    <style>
+        /* Queue-specific visualizations */
+        .queue-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin: 15px 0;
+        }
+        
+        .queue-box {
+            display: flex;
+            align-items: center;
+            border: 3px solid var(--unhan-gold);
+            border-radius: 10px;
+            padding: 10px 15px;
+            background: rgba(26, 58, 110, 0.3);
+        }
+        
+        .queue-element {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--unhan-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background: rgba(37, 99, 235, 0.4);
+            border-radius: 5px;
+            margin: 0 3px;
+        }
+        
+        .queue-element.empty {
+            background: rgba(107, 114, 128, 0.2);
+            border-color: var(--unhan-navy-light);
+            color: var(--unhan-gray);
+        }
+        
+        .queue-element.highlight-front {
+            border-color: var(--color-success);
+            background: rgba(34, 197, 94, 0.3);
+        }
+        
+        .queue-element.highlight-rear {
+            border-color: var(--color-warning);
+            background: rgba(245, 158, 11, 0.3);
+        }
+        
+        .queue-element.wasted {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: var(--color-error);
+        }
+        
+        .queue-arrow {
+            font-size: 1.5em;
+            padding: 0 10px;
+            color: var(--unhan-gold);
+        }
+        
+        .pointer-label {
+            font-size: 0.7em;
+            color: var(--unhan-gold);
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .pointer-front { color: var(--color-success); }
+        .pointer-rear { color: var(--color-warning); }
+        
+        /* Circular queue visual */
+        .circular-queue-visual {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+        }
+        
+        .circular-slot {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border: 2px solid var(--unhan-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            background: rgba(37, 99, 235, 0.3);
+        }
+        
+        .circular-slot.empty {
+            background: rgba(107, 114, 128, 0.2);
+            border-color: var(--unhan-navy-light);
+        }
+        
+        /* Image placeholder styling */
+        .img-placeholder {
+            border: 2px dashed var(--unhan-gold);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            background: rgba(26, 58, 110, 0.2);
+            margin: 10px 0;
+        }
+        
+        .img-placeholder .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .img-placeholder .caption {
+            color: var(--unhan-gold);
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .img-placeholder .filename {
+            color: var(--unhan-gray);
+            font-size: 0.7em;
+            margin-top: 5px;
+        }
+        
+        /* Deque visual */
+        .deque-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .deque-arrows {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.8em;
+        }
+        
+        .deque-arrows.front { color: var(--color-success); }
+        .deque-arrows.rear { color: var(--color-warning); }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>📋 Queue</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 06</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment">Menjelaskan konsep <span class="highlight">FIFO</span> dan ADT Queue</li>
+                    <li class="fragment">Mengimplementasikan queue dengan <span class="highlight">array linear</span></li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">circular queue</span></li>
+                    <li class="fragment">Mengimplementasikan queue dengan <span class="highlight">linked list</span></li>
+                    <li class="fragment">Memahami <span class="highlight">Deque</span> (double-ended queue)</li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <ol>
+                    <li>Konsep Dasar Queue (FIFO)</li>
+                    <li>ADT Queue</li>
+                    <li>Implementasi dengan Array Linear</li>
+                    <li>Circular Queue</li>
+                    <li>Queue dengan Linked List</li>
+                    <li>Deque (Double-Ended Queue)</li>
+                    <li>Aplikasi Queue</li>
+                </ol>
+            </section>
+
+            <!-- ==================== BAGIAN 1: KONSEP DASAR ==================== -->
+            <section>
+                <section>
+                    <h2>📖 1. Konsep Dasar Queue</h2>
+                    <div class="box-definition">
+                        <p><strong>Queue</strong> adalah struktur data linear yang mengikuti prinsip <strong>FIFO (First In First Out)</strong>, di mana elemen yang pertama masuk akan pertama keluar.</p>
+                    </div>
+                    <div class="fragment">
+                        <p class="small">Berbeda dengan Stack (LIFO), Queue menyerupai <span class="highlight">antrian</span> di kehidupan nyata.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🔄 Prinsip FIFO</h2>
+                    <!-- Image placeholder for FIFO concept -->
+                    <div class="img-placeholder">
+                        <div class="icon">🖼️</div>
+                        <div class="caption">Ilustrasi Konsep FIFO pada Queue</div>
+                        <div class="filename">images/p06-01-konsep-fifo-queue.png</div>
+                    </div>
+                    <p class="small text-center">Elemen masuk dari <span style="color: var(--color-warning);">REAR</span>, keluar dari <span style="color: var(--color-success);">FRONT</span></p>
+                </section>
+
+                <section>
+                    <h2>📌 Visualisasi Queue</h2>
+                    <div class="queue-container">
+                        <div class="queue-arrow" style="color: var(--color-success);">← Keluar</div>
+                        <div class="queue-box">
+                            <div class="queue-element highlight-front">A</div>
+                            <div class="queue-element">B</div>
+                            <div class="queue-element">C</div>
+                            <div class="queue-element highlight-rear">D</div>
+                        </div>
+                        <div class="queue-arrow" style="color: var(--color-warning);">Masuk →</div>
+                    </div>
+                    <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                        <span class="pointer-front small">↑ FRONT</span>
+                        <span class="pointer-rear small">↑ REAR</span>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🌍 Analogi Kehidupan Nyata</h2>
+                    <table class="small">
+                        <tr>
+                            <th>Analogi</th>
+                            <th>Penjelasan</th>
+                        </tr>
+                        <tr>
+                            <td>🏦 Antrian bank</td>
+                            <td>Datang pertama, dilayani pertama</td>
+                        </tr>
+                        <tr>
+                            <td>🚗 Gerbang tol</td>
+                            <td>Tiba lebih dulu, lewat lebih dulu</td>
+                        </tr>
+                        <tr>
+                            <td>🖨️ Print queue</td>
+                            <td>Kirim duluan, cetak duluan</td>
+                        </tr>
+                        <tr>
+                            <td>⌨️ Buffer keyboard</td>
+                            <td>Ketik duluan, proses duluan</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>🎖️ Konteks Pertahanan</h2>
+                    <ul>
+                        <li class="fragment"><strong>Antrian pesan militer</strong> — Menjaga urutan kronologis informasi</li>
+                        <li class="fragment"><strong>Task scheduling radar</strong> — Pemrosesan sinyal berurutan</li>
+                        <li class="fragment"><strong>Buffer surveillance</strong> — Data video/audio disimpan sementara sebelum diproses</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>📝 Karakteristik Queue</h2>
+                    <ol>
+                        <li class="fragment"><strong>Dua ujung berbeda:</strong> FRONT (keluar) dan REAR (masuk)</li>
+                        <li class="fragment"><strong>Operasi terbatas:</strong> Insert di rear, delete di front</li>
+                        <li class="fragment"><strong>Akses terbatas:</strong> Tidak bisa akses elemen tengah langsung</li>
+                        <li class="fragment"><strong>Urutan terjaga:</strong> Sesuai waktu kedatangan</li>
+                    </ol>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 2: ADT QUEUE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 2. ADT Queue</h2>
+                    <div class="box-definition">
+                        <p><strong>ADT Queue</strong> mendefinisikan operasi yang dapat dilakukan tanpa menentukan bagaimana diimplementasikan.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>⚙️ Operasi Dasar Queue</h2>
+                    <table class="small">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Deskripsi</th>
+                            <th>Return</th>
+                        </tr>
+                        <tr>
+                            <td><code>enqueue(item)</code></td>
+                            <td>Tambah item ke rear</td>
+                            <td>void</td>
+                        </tr>
+                        <tr>
+                            <td><code>dequeue()</code></td>
+                            <td>Hapus & kembalikan dari front</td>
+                            <td>item</td>
+                        </tr>
+                        <tr>
+                            <td><code>front()</code></td>
+                            <td>Lihat front tanpa hapus</td>
+                            <td>item</td>
+                        </tr>
+                        <tr>
+                            <td><code>isEmpty()</code></td>
+                            <td>Cek apakah kosong</td>
+                            <td>bool</td>
+                        </tr>
+                        <tr>
+                            <td><code>isFull()</code></td>
+                            <td>Cek apakah penuh</td>
+                            <td>bool</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>💻 Interface Queue C++</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3|4|5|6-7">
+template &lt;typename T&gt;
+class QueueADT {
+public:
+    virtual void enqueue(const T& item) = 0;
+    virtual T dequeue() = 0;
+    virtual T front() const = 0;
+    virtual bool isEmpty() const = 0;
+    virtual bool isFull() const = 0;
+    virtual int size() const = 0;
+    virtual ~QueueADT() {}
+};
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Trace Operasi Queue</h2>
+                    <div class="quiz-question">
+                        <p>Apa hasil dari operasi berikut?</p>
+                        <pre><code class="text" data-trim>
+enqueue(10), enqueue(20), enqueue(30), 
+dequeue(), front(), enqueue(40), size()
+                        </code></pre>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><span class="highlight">Jawaban:</span></p>
+                        <p><code>dequeue()</code> → 10, <code>front()</code> → 20, <code>size()</code> → 3</p>
+                        <p class="small">Queue akhir: [20, 30, 40]</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 3: ARRAY LINEAR ==================== -->
+            <section>
+                <section>
+                    <h2>📖 3. Queue dengan Array Linear</h2>
+                    <p>Implementasi sederhana dengan dua variabel penunjuk:</p>
+                    <ul>
+                        <li><code>front</code> — indeks elemen terdepan</li>
+                        <li><code>rear</code> — indeks elemen terakhir</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>📊 Visualisasi Array Linear</h2>
+                    <div class="img-placeholder">
+                        <div class="icon">🖼️</div>
+                        <div class="caption">Queue dengan Array Linear</div>
+                        <div class="filename">images/p06-02-queue-array-linear.png</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Enqueue</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-4|5-7">
+void enqueue(const T& item) {
+    if (isFull()) {
+        throw overflow_error("Queue penuh!");
+    }
+    rearIndex++;
+    data[rearIndex] = item;
+    count++;
+}
+                    </code></pre>
+                    <p class="small fragment">Kompleksitas: <span class="complexity-badge o1">O(1)</span></p>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Dequeue</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-4|5-8">
+T dequeue() {
+    if (isEmpty()) {
+        throw underflow_error("Queue kosong!");
+    }
+    T item = data[frontIndex];
+    frontIndex++;
+    count--;
+    return item;
+}
+                    </code></pre>
+                    <p class="small fragment">Kompleksitas: <span class="complexity-badge o1">O(1)</span></p>
+                </section>
+
+                <section>
+                    <h2>⚠️ Masalah: False Overflow</h2>
+                    <div class="box-danger">
+                        <p><strong>False Overflow:</strong> Ruang di awal array tidak terpakai meski masih ada slot kosong!</p>
+                    </div>
+                    <div class="img-placeholder fragment">
+                        <div class="icon">⚠️</div>
+                        <div class="caption">Ilustrasi False Overflow</div>
+                        <div class="filename">images/p06-03-false-overflow-problem.png</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Contoh False Overflow</h2>
+                    <p class="small">Array capacity = 5</p>
+                    <div style="margin: 15px 0;">
+                        <p class="small">Setelah 3x dequeue:</p>
+                        <div class="queue-container">
+                            <div class="queue-box" style="gap: 3px;">
+                                <div class="queue-element wasted">✗</div>
+                                <div class="queue-element wasted">✗</div>
+                                <div class="queue-element wasted">✗</div>
+                                <div class="queue-element highlight-front">D</div>
+                                <div class="queue-element highlight-rear">E</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="warning small fragment">Tidak bisa enqueue meski ada 3 slot kosong!</p>
+                </section>
+
+                <section>
+                    <h2>🔧 Solusi False Overflow</h2>
+                    <div class="two-columns">
+                        <div>
+                            <h3>Opsi 1: Shift</h3>
+                            <p class="small">Geser semua elemen ke depan</p>
+                            <p class="warning small">O(n) setiap shift!</p>
+                        </div>
+                        <div>
+                            <h3>Opsi 2: Circular</h3>
+                            <p class="small">Wrap-around indeks</p>
+                            <p class="success small">O(1) selalu ✓</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 4: CIRCULAR QUEUE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 4. Circular Queue</h2>
+                    <div class="box-definition">
+                        <p><strong>Circular Queue</strong> — Array di mana indeks "melingkar" kembali ke awal ketika mencapai akhir.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🔄 Konsep Circular Queue</h2>
+                    <div class="img-placeholder">
+                        <div class="icon">🔄</div>
+                        <div class="caption">Circular Queue sebagai Array Melingkar</div>
+                        <div class="filename">images/p06-04-circular-queue-concept.png</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📐 Formula Circular Queue</h2>
+                    <div class="formula-box">
+                        <p><code>nextRear = (rear + 1) % capacity</code></p>
+                    </div>
+                    <div class="formula-box fragment">
+                        <p><code>nextFront = (front + 1) % capacity</code></p>
+                    </div>
+                    <p class="small fragment text-center">Operator modulo (%) memastikan indeks "wrap-around"</p>
+                </section>
+
+                <section>
+                    <h2>💻 Enqueue Circular</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-4|5-7">
+void enqueue(const T& item) {
+    if (isFull()) {
+        throw overflow_error("Queue penuh!");
+    }
+    rearIndex = (rearIndex + 1) % capacity; // Circular!
+    data[rearIndex] = item;
+    count++;
+}
+                    </code></pre>
+                    <p class="small fragment">Kompleksitas: <span class="complexity-badge o1">O(1)</span></p>
+                </section>
+
+                <section>
+                    <h2>💻 Dequeue Circular</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|5-7">
+T dequeue() {
+    if (isEmpty()) {
+        throw underflow_error("Queue kosong!");
+    }
+    T item = data[frontIndex];
+    frontIndex = (frontIndex + 1) % capacity; // Circular!
+    count--;
+    return item;
+}
+                    </code></pre>
+                    <p class="small fragment">Kompleksitas: <span class="complexity-badge o1">O(1)</span></p>
+                </section>
+
+                <section>
+                    <h2>📊 Visualisasi Wrap-Around</h2>
+                    <div class="img-placeholder">
+                        <div class="icon">🔄</div>
+                        <div class="caption">Operasi Wrap-Around pada Circular Queue</div>
+                        <div class="filename">images/p06-05-circular-queue-operations.png</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Circular Queue Trace</h2>
+                    <div class="quiz-question">
+                        <p class="small">Capacity = 5, operasi:</p>
+                        <pre><code class="text small" data-trim>
+enqueue(A), enqueue(B), enqueue(C), 
+dequeue(), dequeue(), enqueue(D), 
+enqueue(E), enqueue(F)
+                        </code></pre>
+                        <p class="small">Di mana posisi F?</p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><span class="highlight">Jawaban:</span> F di indeks <strong>0</strong> (wrap-around!)</p>
+                        <p class="small">rear melingkar dari indeks 4 ke indeks 0</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>❓ Mengapa Perlu Variabel Count?</h2>
+                    <div class="box-warning">
+                        <p class="small"><strong>Masalah:</strong> Tanpa <code>count</code>, kondisi kosong vs penuh ambigu!</p>
+                    </div>
+                    <div class="fragment">
+                        <p class="small"><strong>Dengan count:</strong></p>
+                        <ul class="small">
+                            <li><code>isEmpty(): count == 0</code></li>
+                            <li><code>isFull(): count == capacity</code></li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 5: LINKED LIST ==================== -->
+            <section>
+                <section>
+                    <h2>📖 5. Queue dengan Linked List</h2>
+                    <div class="box-definition">
+                        <p>Queue dengan linked list menggunakan pointer <code>front</code> dan <code>rear</code>. Enqueue di rear, dequeue di front.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Visualisasi Linked Queue</h2>
+                    <div class="img-placeholder">
+                        <div class="icon">🔗</div>
+                        <div class="caption">Queue dengan Singly Linked List</div>
+                        <div class="filename">images/p06-06-queue-linked-list.png</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🏗️ Struktur Node</h2>
+                    <pre><code class="cpp" data-trim>
+template &lt;typename T&gt;
+struct Node {
+    T data;
+    Node* next;
+    
+    Node(const T& value) : data(value), next(nullptr) {}
+};
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>💻 Enqueue (Linked List)</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2|4-7|8-11">
+void enqueue(const T& item) {
+    Node* newNode = new Node(item);
+    
+    if (isEmpty()) {
+        frontPtr = newNode;
+        rearPtr = newNode;
+    } else {
+        rearPtr->next = newNode;
+        rearPtr = newNode;
+    }
+    count++;
+}
+                    </code></pre>
+                    <p class="small fragment">Kompleksitas: <span class="complexity-badge o1">O(1)</span></p>
+                </section>
+
+                <section>
+                    <h2>💻 Dequeue (Linked List)</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-4|5-7|8-11">
+T dequeue() {
+    if (isEmpty()) {
+        throw underflow_error("Queue kosong!");
+    }
+    Node* temp = frontPtr;
+    T item = temp->data;
+    frontPtr = frontPtr->next;
+    if (frontPtr == nullptr) {
+        rearPtr = nullptr;  // Queue jadi kosong
+    }
+    delete temp;
+    count--;
+    return item;
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>❓ Mengapa Perlu Pointer Rear?</h2>
+                    <div class="two-columns">
+                        <div>
+                            <h3 class="warning">Tanpa rear</h3>
+                            <p class="small">Harus traverse sampai akhir</p>
+                            <p class="complexity-bad">O(n)</p>
+                        </div>
+                        <div>
+                            <h3 class="success">Dengan rear</h3>
+                            <p class="small">Akses langsung ke tail</p>
+                            <p class="complexity-good">O(1) ✓</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Perbandingan Implementasi</h2>
+                    <table class="small">
+                        <tr>
+                            <th>Aspek</th>
+                            <th>Array</th>
+                            <th>Linked List</th>
+                        </tr>
+                        <tr>
+                            <td>Enqueue</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Dequeue</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Memory</td>
+                            <td>Fixed size</td>
+                            <td>Dinamis</td>
+                        </tr>
+                        <tr>
+                            <td>Overhead</td>
+                            <td>Tidak ada</td>
+                            <td>Pointer per node</td>
+                        </tr>
+                        <tr>
+                            <td>Cache</td>
+                            <td>Baik</td>
+                            <td>Buruk</td>
+                        </tr>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 6: DEQUE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 6. Deque (Double-Ended Queue)</h2>
+                    <div class="box-definition">
+                        <p><strong>Deque</strong> (dibaca "deck") — struktur data yang memungkinkan insert dan delete dari <strong>kedua ujung</strong>.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🔄 Visualisasi Deque</h2>
+                    <div class="img-placeholder">
+                        <div class="icon">↔️</div>
+                        <div class="caption">Operasi Deque di Kedua Ujung</div>
+                        <div class="filename">images/p06-07-deque-concept.png</div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>⚙️ Operasi Deque</h2>
+                    <table class="small">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Deskripsi</th>
+                        </tr>
+                        <tr>
+                            <td><code>insertFront(item)</code></td>
+                            <td>Sisipkan di depan</td>
+                        </tr>
+                        <tr>
+                            <td><code>insertRear(item)</code></td>
+                            <td>Sisipkan di belakang</td>
+                        </tr>
+                        <tr>
+                            <td><code>deleteFront()</code></td>
+                            <td>Hapus dari depan</td>
+                        </tr>
+                        <tr>
+                            <td><code>deleteRear()</code></td>
+                            <td>Hapus dari belakang</td>
+                        </tr>
+                    </table>
+                    <p class="small fragment">Semua operasi: <span class="complexity-badge o1">O(1)</span></p>
+                </section>
+
+                <section>
+                    <h2>🔀 Variasi Deque</h2>
+                    <table class="small">
+                        <tr>
+                            <th>Jenis</th>
+                            <th>Insert</th>
+                            <th>Delete</th>
+                        </tr>
+                        <tr>
+                            <td>Input-Restricted</td>
+                            <td>Satu ujung</td>
+                            <td>Kedua ujung</td>
+                        </tr>
+                        <tr>
+                            <td>Output-Restricted</td>
+                            <td>Kedua ujung</td>
+                            <td>Satu ujung</td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-info" style="margin-top: 15px;">
+                        <p class="small"><strong>Stack</strong> = Deque dengan operasi hanya di satu ujung</p>
+                        <p class="small"><strong>Queue</strong> = Deque dengan insert di rear, delete di front</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 insertFront (Circular)</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|5-7">
+void insertFront(const T& item) {
+    if (isFull()) {
+        throw overflow_error("Deque penuh!");
+    }
+    // Geser front ke belakang (circular)
+    frontIndex = (frontIndex - 1 + capacity) % capacity;
+    data[frontIndex] = item;
+    count++;
+}
+                    </code></pre>
+                    <p class="small fragment">Note: <code>+ capacity</code> untuk menghindari indeks negatif</p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 7: APLIKASI ==================== -->
+            <section>
+                <section>
+                    <h2>📖 7. Aplikasi Queue</h2>
+                    <ul>
+                        <li class="fragment">🖨️ <strong>Print Spooler</strong> — Antrian dokumen cetak</li>
+                        <li class="fragment">🌐 <strong>BFS Traversal</strong> — Pencarian level-by-level</li>
+                        <li class="fragment">⏰ <strong>Task Scheduling</strong> — Round-robin CPU scheduling</li>
+                        <li class="fragment">📡 <strong>Buffering</strong> — I/O buffer, network packet</li>
+                        <li class="fragment">🎮 <strong>Simulasi</strong> — Simulasi antrian sistem</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>🎖️ Aplikasi Pertahanan</h2>
+                    <ul>
+                        <li class="fragment"><strong>Message Queue</strong> — Antrian pesan komunikasi militer</li>
+                        <li class="fragment"><strong>Radar Processing</strong> — Buffer sinyal radar</li>
+                        <li class="fragment"><strong>Command Queue</strong> — Antrian perintah C4ISR</li>
+                        <li class="fragment"><strong>Event Logging</strong> — Log kejadian kronologis</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>🔧 Queue dengan Dua Stack</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3-4|7-8|11-15">
+template &lt;typename T&gt;
+class QueueUsingTwoStacks {
+    stack&lt;T&gt; stackIn;   // Untuk enqueue
+    stack&lt;T&gt; stackOut;  // Untuk dequeue
+    
+public:
+    void enqueue(const T& item) {
+        stackIn.push(item);  // O(1)
+    }
+    
+    T dequeue() {
+        if (stackOut.empty()) {
+            // Transfer dari stackIn ke stackOut
+            while (!stackIn.empty()) {
+                stackOut.push(stackIn.top());
+                stackIn.pop();
+            }
+        }
+        T item = stackOut.top();
+        stackOut.pop();
+        return item;
+    }
+};
+                    </code></pre>
+                    <p class="small fragment">Amortized: <span class="complexity-badge o1">O(1)</span></p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 8: STL ==================== -->
+            <section>
+                <section>
+                    <h2>📖 8. STL Queue & Deque</h2>
+                    <p>C++ menyediakan <code>std::queue</code> dan <code>std::deque</code></p>
+                </section>
+
+                <section>
+                    <h2>💻 std::queue</h2>
+                    <pre><code class="cpp" data-trim>
+#include &lt;queue&gt;
+using namespace std;
+
+queue&lt;int&gt; q;
+
+q.push(10);        // Enqueue
+q.push(20);
+q.push(30);
+
+cout << q.front(); // 10
+cout << q.back();  // 30
+
+q.pop();           // Dequeue (hapus 10)
+cout << q.size();  // 2
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>💻 std::deque</h2>
+                    <pre><code class="cpp" data-trim>
+#include &lt;deque&gt;
+using namespace std;
+
+deque&lt;int&gt; dq;
+
+dq.push_back(10);   // Insert rear
+dq.push_front(5);   // Insert front
+dq.push_back(15);
+
+// Deque: [5, 10, 15]
+
+cout << dq[1];      // 10 (random access!)
+
+dq.pop_front();     // Hapus 5
+dq.pop_back();      // Hapus 15
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table class="small">
+                    <tr>
+                        <th>Konsep</th>
+                        <th>Penjelasan</th>
+                    </tr>
+                    <tr>
+                        <td>FIFO</td>
+                        <td>First In First Out</td>
+                    </tr>
+                    <tr>
+                        <td>Array Linear</td>
+                        <td>Masalah false overflow</td>
+                    </tr>
+                    <tr>
+                        <td>Circular Queue</td>
+                        <td>Solusi dengan wrap-around</td>
+                    </tr>
+                    <tr>
+                        <td>Linked Queue</td>
+                        <td>Dinamis, overhead pointer</td>
+                    </tr>
+                    <tr>
+                        <td>Deque</td>
+                        <td>Insert/delete kedua ujung</td>
+                    </tr>
+                    <tr>
+                        <td>Kompleksitas</td>
+                        <td>Semua operasi O(1)</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== PERBANDINGAN AKHIR ==================== -->
+            <section>
+                <h2>📊 Perbandingan Implementasi</h2>
+                <table class="time-table">
+                    <tr>
+                        <th>Implementasi</th>
+                        <th>Enqueue</th>
+                        <th>Dequeue</th>
+                        <th>Space</th>
+                        <th>Note</th>
+                    </tr>
+                    <tr>
+                        <td>Array Linear</td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td>O(n)</td>
+                        <td class="warning">False overflow</td>
+                    </tr>
+                    <tr>
+                        <td>Circular Array</td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td>O(n)</td>
+                        <td class="success">Optimal fixed</td>
+                    </tr>
+                    <tr>
+                        <td>Linked List</td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td>O(n)</td>
+                        <td class="success">Dinamis</td>
+                    </tr>
+                    <tr>
+                        <td>Two Stacks</td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td>Amort O(1)</td>
+                        <td>O(n)</td>
+                        <td>Special case</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== Q&A ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.10.1 | Weiss Ch.3.7 | Hubbard Ch.6
+                </p>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 06: Queue</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+    
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
