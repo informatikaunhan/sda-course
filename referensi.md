@@ -8,7 +8,7 @@ Dokumen ini berisi daftar lengkap referensi yang digunakan dalam mata kuliah Str
 
 ### 1. Introduction to Algorithms (4th Edition)
 
-![Cover Introduction to Algorithms](https://m.media-amazon.com/images/I/61Mw06x2XnL._SL1500_.jpg)
+![Cover Introduction to Algorithms](https://mit-press-new-us.imgix.net/covers/9780262046305.jpg)
 
 | Komponen | Keterangan |
 |----------|------------|
@@ -39,7 +39,7 @@ Buku ini merupakan referensi standar dunia untuk pembelajaran algoritma di unive
 
 ### 2. Data Structures and Algorithm Analysis in C++ (4th Edition)
 
-![Cover Data Structures Weiss](https://m.media-amazon.com/images/I/51n+FWCT49L._SL1360_.jpg)
+![Cover Data Structures Weiss](https://www.pearson.com/store/pmccommercewebservices/v2/medias/size-W370-bigcovers-0133404188.jpg)
 
 | Komponen | Keterangan |
 |----------|------------|
@@ -71,7 +71,7 @@ Buku karya Mark Allen Weiss ini merupakan teks klasik untuk pembelajaran struktu
 
 ### 3. Data Structures with C++ - Schaum's Outlines
 
-![Cover Schaum's Data Structures](https://m.media-amazon.com/images/I/51XP1PDSGZL.jpg)
+![Cover Schaum's Data Structures](https://m.media-amazon.com/images/I/51wtUrH-RqL._SY425_.jpg)
 
 | Komponen | Keterangan |
 |----------|------------|
@@ -105,7 +105,7 @@ Bagian dari seri Schaum's Outlines yang terkenal, buku ini menyajikan struktur d
 
 ### 4. Data Structures and Algorithms in C++ (2nd Edition)
 
-![Cover Goodrich Data Structures](https://m.media-amazon.com/images/I/51IG3GKsxhL._SL1360_.jpg)
+![Cover Goodrich Data Structures](https%3A%2F%2Fmedia.wiley.com%2Fproduct_data%2FcoverImage300%2F75%2F04703832%2F0470383275.jpg)
 
 | Komponen | Keterangan |
 |----------|------------|
@@ -138,7 +138,7 @@ Buku ini menggunakan pendekatan object-oriented dalam menjelaskan struktur data 
 
 ### 5. Data Structures, Algorithms and Applications in C++
 
-![Cover Sahni Data Structures](https://m.media-amazon.com/images/I/41YOlUjGUcL.jpg)
+![Cover Sahni Data Structures](https://m.media-amazon.com/images/I/71EnPtS3XtL._SY466_.jpg)
 
 | Komponen | Keterangan |
 |----------|------------|
@@ -172,7 +172,7 @@ Buku karya Sartaj Sahni ini fokus pada aplikasi praktis dari struktur data dan a
 
 ### 6. Algorithms (4th Edition)
 
-![Cover Sedgewick Algorithms](https://m.media-amazon.com/images/I/61-fxD4vFVL._SL1500_.jpg)
+![Cover Sedgewick Algorithms](https://www.pearson.com/store/pmccommercewebservices/v2/medias/size-W370-A1030-00-24-60-A103000246014-A103000246014-Lrg.jpg)
 
 | Komponen | Keterangan |
 |----------|------------|
