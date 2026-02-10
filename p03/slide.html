@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 03: Single Linked List - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="../css/unhan-theme.css">
+    
+    <!-- Slide-specific styles for linked list visualization -->
+    <style>
+        /* Linked list node visualization */
+        .ll-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .ll-node-box {
+            display: flex;
+            border: 2px solid var(--unhan-gold);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .ll-node-box .data {
+            background: rgba(37, 99, 235, 0.4);
+            padding: 8px 15px;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .ll-node-box .next {
+            background: rgba(245, 158, 11, 0.4);
+            padding: 8px 10px;
+            font-size: 0.7em;
+        }
+        
+        .ll-node-box.new-node {
+            border-color: var(--color-success);
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .ll-node-box.delete-node {
+            border-color: var(--color-error);
+            background: rgba(239, 68, 68, 0.2);
+            opacity: 0.7;
+        }
+        
+        .ll-arrow {
+            color: var(--unhan-gold);
+            font-size: 1.3em;
+        }
+        
+        .ll-head {
+            background: rgba(16, 185, 129, 0.3);
+            border: 2px solid var(--color-success);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+        
+        .ll-null {
+            color: var(--color-error);
+            font-weight: bold;
+        }
+        
+        /* Memory comparison visual */
+        .memory-visual {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+        
+        .memory-block {
+            text-align: center;
+        }
+        
+        .memory-cells {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .memory-cells.horizontal {
+            flex-direction: row;
+        }
+        
+        .memory-cell {
+            border: 2px solid var(--unhan-gold);
+            padding: 8px 15px;
+            background: rgba(37, 99, 235, 0.3);
+            font-weight: bold;
+        }
+        
+        .memory-cell.scattered {
+            margin: 5px;
+        }
+        
+        /* Image placeholder */
+        .img-placeholder {
+            border: 2px dashed var(--unhan-gold);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            background: rgba(26, 58, 110, 0.3);
+            margin: 10px 0;
+        }
+        
+        .img-placeholder .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .img-placeholder .title {
+            color: var(--unhan-gold);
+            font-weight: bold;
+        }
+        
+        .img-placeholder .caption {
+            font-size: 0.7em;
+            color: var(--unhan-gray);
+            margin-top: 5px;
+        }
+        
+        /* Step visualization */
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .step-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-num {
+            background: var(--unhan-gold);
+            color: var(--unhan-navy-dark);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🔗 Single Linked List</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 03</p>
+                <p class="instructor" style="margin-top: 1.5em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+            
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment">Menjelaskan konsep linked list dan komponen penyusunnya</li>
+                    <li class="fragment">Membandingkan karakteristik <span class="highlight">array</span> dan <span class="highlight">linked list</span></li>
+                    <li class="fragment">Mengimplementasikan struktur <code>Node</code> dalam C++</li>
+                    <li class="fragment">Mengimplementasikan operasi <span class="highlight">insert, delete, search, traversal</span></li>
+                    <li class="fragment">Menganalisis kompleksitas waktu setiap operasi</li>
+                </ol>
+            </section>
+            
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <ol style="font-size: 0.8em;">
+                    <li>Pendahuluan &amp; Motivasi</li>
+                    <li>Konsep Linked List</li>
+                    <li>Array vs Linked List</li>
+                    <li>Implementasi Node</li>
+                    <li>Operasi Single Linked List</li>
+                    <li>Analisis Kompleksitas</li>
+                    <li>Aplikasi Pertahanan</li>
+                </ol>
+            </section>
+            
+            <!-- ==================== BAGIAN 1: PENDAHULUAN ==================== -->
+            <section>
+                <section>
+                    <h2>1. Pendahuluan</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Keterbatasan Array</h3>
+                </section>
+                
+                <section>
+                    <h2>⚠️ Keterbatasan Array</h2>
+                    <div class="box-warning" style="font-size: 0.75em;">
+                        <ol>
+                            <li class="fragment"><strong>Ukuran tetap (static)</strong><br>
+                                Ukuran harus ditentukan saat kompilasi/alokasi</li>
+                            <li class="fragment"><strong>Insert/Delete tidak efisien</strong><br>
+                                Menyisipkan di tengah memerlukan pergeseran → <code>O(n)</code></li>
+                            <li class="fragment"><strong>Pemborosan memori</strong><br>
+                                Alokasi berlebih → terbuang; terlalu kecil → perlu realokasi</li>
+                        </ol>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>💡 Solusi: Linked List</h2>
+                    <div class="box-definition">
+                        <p><strong>Linked List</strong> adalah struktur data linear yang terdiri dari <span class="highlight">node</span> yang saling terhubung melalui <span class="highlight">pointer</span>.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 15px;">
+                        <p style="font-size: 0.8em;">✅ Ukuran dinamis</p>
+                        <p style="font-size: 0.8em;">✅ Insert/delete efisien di awal</p>
+                        <p style="font-size: 0.8em;">✅ Tidak ada pemborosan memori</p>
+                    </div>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 2: KONSEP LINKED LIST ==================== -->
+            <section>
+                <section>
+                    <h2>2. Konsep Linked List</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Komponen Penyusun</h3>
+                </section>
+                
+                <section>
+                    <h2>📦 Struktur Node</h2>
+                    <div class="box-definition">
+                        <p><strong>Node</strong> adalah unit dasar linked list:</p>
+                    </div>
+                    <div class="two-columns" style="margin-top: 15px;">
+                        <div style="font-size: 0.75em;">
+                            <p><span class="highlight">1. Data field</span><br>Menyimpan nilai/informasi</p>
+                            <p class="fragment"><span class="highlight">2. Pointer field (next)</span><br>Menyimpan alamat node berikutnya</p>
+                        </div>
+                        <div class="fragment">
+                            <div class="ll-node-box" style="transform: scale(1.3); margin: 20px auto;">
+                                <div class="data">42</div>
+                                <div class="next">next→</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>🖼️ Visualisasi Node</h2>
+                    <div class="img-placeholder">
+                        <p class="icon">📊</p>
+                        <p class="title">p03-02-node-structure.png</p>
+                        <p class="caption">Gambar 1.2: Struktur Node dalam Single Linked List</p>
+                    </div>
+                    <p style="font-size: 0.7em; margin-top: 10px;">Node terdiri dari <span class="highlight">data</span> (nilai) dan <span class="highlight">next</span> (pointer ke node berikutnya)</p>
+                </section>
+                
+                <section>
+                    <h2>🔑 Komponen Penting</h2>
+                    <div class="two-columns" style="font-size: 0.75em;">
+                        <div>
+                            <h3 style="font-size: 1em;">Head Pointer</h3>
+                            <div class="box-info">
+                                <p>Pointer ke node <strong>pertama</strong>. Satu-satunya akses masuk ke linked list.</p>
+                            </div>
+                        </div>
+                        <div class="fragment">
+                            <h3 style="font-size: 1em;">Tail Pointer (Opsional)</h3>
+                            <div class="box-success">
+                                <p>Pointer ke node <strong>terakhir</strong>. Mempercepat insert di akhir: O(n) → O(1)</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>🔗 Single Linked List</h2>
+                    <div class="ll-visual">
+                        <span class="ll-head">head</span>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box">
+                            <div class="data">10</div>
+                            <div class="next">→</div>
+                        </div>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box">
+                            <div class="data">20</div>
+                            <div class="next">→</div>
+                        </div>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box">
+                            <div class="data">30</div>
+                            <div class="next">→</div>
+                        </div>
+                        <span class="ll-arrow">→</span>
+                        <span class="ll-null">NULL</span>
+                    </div>
+                    <p style="font-size: 0.75em; text-align: center; margin-top: 15px;">Traversal hanya dapat dilakukan <strong>satu arah</strong>: head → tail</p>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 3: ARRAY VS LINKED LIST ==================== -->
+            <section>
+                <section>
+                    <h2>3. Array vs Linked List</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Perbandingan Karakteristik</h3>
+                </section>
+                
+                <section>
+                    <h2>💾 Penyimpanan di Memori</h2>
+                    <div class="img-placeholder">
+                        <p class="icon">🗂️</p>
+                        <p class="title">p03-01-array-vs-linkedlist-memory.png</p>
+                        <p class="caption">Gambar 1.1: Perbandingan penyimpanan Array dan Linked List di memori</p>
+                    </div>
+                    <div class="two-columns" style="font-size: 0.7em; margin-top: 10px;">
+                        <div><strong>Array:</strong> Contiguous (berurutan)</div>
+                        <div><strong>Linked List:</strong> Non-contiguous (tersebar)</div>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>📊 Perbandingan Kompleksitas</h2>
+                    <table style="font-size: 0.55em;">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Array</th>
+                            <th>Linked List</th>
+                        </tr>
+                        <tr>
+                            <td>Akses Elemen</td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Insert di Awal</td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Insert di Akhir</td>
+                            <td><span class="complexity-good">O(1)*</span></td>
+                            <td><span class="complexity-ok">O(n)</span> / <span class="complexity-good">O(1)**</span></td>
+                        </tr>
+                        <tr>
+                            <td>Delete di Awal</td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                        </tr>
+                    </table>
+                    <p class="small" style="margin-top: 10px;">* jika ada ruang &nbsp; ** dengan tail pointer</p>
+                </section>
+                
+                <section>
+                    <h2>⚖️ Kapan Menggunakan?</h2>
+                    <div class="two-columns" style="font-size: 0.7em;">
+                        <div>
+                            <h3 style="font-size: 1em; color: var(--color-info);">✅ Array</h3>
+                            <ul>
+                                <li>Ukuran data tetap/diketahui</li>
+                                <li>Akses random sering</li>
+                                <li>Cache performance penting</li>
+                            </ul>
+                        </div>
+                        <div class="fragment">
+                            <h3 style="font-size: 1em; color: var(--color-success);">✅ Linked List</h3>
+                            <ul>
+                                <li>Ukuran data dinamis</li>
+                                <li>Insert/delete sering di awal</li>
+                                <li>Tidak perlu akses random</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>🎖️ Studi Kasus Pertahanan</h2>
+                    <div class="quiz-question" style="font-size: 0.75em;">
+                        <p><strong>Sistem radar perlu menyimpan data pesawat yang terdeteksi. Data sering ditambah/dihapus secara dinamis. Pilih struktur data yang tepat!</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer" style="font-size: 0.7em;">
+                        <p class="highlight">Jawaban: Linked List</p>
+                        <ul>
+                            <li>Jumlah pesawat dinamis (bisa bertambah/berkurang)</li>
+                            <li>Insert &amp; delete yang sering lebih efisien</li>
+                            <li>Tidak ada pemborosan memori</li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 4: IMPLEMENTASI NODE ==================== -->
+            <section>
+                <section>
+                    <h2>4. Implementasi Node</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Kode C++</h3>
+                </section>
+                
+                <section>
+                    <h2>💻 Struct Node</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|1-5|7-8">
+struct Node {
+    int data;       // Data yang disimpan
+    Node* next;     // Pointer ke node berikutnya
+    
+    // Constructor
+    Node(int value) : data(value), next(nullptr) {}
+};
+                    </code></pre>
+                    <div class="fragment box-info" style="font-size: 0.7em; margin-top: 10px;">
+                        <p>Constructor otomatis set <code>next = nullptr</code></p>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>🔨 Membuat Node Baru</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|1-2|4-7">
+// Menggunakan constructor
+Node* newNode = new Node(10);
+
+// Atau secara manual
+Node* anotherNode = new Node;
+anotherNode->data = 20;
+anotherNode->next = nullptr;
+                    </code></pre>
+                </section>
+                
+                <section>
+                    <h2>🧪 Contoh: Membuat Linked List</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-4|7-9|12" style="font-size: 0.85em;">
+// Buat tiga node
+Node* node1 = new Node(5);
+Node* node2 = new Node(10);
+Node* node3 = new Node(15);
+
+// Hubungkan node-node
+node1->next = node2;  // node1 -> node2
+node2->next = node3;  // node2 -> node3
+// node3->next sudah nullptr
+
+// Set head
+Node* head = node1;
+                    </code></pre>
+                    <div class="fragment ll-visual" style="margin-top: 15px;">
+                        <span class="ll-head">head</span>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box"><div class="data">5</div><div class="next">→</div></div>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box"><div class="data">10</div><div class="next">→</div></div>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box"><div class="data">15</div><div class="next">→</div></div>
+                        <span class="ll-arrow">→</span>
+                        <span class="ll-null">NULL</span>
+                    </div>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 5: OPERASI TRAVERSAL ==================== -->
+            <section>
+                <section>
+                    <h2>5. Operasi Linked List</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Traversal &amp; Display</h3>
+                </section>
+                
+                <section>
+                    <h2>🚶 Traversal</h2>
+                    <div class="box-definition" style="font-size: 0.8em;">
+                        <p><strong>Traversal</strong> = mengunjungi setiap node dari head hingga NULL</p>
+                    </div>
+                    <pre><code class="cpp" data-trim data-line-numbers style="font-size: 0.9em;">
+void display(Node* head) {
+    Node* current = head;
+    while (current != nullptr) {
+        cout << current->data << " -> ";
+        current = current->next;
+    }
+    cout << "NULL" << endl;
+}
+                    </code></pre>
+                    <p class="fragment" style="font-size: 0.8em; margin-top: 10px;">
+                        <span class="complexity-badge on">Kompleksitas: O(n)</span>
+                    </p>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 6: INSERT OPERATIONS ==================== -->
+            <section>
+                <section>
+                    <h2>5. Operasi Linked List</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Insert Operations</h3>
+                </section>
+                
+                <section>
+                    <h2>➕ Insert di Awal</h2>
+                    <div class="step-container" style="font-size: 0.7em;">
+                        <div class="step-row fragment">
+                            <span class="step-num">1</span>
+                            <span>Buat node baru</span>
+                        </div>
+                        <div class="step-row fragment">
+                            <span class="step-num">2</span>
+                            <span>Set <code>newNode->next = head</code></span>
+                        </div>
+                        <div class="step-row fragment">
+                            <span class="step-num">3</span>
+                            <span>Update <code>head = newNode</code></span>
+                        </div>
+                    </div>
+                    <pre class="fragment"><code class="cpp" data-trim style="font-size: 0.85em;">
+void insertAtBeginning(Node*& head, int value) {
+    Node* newNode = new Node(value);
+    newNode->next = head;
+    head = newNode;
+}
+                    </code></pre>
+                    <p class="fragment"><span class="complexity-badge o1">O(1)</span></p>
+                </section>
+                
+                <section>
+                    <h2>🖼️ Visualisasi Insert di Awal</h2>
+                    <div class="img-placeholder">
+                        <p class="icon">📈</p>
+                        <p class="title">p03-04-insert-at-beginning.png</p>
+                        <p class="caption">Gambar 5.1: Operasi Insert di Awal Single Linked List</p>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>✏️ Contoh Insert di Awal</h2>
+                    <p style="font-size: 0.7em;"><strong>Sebelum:</strong></p>
+                    <div class="ll-visual" style="font-size: 0.9em;">
+                        <span class="ll-head">head</span><span class="ll-arrow">→</span>
+                        <div class="ll-node-box"><div class="data">10</div><div class="next">→</div></div>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box"><div class="data">20</div><div class="next">→</div></div>
+                        <span class="ll-arrow">→</span>
+                        <span class="ll-null">NULL</span>
+                    </div>
+                    <p style="font-size: 0.7em;" class="fragment"><strong>insertAtBeginning(5)</strong></p>
+                    <div class="ll-visual fragment" style="font-size: 0.9em;">
+                        <span class="ll-head">head</span><span class="ll-arrow">→</span>
+                        <div class="ll-node-box new-node"><div class="data">5</div><div class="next">→</div></div>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box"><div class="data">10</div><div class="next">→</div></div>
+                        <span class="ll-arrow">→</span>
+                        <div class="ll-node-box"><div class="data">20</div><div class="next">→</div></div>
+                        <span class="ll-arrow">→</span>
+                        <span class="ll-null">NULL</span>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>➕ Insert di Akhir</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3-7|10-13|16" style="font-size: 0.8em;">
+void insertAtEnd(Node*& head, int value) {
+    Node* newNode = new Node(value);
+    
+    // Kasus list kosong
+    if (head == nullptr) {
+        head = newNode;
+        return;
+    }
+    
+    // Traversal ke node terakhir
+    Node* current = head;
+    while (current->next != nullptr) {
+        current = current->next;
+    }
+    
+    // Hubungkan
+    current->next = newNode;
+}
+                    </code></pre>
+                    <p class="fragment"><span class="complexity-badge on">O(n)</span> tanpa tail pointer</p>
+                </section>
+                
+                <section>
+                    <h2>🖼️ Visualisasi Insert di Akhir</h2>
+                    <div class="img-placeholder">
+                        <p class="icon">📈</p>
+                        <p class="title">p03-05-insert-at-end.png</p>
+                        <p class="caption">Gambar 5.2: Operasi Insert di Akhir Single Linked List</p>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>➕ Insert di Posisi Tertentu</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers style="font-size: 0.75em;">
+void insertAtPosition(Node*& head, int value, int pos) {
+    if (pos == 0) { insertAtBeginning(head, value); return; }
+    
+    // Traversal ke posisi (pos - 1)
+    Node* prev = head;
+    for (int i = 0; i < pos - 1; i++) {
+        prev = prev->next;
+    }
+    
+    // Sisipkan node baru
+    Node* newNode = new Node(value);
+    newNode->next = prev->next;
+    prev->next = newNode;
+}
+                    </code></pre>
+                    <p class="fragment"><span class="complexity-badge on">O(n)</span></p>
+                </section>
+                
+                <section>
+                    <h2>🖼️ Visualisasi Insert di Tengah</h2>
+                    <div class="img-placeholder">
+                        <p class="icon">📈</p>
+                        <p class="title">p03-06-insert-at-position.png</p>
+                        <p class="caption">Gambar 5.3: Operasi Insert di Posisi Tertentu</p>
+                    </div>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 7: DELETE OPERATIONS ==================== -->
+            <section>
+                <section>
+                    <h2>5. Operasi Linked List</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Delete Operations</h3>
+                </section>
+                
+                <section>
+                    <h2>➖ Delete di Awal</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-3|5-7">
+void deleteAtBeginning(Node*& head) {
+    if (head == nullptr) 
+        throw runtime_error("List kosong!");
+    
+    Node* temp = head;      // Simpan node
+    head = head->next;      // Update head
+    delete temp;            // Hapus node
+}
+                    </code></pre>
+                    <p class="fragment"><span class="complexity-badge o1">O(1)</span></p>
+                </section>
+                
+                <section>
+                    <h2>⚠️ Kesalahan Umum Delete</h2>
+                    <div class="box-danger" style="font-size: 0.75em;">
+                        <p><strong>SALAH:</strong></p>
+                        <pre><code class="cpp" data-trim>
+delete head;
+head = head->next;  // ❌ UNDEFINED BEHAVIOR!
+                        </code></pre>
+                    </div>
+                    <div class="fragment box-success" style="font-size: 0.75em;">
+                        <p><strong>BENAR:</strong></p>
+                        <pre><code class="cpp" data-trim>
+Node* temp = head;
+head = head->next;  // ✅ Update dulu
+delete temp;        // ✅ Baru hapus
+                        </code></pre>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>🖼️ Visualisasi Delete di Awal</h2>
+                    <div class="img-placeholder">
+                        <p class="icon">📉</p>
+                        <p class="title">p03-07-delete-at-beginning.png</p>
+                        <p class="caption">Gambar 5.4: Operasi Delete di Awal Single Linked List</p>
+                    </div>
+                </section>
+                
+                <section>
+                    <h2>➖ Delete di Akhir</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers style="font-size: 0.75em;">
+void deleteAtEnd(Node*& head) {
+    if (head == nullptr) throw runtime_error("List kosong!");
+    
+    // Kasus hanya satu node
+    if (head->next == nullptr) {
+        delete head;
+        head = nullptr;
+        return;
+    }
+    
+    // Traversal ke node kedua terakhir
+    Node* current = head;
+    while (current->next->next != nullptr) {
+        current = current->next;
+    }
+    
+    delete current->next;
+    current->next = nullptr;
+}
+                    </code></pre>
+                    <p class="fragment"><span class="complexity-badge on">O(n)</span></p>
+                </section>
+                
+                <section>
+                    <h2>🧠 Quiz: Kondisi Loop</h2>
+                    <div class="quiz-question" style="font-size: 0.8em;">
+                        <p>Mengapa delete di akhir menggunakan:</p>
+                        <code>current->next->next != nullptr</code>
+                        <p>bukan <code>current->next != nullptr</code>?</p>
+                    </div>
+                    <div class="fragment quiz-answer" style="font-size: 0.7em;">
+                        <p>Kita perlu berhenti di node <strong>kedua terakhir</strong> agar bisa:</p>
+                        <ul>
+                            <li>Mengakses node terakhir: <code>current->next</code></li>
+                            <li>Mengubah pointer: <code>current->next = nullptr</code></li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 8: SEARCH ==================== -->
+            <section>
+                <section>
+                    <h2>5. Operasi Linked List</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Search &amp; Find</h3>
+                </section>
+                
+                <section>
+                    <h2>🔍 Search</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers>
+bool search(Node* head, int value) {
+    Node* current = head;
+    while (current != nullptr) {
+        if (current->data == value) {
+            return true;  // Ditemukan
+        }
+        current = current->next;
+    }
+    return false;  // Tidak ditemukan
+}
+                    </code></pre>
+                    <p class="fragment"><span class="complexity-badge on">O(n)</span> - worst case semua node</p>
+                </section>
+                
+                <section>
+                    <h2>🎯 Two Pointer Technique</h2>
+                    <p style="font-size: 0.75em;">Mencari elemen ke-k dari belakang dengan <strong>satu kali</strong> traversal:</p>
+                    <pre><code class="cpp" data-trim data-line-numbers style="font-size: 0.8em;">
+int findKthFromEnd(Node* head, int k) {
+    Node* fast = head;
+    Node* slow = head;
+    
+    // Majukan fast k langkah
+    for (int i = 0; i < k; i++) {
+        fast = fast->next;
+    }
+    
+    // Majukan bersamaan sampai fast = NULL
+    while (fast != nullptr) {
+        fast = fast->next;
+        slow = slow->next;
+    }
+    
+    return slow->data;
+}
+                    </code></pre>
+                </section>
+                
+                <section>
+                    <h2>🖼️ Two Pointer Visualization</h2>
+                    <div class="img-placeholder">
+                        <p class="icon">👆👆</p>
+                        <p class="title">p03-08-kth-from-end-two-pointers.png</p>
+                        <p class="caption">Gambar 3.8: Two-pointer technique untuk elemen ke-k dari belakang</p>
+                    </div>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 9: RINGKASAN KOMPLEKSITAS ==================== -->
+            <section>
+                <section>
+                    <h2>6. Ringkasan Kompleksitas</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Big-O Analysis</h3>
+                </section>
+                
+                <section>
+                    <h2>📊 Kompleksitas Waktu</h2>
+                    <table style="font-size: 0.6em;">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Kompleksitas</th>
+                            <th>Keterangan</th>
+                        </tr>
+                        <tr>
+                            <td>Traversal</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                            <td>Mengunjungi semua node</td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                            <td>Worst case: elemen tidak ada</td>
+                        </tr>
+                        <tr>
+                            <td>Insert Beginning</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>Konstan</td>
+                        </tr>
+                        <tr>
+                            <td>Insert End</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                            <td>O(1) dengan tail</td>
+                        </tr>
+                        <tr>
+                            <td>Insert Position</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                            <td>Traversal ke posisi</td>
+                        </tr>
+                        <tr>
+                            <td>Delete Beginning</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>Konstan</td>
+                        </tr>
+                        <tr>
+                            <td>Delete End</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                            <td>Perlu node kedua terakhir</td>
+                        </tr>
+                    </table>
+                </section>
+                
+                <section>
+                    <h2>⚖️ Keunggulan vs Kelemahan</h2>
+                    <div class="two-columns" style="font-size: 0.7em;">
+                        <div>
+                            <h3 style="font-size: 1em; color: var(--color-success);">✅ Keunggulan</h3>
+                            <ul>
+                                <li>Ukuran dinamis</li>
+                                <li>Insert/delete di awal O(1)</li>
+                                <li>Tidak ada pemborosan memori</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 1em; color: var(--color-error);">❌ Kelemahan</h3>
+                            <ul>
+                                <li>Tidak ada random access</li>
+                                <li>Memory overhead (pointer)</li>
+                                <li>Cache performance kurang</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </section>
+            
+            <!-- ==================== BAGIAN 10: APLIKASI PERTAHANAN ==================== -->
+            <section>
+                <section>
+                    <h2>🎖️ 7. Aplikasi Pertahanan</h2>
+                    <h3 style="color: var(--unhan-gold-light);">Studi Kasus Militer</h3>
+                </section>
+                
+                <section>
+                    <h2>📡 Radar Log Buffer</h2>
+                    <p style="font-size: 0.75em;">Sistem log aktivitas radar dengan <strong>circular buffer</strong>:</p>
+                    <pre><code class="cpp" data-trim style="font-size: 0.7em;">
+struct RadarLog {
+    time_t timestamp;
+    string activity;
+    RadarLog* next;
+};
+
+class RadarLogBuffer {
+private:
+    RadarLog* head;
+    RadarLog* tail;
+    int maxSize, currentSize;
+public:
+    void addLog(string activity); // O(1)
+    void displayLogs();           // O(n)
+};
+                    </code></pre>
+                    <p class="fragment small">Ketika penuh, data lama otomatis tertimpa!</p>
+                </section>
+                
+                <section>
+                    <h2>🛡️ Aplikasi Lainnya</h2>
+                    <ul style="font-size: 0.75em;">
+                        <li class="fragment"><strong>Manajemen Antrian Pesan</strong><br>
+                            <span class="small">Pesan komunikasi militer (FIFO)</span></li>
+                        <li class="fragment"><strong>Tracking Target</strong><br>
+                            <span class="small">Daftar pesawat/kapal yang terdeteksi radar</span></li>
+                        <li class="fragment"><strong>Undo History</strong><br>
+                            <span class="small">Sistem command &amp; control (LIFO)</span></li>
+                        <li class="fragment"><strong>Sensor Network</strong><br>
+                            <span class="small">Linked list sensor di perimeter pertahanan</span></li>
+                    </ul>
+                </section>
+            </section>
+            
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Konsep</th>
+                        <th>Poin Penting</th>
+                    </tr>
+                    <tr>
+                        <td>Linked List</td>
+                        <td>Node terhubung via pointer, ukuran dinamis</td>
+                    </tr>
+                    <tr>
+                        <td>Node</td>
+                        <td>Terdiri dari data + pointer next</td>
+                    </tr>
+                    <tr>
+                        <td>Head</td>
+                        <td>Pointer ke node pertama (satu-satunya akses)</td>
+                    </tr>
+                    <tr>
+                        <td>Insert Awal</td>
+                        <td>O(1) - paling efisien</td>
+                    </tr>
+                    <tr>
+                        <td>Delete Awal</td>
+                        <td>O(1) - simpan temp dulu!</td>
+                    </tr>
+                    <tr>
+                        <td>Search/Traversal</td>
+                        <td>O(n) - harus linear</td>
+                    </tr>
+                </table>
+            </section>
+            
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 1.5em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.10.2 | Weiss Ch.3 | Hubbard Ch.7
+                </p>
+            </section>
+            
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 03: Single Linked List</p>
+                <p class="small" style="margin-top: 1.5em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+            
+        </div>
+    </div>
+    
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
