@@ -459,50 +459,10 @@ c) **Operasi Delete di Akhir:**
 #### Jawaban Soal 2
 **Jawaban:**
 
-![Proses Insert Node 25 di Tengah Double Linked List](images/p04-02-dll-insert-middle.png)
+![Proses Insert Node 25 di Tengah Double Linked List](images/p04-09-dll-insert-middle.png)
 
 *Gambar: Ilustrasi proses insert node [25] di antara node [20] dan [30] pada Double Linked List*
 
-**[GEMINI IMAGE PROMPT]**
-<prompt>
-SUBJECT: Step-by-step insertion of node 25 between nodes 20 and 30 in a Double Linked List
-STYLE: Clean educational diagram, flat vector illustration, textbook quality, minimal design
-LAYOUT: Vertical arrangement with three sections - BEFORE, STEPS, AFTER
-
-COLORS:
-- Primary: #2563eb (blue) for existing nodes
-- Highlight: #10b981 (green) for new node [25]
-- Arrows: #f59e0b (orange) for prev pointers, #6366f1 (indigo) for next pointers
-- New connections: #ef4444 (red dashed) showing new pointer assignments
-- Background: #ffffff (white)
-
-ELEMENTS:
-SECTION 1 - "SEBELUM (Before)":
-- 4 rectangular nodes in a horizontal line: [10], [20], [30], [40]
-- Each node shows bidirectional arrows (<->) between adjacent nodes
-- NULL markers at both ends
-- Labels: "head" pointing to [10], "tail" pointing to [40]
-
-SECTION 2 - "LANGKAH-LANGKAH (Steps)" - show pointer changes:
-- Same 4 nodes with new green node [25] appearing between [20] and [30]
-- Step annotations with numbered arrows:
-  1. "Buat node baru [25]" (create new node)
-  2. "newNode->next = node30" (red dashed arrow from 25 to 30)
-  3. "newNode->prev = node20" (red dashed arrow from 25 back to 20)
-  4. "node20->next = newNode" (update 20's next pointer)
-  5. "node30->prev = newNode" (update 30's prev pointer)
-
-SECTION 3 - "SESUDAH (After)":
-- 5 rectangular nodes in a horizontal line: [10], [20], [25], [30], [40]
-- [25] highlighted in green to show it's the newly inserted node
-- All bidirectional arrows properly connected
-- NULL markers at both ends
-
-LABELS: Node values inside boxes, pointer direction labels (prev/next), step numbers
-SIZE: 800x600 pixels
-FORMAT: PNG, white background
-NEGATIVE: No gradients, no 3D effects, no complex textures
-</prompt>
 
 **Penjelasan langkah-langkah:**
 
