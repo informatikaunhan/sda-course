@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 07: Rekursi Lanjut dan Divide-and-Conquer - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="../css/unhan-theme.css">
+    
+    <style>
+        /* Slide-specific styles for recursion visualizations */
+        .recursion-tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .tree-node {
+            background: rgba(37, 99, 235, 0.3);
+            border: 2px solid var(--unhan-gold);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .tree-node.base-case {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: var(--color-success);
+        }
+        .tree-node.highlight {
+            background: rgba(245, 158, 11, 0.3);
+            border-color: var(--color-warning);
+        }
+        
+        /* Memoization visualization */
+        .memo-table {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .memo-cell {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--unhan-gold);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            background: rgba(37, 99, 235, 0.2);
+        }
+        .memo-cell .key { font-size: 0.6em; color: var(--unhan-gray); }
+        .memo-cell .value { font-weight: bold; }
+        .memo-cell.cached {
+            background: rgba(16, 185, 129, 0.3);
+            border-color: var(--color-success);
+        }
+        
+        /* Tower of Hanoi visualization */
+        .hanoi-visual {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        .hanoi-peg {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+        }
+        .hanoi-peg .peg-name {
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--unhan-gold);
+        }
+        .hanoi-disk {
+            height: 20px;
+            border-radius: 5px;
+            margin: 2px 0;
+        }
+        .disk-1 { width: 40px; background: #f59e0b; }
+        .disk-2 { width: 60px; background: #10b981; }
+        .disk-3 { width: 80px; background: #2563eb; }
+        .peg-base {
+            width: 100px;
+            height: 8px;
+            background: var(--unhan-gray);
+            border-radius: 2px;
+        }
+        .peg-rod {
+            width: 8px;
+            height: 80px;
+            background: var(--unhan-gray);
+            border-radius: 2px 2px 0 0;
+        }
+        
+        /* Image placeholder styling */
+        .img-placeholder {
+            border: 2px dashed var(--unhan-gold);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            background: rgba(26, 58, 110, 0.3);
+            margin: 15px 0;
+        }
+        .img-placeholder .icon { font-size: 2em; margin-bottom: 10px; }
+        .img-placeholder .title { color: var(--unhan-gold); font-weight: bold; }
+        .img-placeholder .file { font-size: 0.8em; color: var(--unhan-gray); }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🔄 Rekursi Lanjut dan Divide-and-Conquer</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 07</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment"><span class="highlight">Menganalisis</span> algoritma rekursif dengan base case & recursive case</li>
+                    <li class="fragment"><span class="highlight">Menghitung</span> kompleksitas dengan recurrence relation</li>
+                    <li class="fragment"><span class="highlight">Menerapkan</span> Master Theorem</li>
+                    <li class="fragment"><span class="highlight">Mengimplementasikan</span> memoization untuk optimasi</li>
+                    <li class="fragment"><span class="highlight">Menerapkan</span> paradigma divide-and-conquer</li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <ol>
+                    <li class="fragment">Review Rekursi & Tracing</li>
+                    <li class="fragment">Analisis Kompleksitas dengan Recurrence Relation</li>
+                    <li class="fragment">Master Theorem</li>
+                    <li class="fragment">Tail Recursion & Optimasi</li>
+                    <li class="fragment">Memoization</li>
+                    <li class="fragment">Paradigma Divide-and-Conquer</li>
+                    <li class="fragment">Binary Search & Tower of Hanoi</li>
+                </ol>
+            </section>
+
+            <!-- ==================== SECTION 1: REVIEW REKURSI ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 1</h2>
+                <h1>📖 Review Rekursi</h1>
+            </section>
+
+            <section>
+                <h2>📖 Apa itu Rekursi?</h2>
+                <div class="box-definition">
+                    <p><strong>Rekursi</strong> adalah teknik pemrograman di mana sebuah fungsi memanggil dirinya sendiri untuk menyelesaikan masalah.</p>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <table style="font-size: 0.8em;">
+                        <tr>
+                            <th>Komponen</th>
+                            <th>Fungsi</th>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Base Case</span></td>
+                            <td>Kondisi penghenti rekursi</td>
+                        </tr>
+                        <tr>
+                            <td><span class="highlight">Recursive Case</span></td>
+                            <td>Pemanggilan fungsi ke dirinya sendiri</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <section>
+                <h2>💻 Anatomi Fungsi Rekursif</h2>
+                <pre><code class="cpp" data-trim data-line-numbers="|2-4|6-7">
+returnType fungsiRekursif(parameter) {
+    // Base case: kondisi berhenti
+    if (kondisiBerhenti) {
+        return nilaiDasar;
+    }
+    // Recursive case: pemanggilan diri sendiri
+    return fungsiRekursif(parameterYangLebihKecil);
+}
+                </code></pre>
+                <div class="fragment box-warning" style="font-size: 0.8em;">
+                    <p>⚠️ <strong>Penting:</strong> Tanpa base case, rekursi akan berjalan selamanya (infinite recursion) → Stack Overflow!</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>💻 Contoh Klasik: Faktorial</h2>
+                <pre><code class="cpp" data-trim data-line-numbers="|3-5|7">
+int faktorial(int n) {
+    // Base case
+    if (n <= 1) {
+        return 1;
+    }
+    // Recursive case
+    return n * faktorial(n - 1);
+}
+// faktorial(5) → 5 × 4 × 3 × 2 × 1 = 120
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>🔍 Tracing Rekursi</h2>
+                <div class="img-placeholder">
+                    <p class="icon">📊</p>
+                    <p class="title">Visualisasi Tracing faktorial(5)</p>
+                    <p class="file">images/p07-01-factorial-tracing.png</p>
+                </div>
+                <p class="small" style="text-align: center;">Call stack turun (pemanggilan) lalu naik (return values)</p>
+            </section>
+
+            <section>
+                <h2>📊 Tabel Tracing faktorial(5)</h2>
+                <table style="font-size: 0.7em;">
+                    <tr>
+                        <th>Call</th>
+                        <th>n</th>
+                        <th>Kondisi</th>
+                        <th>Return</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td>faktorial(5)</td>
+                        <td>5</td>
+                        <td>n > 1</td>
+                        <td>5 × 24 = <span class="highlight">120</span></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>faktorial(4)</td>
+                        <td>4</td>
+                        <td>n > 1</td>
+                        <td>4 × 6 = 24</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>faktorial(3)</td>
+                        <td>3</td>
+                        <td>n > 1</td>
+                        <td>3 × 2 = 6</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>faktorial(2)</td>
+                        <td>2</td>
+                        <td>n > 1</td>
+                        <td>2 × 1 = 2</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>faktorial(1)</td>
+                        <td>1</td>
+                        <td class="success">Base case!</td>
+                        <td>1</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== SECTION 2: ANALISIS KOMPLEKSITAS ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 2</h2>
+                <h1>📈 Analisis Kompleksitas Rekursi</h1>
+            </section>
+
+            <section>
+                <h2>📈 Recurrence Relation</h2>
+                <div class="box-definition">
+                    <p><strong>Recurrence Relation</strong> adalah persamaan yang mendefinisikan kompleksitas waktu fungsi rekursif.</p>
+                </div>
+                <div class="fragment formula-box" style="margin-top: 1em;">
+                    <p style="font-size: 1.3em;"><strong>T(n) = a·T(n/b) + f(n)</strong></p>
+                </div>
+                <div class="fragment" style="font-size: 0.8em; margin-top: 1em;">
+                    <ul>
+                        <li><code>T(n)</code> = waktu untuk masalah berukuran n</li>
+                        <li><code>a</code> = jumlah subproblem</li>
+                        <li><code>n/b</code> = ukuran setiap subproblem</li>
+                        <li><code>f(n)</code> = waktu membagi dan menggabungkan</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>🌳 Metode Pohon Rekursi</h2>
+                <div class="img-placeholder">
+                    <p class="icon">🌲</p>
+                    <p class="title">Recursion Tree: T(n) = 2T(n/2) + n</p>
+                    <p class="file">images/p07-02-recursion-tree.png</p>
+                </div>
+                <p class="small fragment" style="text-align: center;">
+                    Total cost = n × (log₂n + 1) = <span class="highlight">O(n log n)</span>
+                </p>
+            </section>
+
+            <!-- ==================== SECTION 3: MASTER THEOREM ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 3</h2>
+                <h1>🎓 Master Theorem</h1>
+            </section>
+
+            <section>
+                <h2>🎓 Master Theorem</h2>
+                <p style="font-size: 0.9em;">Untuk <code>T(n) = aT(n/b) + f(n)</code>, bandingkan <code>f(n)</code> dengan <code>n^(log_b(a))</code>:</p>
+                <table style="font-size: 0.7em; margin-top: 1em;">
+                    <tr>
+                        <th>Kasus</th>
+                        <th>Kondisi</th>
+                        <th>Kompleksitas</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td><span class="highlight">1</span></td>
+                        <td>f(n) < n^(log_b(a))</td>
+                        <td>Θ(n^(log_b(a)))</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><span class="highlight">2</span></td>
+                        <td>f(n) = n^(log_b(a))</td>
+                        <td>Θ(n^(log_b(a)) · log n)</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><span class="highlight">3</span></td>
+                        <td>f(n) > n^(log_b(a))</td>
+                        <td>Θ(f(n))</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>📐 Flowchart Master Theorem</h2>
+                <div class="img-placeholder">
+                    <p class="icon">📐</p>
+                    <p class="title">Flowchart penggunaan Master Theorem</p>
+                    <p class="file">images/p07-03-master-theorem.png</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>🧠 Contoh: T(n) = 4T(n/2) + n</h2>
+                <div class="two-columns" style="font-size: 0.85em;">
+                    <div>
+                        <p><strong>Langkah 1:</strong> Identifikasi</p>
+                        <ul>
+                            <li>a = 4, b = 2</li>
+                            <li>f(n) = n</li>
+                        </ul>
+                        <p class="fragment"><strong>Langkah 2:</strong> Hitung</p>
+                        <ul class="fragment">
+                            <li>log₂(4) = 2</li>
+                            <li>n^(log_b(a)) = n²</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="fragment"><strong>Langkah 3:</strong> Bandingkan</p>
+                        <ul class="fragment">
+                            <li>f(n) = n¹</li>
+                            <li>n¹ < n² → <span class="highlight">Kasus 1</span></li>
+                        </ul>
+                        <div class="fragment box-success" style="margin-top: 1em;">
+                            <p><strong>T(n) = Θ(n²)</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>🧠 Contoh: T(n) = 2T(n/2) + n</h2>
+                <p style="font-size: 0.9em;">Ini adalah kompleksitas <span class="highlight">Merge Sort</span>!</p>
+                <ul style="font-size: 0.85em;">
+                    <li class="fragment">a = 2, b = 2, f(n) = n</li>
+                    <li class="fragment">log₂(2) = 1 → n^(log_b(a)) = n¹ = n</li>
+                    <li class="fragment">f(n) = n = Θ(n¹) → <span class="highlight">Kasus 2</span></li>
+                </ul>
+                <div class="fragment box-success" style="margin-top: 1em;">
+                    <p><strong>T(n) = Θ(n log n)</strong></p>
+                </div>
+            </section>
+
+            <!-- ==================== SECTION 4: TAIL RECURSION ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 4</h2>
+                <h1>🔧 Tail Recursion dan Optimasi</h1>
+            </section>
+
+            <section>
+                <h2>🔧 Apa itu Tail Recursion?</h2>
+                <div class="box-definition">
+                    <p><strong>Tail Recursion</strong> adalah rekursi di mana pemanggilan rekursif adalah operasi <em>terakhir</em> sebelum return.</p>
+                </div>
+                <div class="two-columns fragment" style="margin-top: 1em; font-size: 0.8em;">
+                    <div>
+                        <p><strong>❌ Non-tail:</strong></p>
+                        <pre><code class="cpp" data-trim>
+return n * faktorial(n-1);
+// Operasi × SETELAH rekursi
+                        </code></pre>
+                    </div>
+                    <div>
+                        <p><strong>✅ Tail:</strong></p>
+                        <pre><code class="cpp" data-trim>
+return faktorialTail(n-1, n*acc);
+// Rekursi adalah TERAKHIR
+                        </code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>📊 Perbandingan Stack Usage</h2>
+                <div class="img-placeholder">
+                    <p class="icon">📊</p>
+                    <p class="title">Regular vs Tail Recursion Stack</p>
+                    <p class="file">images/p07-04-tail-recursion.png</p>
+                </div>
+                <table class="fragment" style="font-size: 0.7em; margin-top: 0.5em;">
+                    <tr>
+                        <th>Aspek</th>
+                        <th>Regular</th>
+                        <th>Tail</th>
+                    </tr>
+                    <tr>
+                        <td>Memory</td>
+                        <td class="warning">O(n)</td>
+                        <td class="success">O(1)*</td>
+                    </tr>
+                    <tr>
+                        <td>Stack Overflow</td>
+                        <td class="warning">Mungkin</td>
+                        <td class="success">Dihindari</td>
+                    </tr>
+                </table>
+                <p class="small">*dengan Tail Call Optimization (TCO)</p>
+            </section>
+
+            <section>
+                <h2>💻 Contoh: Faktorial Tail Recursive</h2>
+                <pre><code class="cpp" data-trim data-line-numbers="|2|3">
+int faktorialTail(int n, int acc = 1) {
+    if (n <= 1) return acc;     // Base: return accumulator
+    return faktorialTail(n-1, n*acc);  // Tail recursive
+}
+
+// Tracing faktorialTail(5, 1):
+// (5, 1) → (4, 5) → (3, 20) → (2, 60) → (1, 120) → 120
+                </code></pre>
+            </section>
+
+            <!-- ==================== SECTION 5: MEMOIZATION ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 5</h2>
+                <h1>💾 Memoization</h1>
+            </section>
+
+            <section>
+                <h2>💾 Konsep Memoization</h2>
+                <div class="box-definition">
+                    <p><strong>Memoization</strong> adalah teknik menyimpan hasil komputasi untuk menghindari perhitungan berulang.</p>
+                </div>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p>Masalah dengan Fibonacci naive:</p>
+                    <pre><code class="cpp" data-trim>
+// O(2^n) - sangat lambat!
+int fib(int n) {
+    if (n <= 1) return n;
+    return fib(n-1) + fib(n-2);  // Banyak duplikasi!
+}
+                    </code></pre>
+                </div>
+            </section>
+
+            <section>
+                <h2>🔴 Overlapping Subproblems</h2>
+                <div class="img-placeholder">
+                    <p class="icon">🌲</p>
+                    <p class="title">Fibonacci(5) dengan perhitungan duplikat</p>
+                    <p class="file">images/p07-05-fibonacci-overlap.png</p>
+                </div>
+                <p class="fragment small" style="text-align: center;">
+                    fib(3) dihitung <span class="warning">2 kali</span>, fib(2) dihitung <span class="warning">3 kali</span>!
+                </p>
+            </section>
+
+            <section>
+                <h2>💻 Fibonacci dengan Memoization</h2>
+                <pre><code class="cpp" data-trim data-line-numbers="|1|5-7|9-10">
+unordered_map&lt;int, long long&gt; memo;
+
+long long fibMemo(int n) {
+    if (n <= 1) return n;
+    // Cek apakah sudah pernah dihitung
+    if (memo.find(n) != memo.end()) {
+        return memo[n];  // Return dari cache
+    }
+    // Hitung dan simpan
+    memo[n] = fibMemo(n-1) + fibMemo(n-2);
+    return memo[n];
+}
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>📊 Perbandingan Performa</h2>
+                <table style="font-size: 0.75em;">
+                    <tr>
+                        <th>Metode</th>
+                        <th>Waktu</th>
+                        <th>Ruang</th>
+                        <th>Fib(40)</th>
+                    </tr>
+                    <tr>
+                        <td>Naive</td>
+                        <td class="warning">O(2^n)</td>
+                        <td>O(n)</td>
+                        <td class="warning">~1 menit</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Memoization</td>
+                        <td class="success">O(n)</td>
+                        <td>O(n)</td>
+                        <td class="success">&lt; 1 ms</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Tail Recursive</td>
+                        <td class="success">O(n)</td>
+                        <td class="success">O(1)*</td>
+                        <td class="success">&lt; 1 ms</td>
+                    </tr>
+                </table>
+                <p class="small">*dengan TCO</p>
+            </section>
+
+            <!-- ==================== SECTION 6: DIVIDE AND CONQUER ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 6</h2>
+                <h1>⚔️ Paradigma Divide-and-Conquer</h1>
+            </section>
+
+            <section>
+                <h2>⚔️ Divide-and-Conquer</h2>
+                <div class="box-definition">
+                    <p><strong>Divide-and-Conquer</strong> memecah masalah menjadi sub-masalah yang lebih kecil, menyelesaikan secara rekursif, lalu menggabungkan solusi.</p>
+                </div>
+                <div class="three-columns fragment" style="margin-top: 1.5em; text-align: center; font-size: 0.8em;">
+                    <div class="step-box">
+                        <p style="font-size: 1.5em;">1️⃣</p>
+                        <p><strong>DIVIDE</strong></p>
+                        <p class="small">Bagi masalah</p>
+                    </div>
+                    <div class="step-box">
+                        <p style="font-size: 1.5em;">2️⃣</p>
+                        <p><strong>CONQUER</strong></p>
+                        <p class="small">Selesaikan rekursif</p>
+                    </div>
+                    <div class="step-box">
+                        <p style="font-size: 1.5em;">3️⃣</p>
+                        <p><strong>COMBINE</strong></p>
+                        <p class="small">Gabungkan solusi</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>📊 Visualisasi Divide-and-Conquer</h2>
+                <div class="img-placeholder">
+                    <p class="icon">⚔️</p>
+                    <p class="title">Divide → Conquer → Combine</p>
+                    <p class="file">images/p07-06-divide-conquer.png</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>📊 Algoritma D&C Klasik</h2>
+                <table style="font-size: 0.7em;">
+                    <tr>
+                        <th>Algoritma</th>
+                        <th>Divide</th>
+                        <th>Conquer</th>
+                        <th>Combine</th>
+                        <th>T(n)</th>
+                    </tr>
+                    <tr>
+                        <td>Binary Search</td>
+                        <td>Bagi 2</td>
+                        <td>Search separuh</td>
+                        <td>-</td>
+                        <td class="success">O(log n)</td>
+                    </tr>
+                    <tr>
+                        <td>Merge Sort</td>
+                        <td>Bagi 2</td>
+                        <td>Sort keduanya</td>
+                        <td>Merge</td>
+                        <td class="success">O(n log n)</td>
+                    </tr>
+                    <tr>
+                        <td>Quick Sort</td>
+                        <td>Partition</td>
+                        <td>Sort keduanya</td>
+                        <td>-</td>
+                        <td>O(n log n)*</td>
+                    </tr>
+                    <tr>
+                        <td>Tower of Hanoi</td>
+                        <td>n-1 disk</td>
+                        <td>Pindah 1</td>
+                        <td>n-1 disk</td>
+                        <td class="warning">O(2^n)</td>
+                    </tr>
+                </table>
+                <p class="small">*average case</p>
+            </section>
+
+            <!-- ==================== SECTION 7: BINARY SEARCH ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 7</h2>
+                <h1>🔍 Binary Search</h1>
+            </section>
+
+            <section>
+                <h2>🔍 Binary Search</h2>
+                <div class="box-definition">
+                    <p><strong>Binary Search</strong> mencari pada array terurut dengan membagi search space menjadi setengah setiap iterasi.</p>
+                </div>
+                <div class="box-warning fragment" style="margin-top: 1em; font-size: 0.85em;">
+                    <p>⚠️ <strong>Prasyarat:</strong> Array HARUS sudah terurut!</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>💻 Binary Search Rekursif</h2>
+                <pre><code class="cpp" data-trim data-line-numbers="|2|5|8-12">
+int binarySearch(int arr[], int left, int right, int target) {
+    if (left > right) return -1;  // Base: tidak ditemukan
+    
+    // Divide: hitung titik tengah
+    int mid = left + (right - left) / 2;
+    
+    // Conquer
+    if (arr[mid] == target)
+        return mid;
+    else if (target < arr[mid])
+        return binarySearch(arr, left, mid-1, target);
+    else
+        return binarySearch(arr, mid+1, right, target);
+}
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>📐 Analisis Binary Search</h2>
+                <p>Recurrence: <code>T(n) = T(n/2) + O(1)</code></p>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p>Master Theorem:</p>
+                    <ul style="font-size: 0.85em;">
+                        <li>a = 1, b = 2, f(n) = O(1)</li>
+                        <li>log₂(1) = 0 → n^0 = 1</li>
+                        <li>f(n) = Θ(1) → <span class="highlight">Kasus 2</span></li>
+                    </ul>
+                </div>
+                <div class="fragment box-success" style="margin-top: 1em;">
+                    <p><strong>T(n) = Θ(log n)</strong></p>
+                </div>
+            </section>
+
+            <!-- ==================== SECTION 8: TOWER OF HANOI ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 8</h2>
+                <h1>🗼 Tower of Hanoi</h1>
+            </section>
+
+            <section>
+                <h2>🗼 Deskripsi Masalah</h2>
+                <div class="img-placeholder">
+                    <p class="icon">🗼</p>
+                    <p class="title">Tower of Hanoi dengan 3 disk</p>
+                    <p class="file">images/p07-07-tower-of-hanoi.png</p>
+                </div>
+                <div class="box-info fragment" style="font-size: 0.8em; margin-top: 0.5em;">
+                    <p><strong>Aturan:</strong> 1) Satu disk per waktu, 2) Tidak boleh besar di atas kecil, 3) Gunakan tiang bantu</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>🧠 Strategi Divide-and-Conquer</h2>
+                <ol style="font-size: 0.9em;">
+                    <li class="fragment"><strong>Divide:</strong> Pindahkan n-1 disk dari A ke B (pakai C)</li>
+                    <li class="fragment"><strong>Conquer:</strong> Pindahkan disk terbesar dari A ke C</li>
+                    <li class="fragment"><strong>Combine:</strong> Pindahkan n-1 disk dari B ke C (pakai A)</li>
+                </ol>
+                <div class="fragment formula-box" style="margin-top: 1em;">
+                    <p><strong>Jumlah Langkah: 2<sup>n</sup> - 1</strong></p>
+                </div>
+            </section>
+
+            <section>
+                <h2>💻 Implementasi Tower of Hanoi</h2>
+                <pre><code class="cpp" data-trim data-line-numbers="|2-5|8|11">
+void hanoi(int n, char src, char dst, char aux) {
+    if (n == 1) {
+        cout << "Pindah disk 1: " << src << " → " << dst << endl;
+        return;
+    }
+    
+    // Pindahkan n-1 disk ke auxiliary
+    hanoi(n-1, src, aux, dst);
+    
+    // Pindahkan disk terbesar ke destination
+    cout << "Pindah disk " << n << ": " << src << " → " << dst << endl;
+    
+    // Pindahkan n-1 disk ke destination
+    hanoi(n-1, aux, dst, src);
+}
+                </code></pre>
+            </section>
+
+            <section>
+                <h2>📊 Kompleksitas Tower of Hanoi</h2>
+                <table style="font-size: 0.8em;">
+                    <tr>
+                        <th>n (disk)</th>
+                        <th>Langkah</th>
+                        <th>Waktu (1 langkah/detik)</th>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>7</td>
+                        <td>7 detik</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>31</td>
+                        <td>31 detik</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>1.023</td>
+                        <td>~17 menit</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>1.048.575</td>
+                        <td class="warning">~12 hari</td>
+                    </tr>
+                    <tr>
+                        <td>64</td>
+                        <td>~1.8 × 10¹⁹</td>
+                        <td class="warning">~585 miliar tahun!</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== SECTION 9: KONVERSI ==================== -->
+            <section>
+                <h2 style="color: var(--unhan-gold);">BAGIAN 9</h2>
+                <h1>🔄 Konversi Rekursi ke Iterasi</h1>
+            </section>
+
+            <section>
+                <h2>🔄 Mengapa Mengkonversi?</h2>
+                <table style="font-size: 0.8em;">
+                    <tr>
+                        <th>Aspek</th>
+                        <th>Rekursi</th>
+                        <th>Iterasi + Stack</th>
+                    </tr>
+                    <tr>
+                        <td>Kode</td>
+                        <td class="success">Lebih sederhana</td>
+                        <td class="warning">Lebih kompleks</td>
+                    </tr>
+                    <tr>
+                        <td>Stack</td>
+                        <td>Implisit (call stack)</td>
+                        <td>Eksplisit</td>
+                    </tr>
+                    <tr>
+                        <td>Stack Overflow</td>
+                        <td class="warning">Risiko tinggi</td>
+                        <td class="success">Dapat dikontrol</td>
+                    </tr>
+                    <tr>
+                        <td>Efisiensi</td>
+                        <td>Function call overhead</td>
+                        <td class="success">Lebih efisien</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>💻 Contoh: Faktorial dengan Stack</h2>
+                <pre><code class="cpp" data-trim data-line-numbers="|3-6|9-12">
+int faktorialStack(int n) {
+    stack&lt;int&gt; s;
+    // Push semua nilai (simulasi rekursi turun)
+    while (n > 1) {
+        s.push(n);
+        n--;
+    }
+    // Pop dan kalikan (simulasi rekursi naik)
+    int result = 1;
+    while (!s.empty()) {
+        result *= s.top();
+        s.pop();
+    }
+    return result;
+}
+                </code></pre>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.65em;">
+                    <tr>
+                        <th>Topik</th>
+                        <th>Konsep Kunci</th>
+                        <th>Kompleksitas</th>
+                    </tr>
+                    <tr>
+                        <td>Rekursi</td>
+                        <td>Base case + Recursive case</td>
+                        <td>Tergantung algoritma</td>
+                    </tr>
+                    <tr>
+                        <td>Master Theorem</td>
+                        <td>3 kasus berdasarkan f(n)</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Tail Recursion</td>
+                        <td>Rekursi operasi terakhir</td>
+                        <td class="success">O(1) space*</td>
+                    </tr>
+                    <tr>
+                        <td>Memoization</td>
+                        <td>Simpan hasil yang sudah dihitung</td>
+                        <td class="success">O(2^n) → O(n)</td>
+                    </tr>
+                    <tr>
+                        <td>Binary Search</td>
+                        <td>Bagi search space setengah</td>
+                        <td class="success">O(log n)</td>
+                    </tr>
+                    <tr>
+                        <td>Tower of Hanoi</td>
+                        <td>Pindah n-1, pindah 1, pindah n-1</td>
+                        <td class="warning">O(2^n)</td>
+                    </tr>
+                </table>
+                <p class="small">*dengan TCO</p>
+            </section>
+
+            <!-- ==================== QUIZ ==================== -->
+            <section>
+                <h2>🧠 Quiz 1</h2>
+                <div class="quiz-question">
+                    <p><strong>Tentukan kompleksitas T(n) = 8T(n/2) + n² menggunakan Master Theorem.</strong></p>
+                </div>
+                <div class="fragment quiz-answer">
+                    <p><span class="highlight">Jawaban:</span></p>
+                    <ul style="font-size: 0.85em;">
+                        <li>a=8, b=2, f(n)=n²</li>
+                        <li>log₂(8) = 3 → n^(log_b(a)) = n³</li>
+                        <li>f(n) = n² < n³ → <strong>Kasus 1</strong></li>
+                        <li><strong>T(n) = Θ(n³)</strong></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>🧠 Quiz 2</h2>
+                <div class="quiz-question">
+                    <p><strong>Berapa langkah minimum Tower of Hanoi dengan 6 disk?</strong></p>
+                </div>
+                <div class="fragment quiz-answer">
+                    <p><span class="highlight">Jawaban:</span></p>
+                    <p>Langkah = 2<sup>n</sup> - 1 = 2<sup>6</sup> - 1 = 64 - 1 = <strong>63 langkah</strong></p>
+                </div>
+            </section>
+
+            <section>
+                <h2>🧠 Quiz 3</h2>
+                <div class="quiz-question">
+                    <p><strong>Mengapa memoization efektif untuk Fibonacci tapi tidak untuk faktorial?</strong></p>
+                </div>
+                <div class="fragment quiz-answer">
+                    <ul style="font-size: 0.85em;">
+                        <li>Fibonacci memiliki <span class="highlight">overlapping subproblems</span></li>
+                        <li>fib(n-1) dan fib(n-2) berbagi banyak subproblem</li>
+                        <li>Faktorial <span class="warning">tidak memiliki</span> overlapping subproblems</li>
+                        <li>faktorial(n-1) hanya dipanggil sekali</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ==================== APLIKASI PERTAHANAN ==================== -->
+            <section>
+                <h2>🎖️ Aplikasi Pertahanan</h2>
+                <div class="two-columns" style="font-size: 0.85em;">
+                    <div>
+                        <p><strong>Binary Search:</strong></p>
+                        <ul>
+                            <li>Pencarian data radar terurut</li>
+                            <li>Lookup database target</li>
+                            <li>Range query waktu deteksi</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p><strong>Divide-and-Conquer:</strong></p>
+                        <ul>
+                            <li>Pembagian area patroli</li>
+                            <li>Sorting data intelijen</li>
+                            <li>Optimasi rute logistik</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.4 | Weiss Ch.1.3 | Hubbard Ch.4
+                </p>
+            </section>
+
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 07: Rekursi Lanjut dan Divide-and-Conquer</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+    
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
