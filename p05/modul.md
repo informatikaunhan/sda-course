@@ -996,7 +996,7 @@ int main() {
 }
 ```
 
-![Trace Evaluasi Postfix](images/p05-08-postfix-evaluation-trace.png)
+![Trace Evaluasi Postfix](images/p05-07-postfix-evaluation-trace.png)
 
 *Gambar 8.1: Trace Evaluasi Ekspresi Postfix "23*5+"*
 
