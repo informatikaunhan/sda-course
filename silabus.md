@@ -1,4 +1,5 @@
 # RENCANA PEMBELAJARAN SEMESTER (RPS)
+
 # BERBASIS OUTCOME-BASED EDUCATION (OBE)
 
 ---
@@ -42,12 +43,19 @@ Mahasiswa akan mempelajari berbagai algoritma penting termasuk algoritma sorting
 Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan telah menguasai:
 
 1. **Pemrograman Dasar C++**: Tipe data, variabel, operator, I/O, percabangan, perulangan
+
 2. **Fungsi dan Rekursi**: Parameter passing, return value, fungsi rekursif dasar
+
 3. **Array**: Array 1D dan multidimensi, operasi dasar pada array
+
 4. **Pointer**: Konsep pointer, dereferencing, pointer arithmetic, dynamic memory (new/delete)
+
 5. **Struct**: Tipe data bentukan, array of struct
+
 6. **File Handling**: Operasi baca/tulis file
+
 7. **Exception Handling**: Try-catch, penanganan error
+
 8. **Pengenalan OOP**: Konsep dasar class, object, encapsulation
 
 ---
@@ -55,13 +63,19 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 ## REFERENSI
 
 ### Referensi Utama
+
 1. Cormen, T.H., Leiserson, C.E., Rivest, R.L., & Stein, C. (2022). *Introduction to Algorithms* (4th Ed.). MIT Press.
+
 2. Weiss, M.A. (2014). *Data Structures and Algorithm Analysis in C++* (4th Ed.). Pearson.
 
 ### Referensi Pendukung
+
 3. Hubbard, J.R. (2000). *Data Structures with C++ (Schaum's Outlines)*. McGraw-Hill.
+
 4. Goodrich, M.T., Tamassia, R., & Mount, D.M. (2011). *Data Structures and Algorithms in C++* (2nd Ed.). Wiley.
+
 5. Sahni, S. (2019). *Data Structures, Algorithms and Applications in C++*. Universities Press.
+
 6. Sedgewick, R. & Wayne, K. (2011). *Algorithms* (4th Ed.). Addison-Wesley.
 
 ---
@@ -142,7 +156,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 |----------|--------|
 | **Sub-CPMK** | Sub-CPMK-1.2 |
 | **Indikator Pencapaian** | (1) Mahasiswa mampu menghitung kompleksitas waktu dan ruang algoritma; (2) Mahasiswa mampu membandingkan efisiensi algoritma menggunakan notasi asimptotik |
-| **Materi Pembelajaran** | Pentingnya analisis algoritma, notasi Big-O, Big-Ω, Big-Θ, analisis best case/worst case/average case, aturan penjumlahan dan perkalian, kompleksitas umum: O(1), O(log n), O(n), O(n log n), O(nÂ²), O(2â¿), analisis algoritma iteratif dan rekursif, amortized analysis (pengenalan) |
+| **Materi Pembelajaran** | Pentingnya analisis algoritma, notasi Big-O, Big-Ω, Big-Θ, analisis best case/worst case/average case, aturan penjumlahan dan perkalian, kompleksitas umum: O(1), O(log n), O(n), O(n log n), O(n²), O(2ⁿ), analisis algoritma iteratif dan rekursif, amortized analysis (pengenalan) |
 | **Bentuk & Waktu Pembelajaran** | Teori: 2×50 menit (100 menit); Praktikum: 3×50 menit (150 menit) |
 | **Metode Pembelajaran** | Ceramah, problem-based learning, latihan soal, eksperimen pengukuran waktu |
 | **Pengalaman Belajar** | Mahasiswa menganalisis kompleksitas berbagai algoritma dan membuktikan secara empiris melalui pengukuran waktu eksekusi |
@@ -423,9 +437,13 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 ## ATURAN PERKULIAHAN
 
 1. **Kehadiran**: Minimal 80% dari total pertemuan untuk dapat mengikuti UAS
+
 2. **Keterlambatan Tugas**: Pengurangan 10% per hari keterlambatan, maksimal 3 hari
+
 3. **Plagiarisme**: Pelanggaran akan dikenai sanksi sesuai peraturan akademik (nilai 0 untuk komponen terkait)
+
 4. **Praktikum**: Wajib hadir dan menyelesaikan tugas praktikum setiap pertemuan
+
 5. **Ujian Susulan**: Hanya diberikan dengan alasan yang sah dan bukti pendukung
 
 ---
@@ -433,10 +451,13 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 ## KETERHUBUNGAN DENGAN MATA KULIAH LAIN
 
 ### Mata Kuliah Prasyarat
+
 - **Dasar-Dasar Pemrograman (DDP101)**: Menyediakan fondasi pemrograman C++, pointer, array, struct, rekursi dasar, dan pengenalan OOP
 
 ### Mata Kuliah Lanjutan
+
 - **Pemrograman Berorientasi Objek (Semester 3)**: Akan memperdalam konsep class, inheritance, polymorphism yang diperkenalkan dalam implementasi struktur data
+
 - **Kecerdasan Artifisial (Semester 4)**: Membutuhkan pemahaman struktur data (tree, graph, priority queue) untuk implementasi algoritma AI seperti search algorithms, game tree, dan lainnya
 
 ---
@@ -446,13 +467,11 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 ### Referensi Utama
 1. Cormen, T.H., Leiserson, C.E., Rivest, R.L., & Stein, C. (2022). *Introduction to Algorithms* (4th Ed.). MIT Press. ISBN: 978-0262046305
 2. Weiss, M.A. (2014). *Data Structures and Algorithm Analysis in C++* (4th Ed.). Pearson. ISBN: 978-0132847377
-
 ### Referensi Pendukung
 3. Hubbard, J.R. (2000). *Data Structures with C++ (Schaum's Outlines)*. McGraw-Hill. ISBN: 978-0071353458
 4. Goodrich, M.T., Tamassia, R., & Mount, D.M. (2011). *Data Structures and Algorithms in C++* (2nd Ed.). Wiley. ISBN: 978-0470383278
 5. Sahni, S. (2019). *Data Structures, Algorithms and Applications in C++*. Universities Press. ISBN: 978-8173716232
 6. Sedgewick, R. & Wayne, K. (2011). *Algorithms* (4th Ed.). Addison-Wesley. ISBN: 978-0321573513
-
 ### Sumber Online
 7. Visualgo - Visualizing Data Structures and Algorithms: https://visualgo.net/
 8. GeeksforGeeks - Data Structures: https://www.geeksforgeeks.org/data-structures/
@@ -463,9 +482,11 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 *Dokumen ini disusun berdasarkan prinsip Outcome-Based Education (OBE) dan dapat direvisi sesuai kebutuhan pembelajaran.*
 
 **Disusun oleh:**  
+
 Anindito, S.Kom., S.S., S.H., M.TI., CHFI.
 
 **Disetujui oleh:**  
+
 Ketua Program Studi
 
 **Tanggal:** [Tanggal Pengesahan]
@@ -479,3 +500,4 @@ This repository is licensed under the **Creative Commons Attribution 4.0 Interna
 Commercial use is permitted, provided attribution is given to the author.
 
 © 2026 Anindito
+
