@@ -147,6 +147,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Kuis (10%), Tugas praktikum (15%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.10; Weiss Ch.1; Hubbard Ch.1-2 |
+| **Sumber Praktikum** | C++ Reference - Memory: https://en.cppreference.com/w/cpp/memory; Visualgo - Linked List: https://visualgo.net/en/list |
 
 ---
 
@@ -163,6 +164,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Kuis (15%), Tugas analisis (20%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.2-3; Weiss Ch.2; Goodrich Ch.4 |
+| **Sumber Praktikum** | Algorithm Visualizer: https://algorithm-visualizer.org/; Big-O Cheat Sheet: https://www.bigocheatsheet.com/ |
 
 ---
 
@@ -179,6 +181,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.10.2; Weiss Ch.3; Hubbard Ch.7 |
+| **Sumber Praktikum** | Visualgo - Linked List: https://visualgo.net/en/list; GeeksforGeeks - Linked List: https://www.geeksforgeeks.org/data-structures/linked-list/ |
 
 ---
 
@@ -195,6 +198,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%), Kuis (10%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.10.2; Weiss Ch.3; Goodrich Ch.3 |
+| **Sumber Praktikum** | Visualgo - Linked List: https://visualgo.net/en/list; GeeksforGeeks - Doubly Linked List: https://www.geeksforgeeks.org/doubly-linked-list/ |
 
 ---
 
@@ -211,6 +215,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.10.1; Weiss Ch.3.6; Hubbard Ch.5 |
+| **Sumber Praktikum** | Visualgo - Stack: https://visualgo.net/en/list; GeeksforGeeks - Stack: https://www.geeksforgeeks.org/stack-data-structure/ |
 
 ---
 
@@ -227,6 +232,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%), Kuis (10%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.10.1; Weiss Ch.3.7; Hubbard Ch.6 |
+| **Sumber Praktikum** | Visualgo - Queue: https://visualgo.net/en/list; GeeksforGeeks - Queue: https://www.geeksforgeeks.org/queue-data-structure/ |
 
 ---
 
@@ -243,6 +249,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (20%), Kuis (15%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.4; Weiss Ch.1.3; Hubbard Ch.4 |
+| **Sumber Praktikum** | Visualgo - Recursion Tree: https://visualgo.net/en/recursion; GeeksforGeeks - Recursion: https://www.geeksforgeeks.org/recursion/; CP-Algorithms: https://cp-algorithms.com/ |
 
 ---
 
@@ -271,6 +278,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.2; Weiss Ch.7.2; Hubbard Ch.13 |
+| **Sumber Praktikum** | Visualgo - Sorting: https://visualgo.net/en/sorting; Sorting Algorithms Visualizer: https://www.sortvisualizer.com/ |
 
 ---
 
@@ -287,6 +295,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%), Kuis (15%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.7-8; Weiss Ch.7.4-7.7; Hubbard Ch.13 |
+| **Sumber Praktikum** | Visualgo - Sorting: https://visualgo.net/en/sorting; GeeksforGeeks - Merge Sort: https://www.geeksforgeeks.org/merge-sort/; GeeksforGeeks - Quick Sort: https://www.geeksforgeeks.org/quick-sort/ |
 
 ---
 
@@ -303,6 +312,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.12 (intro); Weiss Ch.4; Hubbard Ch.9-10 |
+| **Sumber Praktikum** | Visualgo - Binary Tree: https://visualgo.net/en/bst; GeeksforGeeks - Binary Tree: https://www.geeksforgeeks.org/binary-tree-data-structure/ |
 
 ---
 
@@ -319,6 +329,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%), Kuis (10%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.12; Weiss Ch.4.3; Hubbard Ch.11 |
+| **Sumber Praktikum** | Visualgo - BST: https://visualgo.net/en/bst; GeeksforGeeks - BST: https://www.geeksforgeeks.org/binary-search-tree-data-structure/; BST Visualizer: https://www.cs.usfca.edu/~galles/visualization/BST.html |
 
 ---
 
@@ -335,6 +346,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.6; Weiss Ch.6; Hubbard Ch.12 |
+| **Sumber Praktikum** | Visualgo - Heap: https://visualgo.net/en/heap; GeeksforGeeks - Heap: https://www.geeksforgeeks.org/heap-data-structure/; Heap Visualizer: https://www.cs.usfca.edu/~galles/visualization/Heap.html |
 
 ---
 
@@ -351,6 +363,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Tugas praktikum (25%), Kuis (10%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen Ch.11; Weiss Ch.5; Hubbard Ch.8 |
+| **Sumber Praktikum** | Visualgo - Hash Table: https://visualgo.net/en/hashtable; GeeksforGeeks - Hashing: https://www.geeksforgeeks.org/hashing-data-structure/; Hash Table Visualizer: https://www.cs.usfca.edu/~galles/visualization/OpenHash.html |
 
 ---
 
@@ -367,6 +380,7 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 | **Penilaian** | Mini project (30%), Kuis (10%) |
 | **Estimasi Waktu Belajar Mandiri** | 420 menit |
 | **Referensi** | Cormen (seluruh bab terkait); Weiss (seluruh bab terkait) |
+| **Sumber Praktikum** | Visualgo (seluruh modul): https://visualgo.net/; GeeksforGeeks - Data Structures: https://www.geeksforgeeks.org/data-structures/; CP-Algorithms: https://cp-algorithms.com/ |
 
 ---
 
@@ -465,17 +479,72 @@ Berdasarkan silabus Dasar-Dasar Pemrograman (DDP101), mahasiswa diasumsikan tela
 ## DAFTAR PUSTAKA LENGKAP
 
 ### Referensi Utama
+
 1. Cormen, T.H., Leiserson, C.E., Rivest, R.L., & Stein, C. (2022). *Introduction to Algorithms* (4th Ed.). MIT Press. ISBN: 978-0262046305
 2. Weiss, M.A. (2014). *Data Structures and Algorithm Analysis in C++* (4th Ed.). Pearson. ISBN: 978-0132847377
+
 ### Referensi Pendukung
+
 3. Hubbard, J.R. (2000). *Data Structures with C++ (Schaum's Outlines)*. McGraw-Hill. ISBN: 978-0071353458
 4. Goodrich, M.T., Tamassia, R., & Mount, D.M. (2011). *Data Structures and Algorithms in C++* (2nd Ed.). Wiley. ISBN: 978-0470383278
 5. Sahni, S. (2019). *Data Structures, Algorithms and Applications in C++*. Universities Press. ISBN: 978-8173716232
 6. Sedgewick, R. & Wayne, K. (2011). *Algorithms* (4th Ed.). Addison-Wesley. ISBN: 978-0321573513
+
 ### Sumber Online
+
 7. Visualgo - Visualizing Data Structures and Algorithms: https://visualgo.net/
 8. GeeksforGeeks - Data Structures: https://www.geeksforgeeks.org/data-structures/
 9. CP-Algorithms: https://cp-algorithms.com/
+
+---
+
+## MEDIA DAN SUMBER BELAJAR
+
+### Perangkat Keras
+- PC/Laptop (minimum 4GB RAM, 128GB storage)
+- Koneksi internet untuk mengakses resources dan visualisasi online
+
+### Perangkat Lunak
+
+| Kategori | Tools | Sumber |
+|----------|-------|--------|
+| IDE Utama | Code::Blocks (dengan MinGW GCC) | https://www.codeblocks.org/ |
+| Compiler | MinGW-w64 GCC | https://www.mingw-w64.org/ |
+| Debugging | Code::Blocks built-in debugger | Built-in IDE |
+| Memory Debugging | Valgrind (via WSL, opsional) | https://valgrind.org/ |
+
+### Sumber Belajar Online
+
+| Sumber | Deskripsi | URL |
+|--------|-----------|-----|
+| Visualgo | Visualisasi interaktif struktur data dan algoritma | https://visualgo.net/ |
+| GeeksforGeeks | Artikel dan latihan struktur data | https://www.geeksforgeeks.org/data-structures/ |
+| CP-Algorithms | Referensi algoritma kompetitif | https://cp-algorithms.com/ |
+| Big-O Cheat Sheet | Referensi cepat kompleksitas algoritma | https://www.bigocheatsheet.com/ |
+| Data Structure Visualizations | Visualisasi interaktif dari USF | https://www.cs.usfca.edu/~galles/visualization/ |
+
+---
+
+## CATATAN PENTING
+
+1. **Fondasi dari DDP**: Mata kuliah ini melanjutkan langsung dari Dasar-Dasar Pemrograman (DDP101). Mahasiswa yang belum menguasai pointer, rekursi, dan struct dari DDP akan mengalami kesulitan signifikan.
+2. **IDE Standar**: Seluruh praktikum menggunakan Code::Blocks dengan compiler MinGW GCC. Mahasiswa diperbolehkan menggunakan IDE lain untuk belajar mandiri.
+3. **Visualisasi**: Mahasiswa sangat dianjurkan menggunakan Visualgo (https://visualgo.net/) untuk memahami cara kerja struktur data dan algoritma secara visual.
+4. **Manajemen Memori**: Perhatian khusus diberikan pada memory management (new/delete) sepanjang semester. Memory leak dan dangling pointer adalah kesalahan umum yang harus dihindari.
+5. **Plagiarisme Kode**: Tugas pemrograman harus dikerjakan secara mandiri. Diskusi konsep diperbolehkan, namun copy-paste kode dianggap plagiarisme.
+6. **Koneksi Internet**: Beberapa pertemuan memerlukan koneksi internet untuk mengakses visualisasi online dan resources.
+
+---
+
+## KONTRAK PERKULIAHAN
+
+Mahasiswa yang mengikuti mata kuliah ini dianggap telah menyetujui:
+1. Mengikuti minimal 80% pertemuan untuk dapat mengikuti UAS
+2. Mengumpulkan tugas dan laporan praktikum sesuai tenggat waktu
+3. Mengerjakan tugas secara mandiri dan tidak melakukan plagiarisme kode
+4. Wajib hadir dan menyelesaikan tugas praktikum setiap pertemuan
+5. Menyiapkan laptop dengan IDE yang telah terinstal sebelum praktikum
+6. Melakukan backup kode secara berkala
 
 ---
 
@@ -500,4 +569,3 @@ This repository is licensed under the **Creative Commons Attribution 4.0 Interna
 Commercial use is permitted, provided attribution is given to the author.
 
 © 2026 Anindito
-
