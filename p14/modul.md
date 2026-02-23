@@ -387,7 +387,7 @@ int hashMult(int key, int m) {
 
 > **Definisi:** **Collision** terjadi ketika dua key berbeda k1 ≠ k2 menghasilkan hash value yang sama: h(k1) = h(k2).
 
-![Collision pada Hash Table](images/p14-02-collision-ilustrasi.png))
+![Collision pada Hash Table](images/p14-02-collision-ilustrasi.png)
 
 *Gambar 14.2: Ilustrasi collision — dua key berbeda dipetakan ke slot yang sama*
 
