@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 15: Review dan Integrasi Struktur Data - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="css/unhan-theme.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>📚 Review dan Integrasi<br>Struktur Data</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 15</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Menganalisis <span class="highlight">trade-off</span> dalam pemilihan struktur data</li>
+                    <li class="fragment">Memilih struktur data yang <span class="highlight">tepat</span> untuk permasalahan tertentu</li>
+                    <li class="fragment"><span class="highlight">Mengintegrasikan</span> berbagai struktur data untuk menyelesaikan masalah kompleks</li>
+                    <li class="fragment">Mempersiapkan diri menghadapi <span class="highlight">UAS</span></li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Bagian 1</h3>
+                        <ol style="font-size: 0.75em;">
+                            <li>Review Struktur Data Linear</li>
+                            <li>Review Struktur Data Non-Linear</li>
+                            <li>Review Algoritma Sorting</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3>Bagian 2</h3>
+                        <ol start="4" style="font-size: 0.75em;">
+                            <li>Perbandingan Kompleksitas</li>
+                            <li>Kriteria Pemilihan</li>
+                            <li>Studi Kasus Integrasi</li>
+                            <li>Persiapan UAS</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== PETA STRUKTUR DATA ==================== -->
+            <section>
+                <h2>🗺️ Peta Struktur Data</h2>
+                <img src="images/p15-01-peta-struktur-data.png" alt="Peta Struktur Data" style="max-height: 420px;">
+                <p class="small"><em>Gambar 15.1: Peta konsep seluruh struktur data yang dipelajari</em></p>
+            </section>
+
+            <!-- ==================== BAGIAN 1: STRUKTUR DATA LINEAR ==================== -->
+            <section>
+                <section>
+                    <h2>📊 1. Review Struktur Data Linear</h2>
+                    <div class="box-definition">
+                        <p><strong>Struktur Data Linear:</strong> Elemen tersusun secara <span class="highlight">sekuensial</span>, satu demi satu dalam urutan tertentu.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p>Empat struktur data linear utama:</p>
+                        <p class="highlight">Array → Linked List → Stack → Queue</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📦 Array</h2>
+                    <div class="two-columns" style="font-size: 0.8em;">
+                        <div class="box-success">
+                            <p><strong>✅ Kelebihan:</strong></p>
+                            <ul class="small">
+                                <li>Akses langsung O(1)</li>
+                                <li>Cache-friendly</li>
+                                <li>Memori kontinu</li>
+                            </ul>
+                        </div>
+                        <div class="box-danger">
+                            <p><strong>❌ Kelemahan:</strong></p>
+                            <ul class="small">
+                                <li>Ukuran tetap (statis)</li>
+                                <li>Insert/Delete O(n)</li>
+                                <li>Memori terbuang jika tidak penuh</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p class="small"><strong>Gunakan ketika:</strong> Ukuran diketahui, akses random sering</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🔗 Linked List</h2>
+                    <div class="two-columns" style="font-size: 0.8em;">
+                        <div class="box-success">
+                            <p><strong>✅ Kelebihan:</strong></p>
+                            <ul class="small">
+                                <li>Ukuran dinamis</li>
+                                <li>Insert/Delete di posisi diketahui O(1)</li>
+                                <li>Tidak perlu memori kontinu</li>
+                            </ul>
+                        </div>
+                        <div class="box-danger">
+                            <p><strong>❌ Kelemahan:</strong></p>
+                            <ul class="small">
+                                <li>Akses sekuensial O(n)</li>
+                                <li>Overhead pointer</li>
+                                <li>Tidak cache-friendly</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p class="small"><strong>Gunakan ketika:</strong> Insert/delete sering, ukuran berubah-ubah</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📚 Stack (LIFO)</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p><strong>Operasi Utama:</strong> push(), pop(), top() — semua <span class="complexity-badge o1">O(1)</span></p>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.85em;"><strong>Aplikasi:</strong></p>
+                        <ul style="font-size: 0.75em;">
+                            <li>Function call stack</li>
+                            <li>Undo/Redo operation</li>
+                            <li>Expression evaluation</li>
+                            <li>Backtracking algorithms</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🚶 Queue (FIFO)</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p><strong>Operasi Utama:</strong> enqueue(), dequeue(), front() — semua <span class="complexity-badge o1">O(1)</span></p>
+                    </div>
+                    <div class="fragment">
+                        <p style="font-size: 0.85em;"><strong>Variasi:</strong></p>
+                        <ul style="font-size: 0.75em;">
+                            <li><strong>Circular Queue:</strong> Penggunaan memori efisien</li>
+                            <li><strong>Deque:</strong> Insert/delete di kedua ujung</li>
+                            <li><strong>Priority Queue:</strong> Berbasis heap</li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 2: STRUKTUR DATA NON-LINEAR ==================== -->
+            <section>
+                <section>
+                    <h2>🌳 2. Review Struktur Data Non-Linear</h2>
+                    <div class="box-definition">
+                        <p><strong>Struktur Data Non-Linear:</strong> Elemen dapat memiliki <span class="highlight">banyak successor</span> atau predecessor, membentuk struktur hierarkis atau jaringan.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p>Struktur non-linear utama:</p>
+                        <p class="highlight">Tree → BST → Heap → Hash Table</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🌲 Binary Search Tree (BST)</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Average</th>
+                            <th>Worst</th>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td><span class="complexity-good">O(log n)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Insert</td>
+                            <td><span class="complexity-good">O(log n)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Delete</td>
+                            <td><span class="complexity-good">O(log n)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-warning" style="font-size: 0.75em; margin-top: 0.5em;">
+                        <p>⚠️ Worst case terjadi pada BST tidak seimbang (skewed tree)</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>⛰️ Heap</h2>
+                    <div class="two-columns" style="font-size: 0.8em;">
+                        <div>
+                            <p><strong>Min-Heap:</strong></p>
+                            <ul class="small">
+                                <li>Root = elemen terkecil</li>
+                                <li>Priority Queue ascending</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p><strong>Max-Heap:</strong></p>
+                            <ul class="small">
+                                <li>Root = elemen terbesar</li>
+                                <li>Priority Queue descending</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <table class="fragment" style="font-size: 0.6em; margin-top: 1em;">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Kompleksitas</th>
+                        </tr>
+                        <tr><td>getMin/getMax</td><td><span class="complexity-badge o1">O(1)</span></td></tr>
+                        <tr><td>Insert</td><td><span class="complexity-badge ologn">O(log n)</span></td></tr>
+                        <tr><td>Extract</td><td><span class="complexity-badge ologn">O(log n)</span></td></tr>
+                        <tr><td>Build Heap</td><td><span class="complexity-badge on">O(n)</span></td></tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>#️⃣ Hash Table</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p><strong>Operasi average case:</strong> Search, Insert, Delete — semua <span class="complexity-badge o1">O(1)</span></p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.8em;"><strong>Collision Handling:</strong></p>
+                        <ul style="font-size: 0.75em;">
+                            <li><strong>Separate Chaining:</strong> Linked list di setiap bucket</li>
+                            <li><strong>Open Addressing:</strong> Linear/Quadratic probing, Double hashing</li>
+                        </ul>
+                    </div>
+                    <div class="fragment box-warning" style="font-size: 0.75em; margin-top: 0.5em;">
+                        <p>⚠️ Worst case O(n) jika banyak collision atau load factor tinggi</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 3: ALGORITMA SORTING ==================== -->
+            <section>
+                <section>
+                    <h2>📊 3. Review Algoritma Sorting</h2>
+                    <table style="font-size: 0.55em;">
+                        <tr>
+                            <th>Algoritma</th>
+                            <th>Best</th>
+                            <th>Average</th>
+                            <th>Worst</th>
+                            <th>Space</th>
+                            <th>Stable</th>
+                        </tr>
+                        <tr>
+                            <td>Bubble Sort</td>
+                            <td><span class="complexity-good">O(n)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td>O(1)</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td>Selection Sort</td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td>O(1)</td>
+                            <td>❌</td>
+                        </tr>
+                        <tr>
+                            <td>Insertion Sort</td>
+                            <td><span class="complexity-good">O(n)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td>O(1)</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td>Merge Sort</td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td><span class="complexity-ok">O(n)</span></td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td>Quick Sort</td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td>O(log n)</td>
+                            <td>❌</td>
+                        </tr>
+                        <tr>
+                            <td>Heap Sort</td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td>O(1)</td>
+                            <td>❌</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>🎯 Kapan Menggunakan Sorting Apa?</h2>
+                    <ul style="font-size: 0.8em;">
+                        <li class="fragment"><strong>Data kecil (n &lt; 50):</strong> Insertion Sort — simple, low overhead</li>
+                        <li class="fragment"><strong>Data hampir terurut:</strong> Insertion Sort — O(n) best case</li>
+                        <li class="fragment"><strong>Perlu stable sort:</strong> Merge Sort</li>
+                        <li class="fragment"><strong>Perlu in-place:</strong> Quick Sort atau Heap Sort</li>
+                        <li class="fragment"><strong>Worst case guarantee:</strong> Merge Sort atau Heap Sort</li>
+                        <li class="fragment"><strong>Memory terbatas:</strong> Heap Sort — O(1) space</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 4: PERBANDINGAN KOMPLEKSITAS ==================== -->
+            <section>
+                <section>
+                    <h2>📊 4. Perbandingan Kompleksitas</h2>
+                    <img src="images/p15-02-array-vs-linkedlist.png" alt="Array vs Linked List" style="max-height: 350px;">
+                    <p class="small"><em>Gambar 15.2: Perbandingan Array vs Linked List</em></p>
+                </section>
+
+                <section>
+                    <h2>Tabel Kompleksitas Operasi</h2>
+                    <table style="font-size: 0.5em;">
+                        <tr>
+                            <th>Struktur</th>
+                            <th>Access</th>
+                            <th>Search</th>
+                            <th>Insert</th>
+                            <th>Delete</th>
+                            <th>Space</th>
+                        </tr>
+                        <tr>
+                            <td>Array</td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td>O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>Linked List</td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td><span class="complexity-good">O(1)*</span></td>
+                            <td><span class="complexity-good">O(1)*</span></td>
+                            <td>O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>Stack/Queue</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                            <td>O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>BST (avg)</td>
+                            <td>-</td>
+                            <td><span class="complexity-good">O(log n)</span></td>
+                            <td><span class="complexity-good">O(log n)</span></td>
+                            <td><span class="complexity-good">O(log n)</span></td>
+                            <td>O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>Heap</td>
+                            <td><span class="complexity-good">O(1)**</span></td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td><span class="complexity-good">O(log n)</span></td>
+                            <td><span class="complexity-good">O(log n)</span></td>
+                            <td>O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>Hash Table</td>
+                            <td>-</td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                            <td>O(n)</td>
+                        </tr>
+                    </table>
+                    <p class="small" style="margin-top: 0.5em;">*di posisi diketahui | **hanya min/max</p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 5: KRITERIA PEMILIHAN ==================== -->
+            <section>
+                <section>
+                    <h2>🎯 5. Kriteria Pemilihan Struktur Data</h2>
+                    <img src="images/p15-03-decision-framework.png" alt="Decision Framework" style="max-height: 380px;">
+                    <p class="small"><em>Gambar 15.3: Flowchart pemilihan struktur data</em></p>
+                </section>
+
+                <section>
+                    <h2>Pertanyaan Kunci</h2>
+                    <ol style="font-size: 0.8em;">
+                        <li class="fragment"><strong>Operasi apa yang paling sering?</strong>
+                            <ul class="small">
+                                <li>Akses random → Array</li>
+                                <li>Insert/Delete → Linked List</li>
+                                <li>Min/Max → Heap</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>Apakah ukuran data diketahui?</strong>
+                            <ul class="small">
+                                <li>Diketahui → Array</li>
+                                <li>Dinamis → Linked List / Dynamic Array</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>Apakah data perlu terurut?</strong>
+                            <ul class="small">
+                                <li>Ya → BST / Sorted Array</li>
+                                <li>Tidak → Hash Table</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Pilih Struktur Data</h2>
+                    <div class="quiz-question">
+                        <p><strong>Sistem perlu menyimpan data dengan operasi:</strong></p>
+                        <ul style="font-size: 0.8em;">
+                            <li>Pencarian berdasarkan key → sangat sering</li>
+                            <li>Insert/Delete → sering</li>
+                            <li>Akses berurutan → jarang</li>
+                        </ul>
+                        <p><strong>Struktur data apa yang paling tepat?</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban:</strong> <span class="highlight">Hash Table</span></p>
+                        <p class="small">Search O(1), Insert O(1), Delete O(1) — optimal untuk operasi berbasis key!</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Trade-off Analysis</h2>
+                    <div class="quiz-question">
+                        <p><strong>Mengapa array sorted + binary search tidak selalu lebih baik dari BST?</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban:</strong></p>
+                        <ul style="font-size: 0.75em;">
+                            <li>Insert pada sorted array: <span class="warning">O(n)</span> karena perlu geser elemen</li>
+                            <li>Insert pada BST: <span class="success">O(log n)</span> average</li>
+                            <li>Jika data sering berubah → BST lebih efisien</li>
+                            <li>Jika data statis → Sorted array + binary search lebih cache-friendly</li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 6: STUDI KASUS INTEGRASI ==================== -->
+            <section>
+                <section>
+                    <h2>🔧 6. Studi Kasus Integrasi</h2>
+                    <p>Contoh nyata penggunaan <span class="highlight">kombinasi</span> struktur data:</p>
+                    <ol style="font-size: 0.85em;">
+                        <li class="fragment">LRU Cache — Hash Table + Doubly Linked List</li>
+                        <li class="fragment">Text Editor Undo/Redo — Two Stacks</li>
+                        <li class="fragment">Sistem Aset Pertahanan — Multi-Index Pattern</li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>📦 LRU Cache</h2>
+                    <img src="images/p15-04-lru-cache.png" alt="LRU Cache" style="max-height: 300px;">
+                    <p class="small"><em>Gambar 15.4: Arsitektur LRU Cache</em></p>
+                    <div class="fragment box-info" style="font-size: 0.75em; margin-top: 0.5em;">
+                        <p><strong>Kombinasi:</strong> Hash Table (O(1) lookup) + Doubly Linked List (O(1) removal & insertion)</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 LRU Cache: Operasi</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Langkah</th>
+                            <th>Kompleksitas</th>
+                        </tr>
+                        <tr>
+                            <td>get(key)</td>
+                            <td>1. Cari di hash table<br>2. Pindahkan node ke head</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                        </tr>
+                        <tr>
+                            <td>put(key, val)</td>
+                            <td>1. Insert ke hash table<br>2. Insert node di head<br>3. Evict tail jika penuh</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>📝 Text Editor: Undo/Redo</h2>
+                    <img src="images/p15-05-text-editor-undo-redo.png" alt="Text Editor Undo/Redo" style="max-height: 300px;">
+                    <p class="small"><em>Gambar 15.5: Mekanisme undo/redo dengan dua stack</em></p>
+                </section>
+
+                <section>
+                    <h2>📝 Text Editor: Operasi</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+void execute(Operation op) {
+    op.apply(document);
+    undoStack.push(op);
+    redoStack.clear();  // Invalidate redo history
+}
+
+void undo() {
+    if (!undoStack.empty()) {
+        Operation op = undoStack.pop();
+        op.inverse().apply(document);
+        redoStack.push(op);
+    }
+}
+
+void redo() {
+    if (!redoStack.empty()) {
+        Operation op = redoStack.pop();
+        op.apply(document);
+        undoStack.push(op);
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🎖️ Sistem Aset Pertahanan</h2>
+                    <img src="images/p15-06-multi-index-system.png" alt="Multi-Index System" style="max-height: 320px;">
+                    <p class="small"><em>Gambar 15.6: Arsitektur multi-index untuk aset pertahanan</em></p>
+                </section>
+
+                <section>
+                    <h2>🎖️ Multi-Index Pattern</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Query</th>
+                            <th>Struktur Data</th>
+                            <th>Kompleksitas</th>
+                        </tr>
+                        <tr>
+                            <td>Cari berdasarkan ID</td>
+                            <td>Hash Table</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Cari berdasarkan region</td>
+                            <td>BST (by region code)</td>
+                            <td><span class="complexity-badge ologn">O(log n + k)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Ambil prioritas tertinggi</td>
+                            <td>Max-Heap</td>
+                            <td><span class="complexity-badge ologn">O(log n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>History perubahan</td>
+                            <td>Stack</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                        </tr>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 7: PERSIAPAN UAS ==================== -->
+            <section>
+                <section>
+                    <h2>📚 7. Persiapan UAS</h2>
+                    <div class="box-warning" style="font-size: 0.85em;">
+                        <p><strong>Cakupan UAS:</strong> Seluruh materi Pertemuan 1-15, dengan penekanan pada Pertemuan 9-15</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📋 Topik Penting untuk UAS</h2>
+                    <table style="font-size: 0.6em;">
+                        <tr>
+                            <th>Prioritas</th>
+                            <th>Topik</th>
+                            <th>Jenis Soal</th>
+                        </tr>
+                        <tr>
+                            <td>⭐⭐⭐</td>
+                            <td>Sorting (Merge, Quick, Heap)</td>
+                            <td>Tracing, implementasi, analisis</td>
+                        </tr>
+                        <tr>
+                            <td>⭐⭐⭐</td>
+                            <td>Tree & BST operations</td>
+                            <td>Traversal, insert, delete</td>
+                        </tr>
+                        <tr>
+                            <td>⭐⭐⭐</td>
+                            <td>Hash Table</td>
+                            <td>Collision handling, lookup</td>
+                        </tr>
+                        <tr>
+                            <td>⭐⭐</td>
+                            <td>Heap & Priority Queue</td>
+                            <td>Build heap, extract</td>
+                        </tr>
+                        <tr>
+                            <td>⭐⭐</td>
+                            <td>Pemilihan struktur data</td>
+                            <td>Analisis trade-off</td>
+                        </tr>
+                        <tr>
+                            <td>⭐</td>
+                            <td>Stack, Queue, Linked List</td>
+                            <td>Operasi dasar, aplikasi</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>📝 Jenis Soal yang Sering Muncul</h2>
+                    <ol style="font-size: 0.8em;">
+                        <li class="fragment"><strong>Tracing:</strong> Ikuti eksekusi algoritma langkah demi langkah</li>
+                        <li class="fragment"><strong>Implementasi:</strong> Tulis kode untuk operasi tertentu</li>
+                        <li class="fragment"><strong>Analisis kompleksitas:</strong> Tentukan Big-O</li>
+                        <li class="fragment"><strong>Perbandingan:</strong> Bandingkan struktur data untuk skenario tertentu</li>
+                        <li class="fragment"><strong>Desain:</strong> Pilih dan integrasikan struktur data</li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz Persiapan UAS</h2>
+                    <div class="quiz-question">
+                        <p><strong>Diberikan array: [3, 1, 4, 1, 5, 9, 2, 6]</strong></p>
+                        <p>Setelah 3 iterasi Selection Sort, bagaimana kondisi array?</p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban:</strong></p>
+                        <ul style="font-size: 0.75em;">
+                            <li>Iterasi 1: [<span class="highlight">1</span>, 3, 4, 1, 5, 9, 2, 6]</li>
+                            <li>Iterasi 2: [1, <span class="highlight">1</span>, 4, 3, 5, 9, 2, 6]</li>
+                            <li>Iterasi 3: [1, 1, <span class="highlight">2</span>, 3, 5, 9, 4, 6]</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💡 Tips Sukses UAS</h2>
+                    <ol style="font-size: 0.85em;">
+                        <li class="fragment">Pahami <span class="highlight">kapan</span> menggunakan struktur data mana</li>
+                        <li class="fragment">Hafal kompleksitas operasi dasar setiap struktur</li>
+                        <li class="fragment">Latihan <span class="highlight">tracing</span> algoritma di kertas</li>
+                        <li class="fragment">Kerjakan <span class="highlight">solved problems</span> di modul</li>
+                        <li class="fragment">Fokus pada <span class="warning">Pertemuan 9-15</span></li>
+                    </ol>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Struktur Data</th>
+                        <th>Best For</th>
+                        <th>Key Operation</th>
+                    </tr>
+                    <tr>
+                        <td>Array</td>
+                        <td>Random access, data statis</td>
+                        <td>Access O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>Linked List</td>
+                        <td>Insert/delete sering</td>
+                        <td>Insert/Delete O(1)*</td>
+                    </tr>
+                    <tr>
+                        <td>Stack</td>
+                        <td>LIFO, backtracking</td>
+                        <td>Push/Pop O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>Queue</td>
+                        <td>FIFO, scheduling</td>
+                        <td>Enqueue/Dequeue O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>BST</td>
+                        <td>Data terurut, range query</td>
+                        <td>All O(log n) avg</td>
+                    </tr>
+                    <tr>
+                        <td>Heap</td>
+                        <td>Priority queue, top-k</td>
+                        <td>Extract O(log n)</td>
+                    </tr>
+                    <tr>
+                        <td>Hash Table</td>
+                        <td>Key-value lookup</td>
+                        <td>All O(1) avg</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== PERTANYAAN ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen (seluruh bab) | Weiss (seluruh bab)
+                </p>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 15</p>
+                <p class="small" style="margin-top: 1.5em; color: var(--unhan-gold);">
+                    Selamat belajar untuk UAS!
+                </p>
+                <p class="small" style="margin-top: 1em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
