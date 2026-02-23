@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 09: Algoritma Sorting Dasar - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="css/unhan-theme.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🔢 Algoritma Sorting Dasar</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 09</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Mengimplementasikan <span class="highlight">Bubble Sort</span> dengan optimasi early termination</li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">Selection Sort</span> dan memahami karakteristiknya</li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">Insertion Sort</span> dan keunggulannya</li>
+                    <li class="fragment">Menganalisis <span class="text-navy">kompleksitas waktu dan ruang</span> ketiga algoritma</li>
+                    <li class="fragment">Menjelaskan perbedaan <span class="warning">stable</span> dan <span class="warning">unstable</span> sort</li>
+                    <li class="fragment">Memilih algoritma sorting yang tepat untuk kasus tertentu</li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Bagian 1</h3>
+                        <ol style="font-size: 0.8em;">
+                            <li>Pengantar Sorting</li>
+                            <li>Bubble Sort</li>
+                            <li>Selection Sort</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3>Bagian 2</h3>
+                        <ol start="4" style="font-size: 0.8em;">
+                            <li>Insertion Sort</li>
+                            <li>Stable vs Unstable Sort</li>
+                            <li>Perbandingan Algoritma</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== BAGIAN 1: PENGANTAR SORTING ==================== -->
+            <section>
+                <section>
+                    <h2>📖 1. Pengantar Sorting</h2>
+                    <div class="box-definition">
+                        <p><strong>Sorting (Pengurutan)</strong> adalah proses menyusun elemen-elemen dalam urutan tertentu berdasarkan kunci perbandingan.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;">Contoh: <code>[64, 34, 25, 12, 22, 11, 90]</code></p>
+                        <p style="font-size: 0.85em;">Hasil: <code>[11, 12, 22, 25, 34, 64, 90]</code></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Mengapa Sorting Penting?</h2>
+                    <div class="three-columns" style="font-size: 0.8em;">
+                        <div class="fragment box-info" style="text-align: center; padding: 15px;">
+                            <p><strong>🔍 Pencarian</strong></p>
+                            <p class="small">Binary search memerlukan data terurut: O(log n)</p>
+                        </div>
+                        <div class="fragment box-info" style="text-align: center; padding: 15px;">
+                            <p><strong>📊 Analisis</strong></p>
+                            <p class="small">Statistik, median, percentile lebih mudah</p>
+                        </div>
+                        <div class="fragment box-info" style="text-align: center; padding: 15px;">
+                            <p><strong>🔗 Merge</strong></p>
+                            <p class="small">Penggabungan data terurut efisien: O(n)</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🎖️ Aplikasi di Bidang Pertahanan</h2>
+                    <ul style="font-size: 0.85em;">
+                        <li class="fragment"><strong>Sistem Radar:</strong> Mengurutkan target berdasarkan jarak/ancaman</li>
+                        <li class="fragment"><strong>Komunikasi Militer:</strong> Prioritas pesan berdasarkan urgensi</li>
+                        <li class="fragment"><strong>Logistik:</strong> Urutan pengiriman berdasarkan waktu/prioritas</li>
+                        <li class="fragment"><strong>Intelijen:</strong> Ranking data berdasarkan relevansi</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Klasifikasi Algoritma Sorting</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Kriteria</th>
+                            <th>Kategori</th>
+                            <th>Contoh</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Berbasis</strong></td>
+                            <td>Comparison / Non-comparison</td>
+                            <td>Quick Sort / Counting Sort</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Memory</strong></td>
+                            <td>In-place / Out-of-place</td>
+                            <td>Bubble Sort / Merge Sort</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Stabilitas</strong></td>
+                            <td>Stable / Unstable</td>
+                            <td>Insertion Sort / Selection Sort</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Adaptivitas</strong></td>
+                            <td>Adaptive / Non-adaptive</td>
+                            <td>Insertion Sort / Selection Sort</td>
+                        </tr>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 2: BUBBLE SORT ==================== -->
+            <section>
+                <section>
+                    <h2>📖 2. Bubble Sort</h2>
+                    <div class="box-definition">
+                        <p><strong>Bubble Sort</strong> bekerja dengan membandingkan dan menukar elemen berdekatan secara berulang hingga seluruh array terurut.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <blockquote style="font-size: 0.85em;">
+                            Elemen terbesar akan "menggelembung" (<em>bubble</em>) ke posisi akhir di setiap iterasi.
+                        </blockquote>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Algoritma Bubble Sort</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3-4|5-8|6-7">
+void bubbleSort(int arr[], int n) {
+    // Lakukan n-1 pass
+    for (int i = 0; i < n - 1; i++) {
+        // Bandingkan elemen berdekatan
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+            }
+        }
+    }
+}
+                    </code></pre>
+                    <p class="fragment small">Perhatikan: <code>n - 1 - i</code> karena elemen terakhir sudah terurut!</p>
+                </section>
+
+                <section>
+                    <h2>🔄 Visualisasi Bubble Sort</h2>
+                    <img src="images/p09-02-bubble-sort-process.png" alt="Bubble Sort Process" style="max-height: 350px;">
+                    <p class="small"><em>Gambar: Proses Bubble Sort pass demi pass</em></p>
+                </section>
+
+                <section>
+                    <h2>⚡ Optimasi: Early Termination</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|4|7|10-11">
+void bubbleSortOptimized(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        // Flag untuk deteksi swap
+        bool swapped = false;
+        
+        for (int j = 0; j < n - 1 - i; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        
+        // Jika tidak ada swap, array sudah terurut!
+        if (!swapped) break;
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>📊 Kompleksitas Bubble Sort</h2>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Kasus</th>
+                            <th>Kompleksitas</th>
+                            <th>Kondisi</th>
+                        </tr>
+                        <tr>
+                            <td><span class="success">Best Case</span></td>
+                            <td><span class="complexity-badge o1">O(n)</span></td>
+                            <td>Array sudah terurut (dengan optimasi)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-navy">Average Case</span></td>
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Array acak</td>
+                        </tr>
+                        <tr>
+                            <td><span class="warning">Worst Case</span></td>
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Array terurut terbalik</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 1em;">
+                        <strong>Space Complexity:</strong> <span class="complexity-badge o1">O(1)</span> — In-place algorithm
+                    </p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Bubble Sort</h2>
+                    <div class="quiz-question">
+                        <p><strong>Berapa kali swap dilakukan untuk mengurutkan [5, 3, 1] dengan Bubble Sort?</strong></p>
+                        <pre><code class="plaintext" data-trim>
+Array awal: [5, 3, 1]
+Pass 1: ?
+Pass 2: ?
+                        </code></pre>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban: 3 swap</strong></p>
+                        <p class="small">Pass 1: [5,3,1] → [3,5,1] → [3,1,5] (2 swap)<br>
+                        Pass 2: [3,1,5] → [1,3,5] (1 swap)</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 3: SELECTION SORT ==================== -->
+            <section>
+                <section>
+                    <h2>📖 3. Selection Sort</h2>
+                    <div class="box-definition">
+                        <p><strong>Selection Sort</strong> bekerja dengan mencari elemen minimum dari bagian yang belum terurut, lalu menukarnya dengan elemen pertama bagian tersebut.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <blockquote style="font-size: 0.85em;">
+                            "Pilih (<em>select</em>) yang terkecil, taruh di depan."
+                        </blockquote>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Algoritma Selection Sort</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3|5-9|12">
+void selectionSort(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int minIdx = i;  // Asumsi elemen i adalah minimum
+        
+        // Cari minimum di sisa array
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        
+        // Tukar jika minimum bukan di posisi i
+        if (minIdx != i) {
+            swap(arr[i], arr[minIdx]);
+        }
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🔄 Visualisasi Selection Sort</h2>
+                    <img src="images/p09-03-selection-sort-process.png" alt="Selection Sort Process" style="max-height: 350px;">
+                    <p class="small"><em>Gambar: Proses Selection Sort — mencari minimum dan menukar</em></p>
+                </section>
+
+                <section>
+                    <h2>📊 Kompleksitas Selection Sort</h2>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Kasus</th>
+                            <th>Kompleksitas</th>
+                            <th>Keterangan</th>
+                        </tr>
+                        <tr>
+                            <td><span class="success">Best Case</span></td>
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Tetap harus mencari minimum</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-navy">Average Case</span></td>
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Selalu sama</td>
+                        </tr>
+                        <tr>
+                            <td><span class="warning">Worst Case</span></td>
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Selalu sama</td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-success" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>✅ <strong>Keunggulan:</strong> Maksimum <strong>n-1 swap</strong> — cocok saat operasi swap mahal!</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Selection Sort</h2>
+                    <div class="quiz-question">
+                        <p><strong>Berapa kali swap (maksimum) yang dilakukan Selection Sort untuk array berukuran n?</strong></p>
+                        <p style="font-size: 0.8em;">A. n²  &nbsp;&nbsp; B. n log n  &nbsp;&nbsp; C. n-1  &nbsp;&nbsp; D. n</p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban: C. n-1</strong></p>
+                        <p class="small">Selection Sort melakukan maksimum n-1 swap (satu per iterasi outer loop).<br>
+                        Ini berbeda dengan Bubble Sort yang bisa melakukan banyak swap per pass.</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 4: INSERTION SORT ==================== -->
+            <section>
+                <section>
+                    <h2>📖 4. Insertion Sort</h2>
+                    <div class="box-definition">
+                        <p><strong>Insertion Sort</strong> membangun array terurut satu elemen pada satu waktu, dengan menyisipkan setiap elemen ke posisi yang tepat di bagian terurut.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <blockquote style="font-size: 0.85em;">
+                            Seperti <em>menyortir kartu</em> di tangan — ambil satu kartu, sisipkan di posisi yang benar.
+                        </blockquote>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Algoritma Insertion Sort</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-3|5-8|10">
+void insertionSort(int arr[], int n) {
+    for (int i = 1; i < n; i++) {
+        int key = arr[i];  // Elemen yang akan disisipkan
+        int j = i - 1;
+        
+        // Geser elemen yang lebih besar ke kanan
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        
+        arr[j + 1] = key;  // Sisipkan key di posisi yang tepat
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🔄 Visualisasi Insertion Sort</h2>
+                    <img src="images/p09-04-insertion-sort-process.png" alt="Insertion Sort Process" style="max-height: 350px;">
+                    <p class="small"><em>Gambar: Proses Insertion Sort — menyisipkan elemen ke posisi yang tepat</em></p>
+                </section>
+
+                <section>
+                    <h2>📊 Kompleksitas Insertion Sort</h2>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Kasus</th>
+                            <th>Kompleksitas</th>
+                            <th>Kondisi</th>
+                        </tr>
+                        <tr>
+                            <td><span class="success">Best Case</span></td>
+                            <td><span class="complexity-badge o1">O(n)</span></td>
+                            <td>Array sudah terurut</td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-navy">Average Case</span></td>
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Array acak</td>
+                        </tr>
+                        <tr>
+                            <td><span class="warning">Worst Case</span></td>
+                            <td><span class="complexity-badge on2">O(n²)</span></td>
+                            <td>Array terurut terbalik</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>⭐ Keunggulan Insertion Sort</h2>
+                    <div class="two-columns" style="font-size: 0.8em;">
+                        <div class="box-success">
+                            <p><strong>✅ Kelebihan:</strong></p>
+                            <ul class="small">
+                                <li><span class="highlight">Adaptive</span> — O(n) untuk data hampir terurut</li>
+                                <li><span class="highlight">Stable</span> — Menjaga urutan relatif</li>
+                                <li><span class="highlight">Online</span> — Bisa sort sambil menerima data</li>
+                                <li><span class="highlight">Efisien</span> — Untuk data kecil (n < 50)</li>
+                            </ul>
+                        </div>
+                        <div class="fragment box-warning">
+                            <p><strong>⚠️ Kekurangan:</strong></p>
+                            <ul class="small">
+                                <li>O(n²) untuk data besar</li>
+                                <li>Banyak operasi geser</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Insertion Sort</h2>
+                    <div class="quiz-question">
+                        <p><strong>Algoritma sorting mana yang paling efisien untuk array yang "hampir terurut"?</strong></p>
+                        <p style="font-size: 0.8em;">A. Bubble Sort &nbsp;&nbsp; B. Selection Sort &nbsp;&nbsp; C. Insertion Sort &nbsp;&nbsp; D. Semua sama</p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban: C. Insertion Sort</strong></p>
+                        <p class="small">Insertion Sort adalah <em>adaptive algorithm</em> — kompleksitasnya mendekati O(n) ketika data hampir terurut, karena inner loop hampir tidak berjalan.</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 5: STABLE VS UNSTABLE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 5. Stable vs Unstable Sort</h2>
+                    <div class="box-definition">
+                        <p><strong>Stable Sort</strong> mempertahankan urutan relatif elemen dengan kunci yang sama.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;"><strong>Contoh:</strong> Sort berdasarkan nilai, jaga urutan abjad</p>
+                        <pre><code class="plaintext" data-trim>
+Input:  [(A,3), (B,1), (C,3), (D,2)]
+Stable: [(B,1), (D,2), (A,3), (C,3)]  ← A sebelum C
+Unstable: [(B,1), (D,2), (C,3), (A,3)]  ← Urutan bisa berubah
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🔄 Visualisasi Stability</h2>
+                    <img src="images/p09-05-stable-vs-unstable.png" alt="Stable vs Unstable Sort" style="max-height: 320px;">
+                    <p class="small"><em>Gambar: Perbedaan stable dan unstable sort</em></p>
+                </section>
+
+                <section>
+                    <h2>📊 Stabilitas Algoritma</h2>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Algoritma</th>
+                            <th>Stabilitas</th>
+                            <th>Alasan</th>
+                        </tr>
+                        <tr>
+                            <td>Bubble Sort</td>
+                            <td><span class="success">✅ Stable</span></td>
+                            <td>Swap hanya jika <code>></code>, bukan <code>>=</code></td>
+                        </tr>
+                        <tr>
+                            <td>Selection Sort</td>
+                            <td><span class="warning">❌ Unstable</span></td>
+                            <td>Swap melewati elemen sama</td>
+                        </tr>
+                        <tr>
+                            <td>Insertion Sort</td>
+                            <td><span class="success">✅ Stable</span></td>
+                            <td>Geser hanya jika <code>></code>, bukan <code>>=</code></td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-info" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>💡 <strong>Tips:</strong> Stabilitas penting saat sorting dengan multiple keys (multi-level sorting).</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🎖️ Contoh: Sorting Personel Militer</h2>
+                    <p style="font-size: 0.8em;">Urutkan berdasarkan <strong>pangkat</strong>, lalu <strong>masa kerja</strong>:</p>
+                    <pre><code class="plaintext" data-trim style="font-size: 0.55em;">
+Input (urut abjad):
+  [("Andi", Sersan, 5th), ("Budi", Letnan, 3th), 
+   ("Citra", Sersan, 8th), ("Doni", Letnan, 5th)]
+
+1️⃣ Sort by masa kerja (stable):
+  [("Budi", Letnan, 3th), ("Andi", Sersan, 5th), 
+   ("Doni", Letnan, 5th), ("Citra", Sersan, 8th)]
+
+2️⃣ Sort by pangkat (stable):
+  [("Andi", Sersan, 5th), ("Citra", Sersan, 8th),  ← Sersan terurut by masa kerja
+   ("Budi", Letnan, 3th), ("Doni", Letnan, 5th)]  ← Letnan terurut by masa kerja
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 6: PERBANDINGAN ==================== -->
+            <section>
+                <section>
+                    <h2>📖 6. Perbandingan Algoritma</h2>
+                    <table style="font-size: 0.55em;">
+                        <tr>
+                            <th>Kriteria</th>
+                            <th>Bubble Sort</th>
+                            <th>Selection Sort</th>
+                            <th>Insertion Sort</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Best Case</strong></td>
+                            <td><span class="complexity-good">O(n)</span>*</td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-good">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Average Case</strong></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Worst Case</strong></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Space</strong></td>
+                            <td>O(1)</td>
+                            <td>O(1)</td>
+                            <td>O(1)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stable?</strong></td>
+                            <td><span class="success">Ya</span></td>
+                            <td><span class="warning">Tidak</span></td>
+                            <td><span class="success">Ya</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Adaptive?</strong></td>
+                            <td><span class="success">Ya</span>*</td>
+                            <td><span class="warning">Tidak</span></td>
+                            <td><span class="success">Ya</span></td>
+                        </tr>
+                    </table>
+                    <p class="small">* Dengan optimasi early termination</p>
+                </section>
+
+                <section>
+                    <h2>🤔 Kapan Menggunakan?</h2>
+                    <div class="three-columns" style="font-size: 0.75em;">
+                        <div class="fragment box-info" style="padding: 15px;">
+                            <p><strong>Bubble Sort</strong></p>
+                            <ul class="small">
+                                <li>Pembelajaran</li>
+                                <li>Deteksi sorted</li>
+                                <li>Data sangat kecil</li>
+                            </ul>
+                        </div>
+                        <div class="fragment box-success" style="padding: 15px;">
+                            <p><strong>Selection Sort</strong></p>
+                            <ul class="small">
+                                <li>Swap mahal</li>
+                                <li>Memori terbatas</li>
+                                <li>Jumlah write penting</li>
+                            </ul>
+                        </div>
+                        <div class="fragment box-warning" style="padding: 15px;">
+                            <p><strong>Insertion Sort</strong></p>
+                            <ul class="small">
+                                <li>Data hampir terurut</li>
+                                <li>Data kecil (n < 50)</li>
+                                <li>Online sorting</li>
+                                <li>Perlu stable sort</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📈 Perbandingan Visual</h2>
+                    <img src="images/p09-06-algorithm-selection-guide.png" alt="Algorithm Selection Guide" style="max-height: 350px;">
+                    <p class="small"><em>Gambar: Panduan pemilihan algoritma sorting</em></p>
+                </section>
+
+                <section>
+                    <h2>🎖️ Studi Kasus: Sistem Radar</h2>
+                    <div class="box-info" style="font-size: 0.8em;">
+                        <p><strong>Skenario:</strong> Sistem radar mendeteksi 20 target yang perlu diurutkan berdasarkan jarak dan tingkat ancaman.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;"><strong>Analisis:</strong></p>
+                        <ul style="font-size: 0.8em;">
+                            <li>Data kecil (n=20) → <span class="highlight">Insertion Sort</span> cocok</li>
+                            <li>Data mungkin sudah hampir terurut (update posisi) → <span class="highlight">Adaptive</span></li>
+                            <li>Perlu stable sort untuk multi-key → <span class="highlight">Insertion Sort</span></li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi: Sorting Radar Target</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.45em;">
+struct Target {
+    int id;
+    double jarak;      // km
+    int levelAncaman;  // 1-5
+};
+
+// Insertion Sort by levelAncaman (descending), then jarak (ascending)
+void sortTargetByPriority(Target arr[], int n) {
+    for (int i = 1; i < n; i++) {
+        Target key = arr[i];
+        int j = i - 1;
+        
+        // Compare: higher threat first, closer first
+        while (j >= 0 && 
+               (arr[j].levelAncaman < key.levelAncaman ||
+                (arr[j].levelAncaman == key.levelAncaman && 
+                 arr[j].jarak > key.jarak))) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Algoritma</th>
+                        <th>Cara Kerja</th>
+                        <th>Best/Worst</th>
+                        <th>Karakteristik</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Bubble Sort</span></td>
+                        <td>Bandingkan & tukar berdekatan</td>
+                        <td>O(n) / O(n²)</td>
+                        <td>Stable, Adaptive*</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Selection Sort</span></td>
+                        <td>Pilih minimum, taruh di depan</td>
+                        <td>O(n²) / O(n²)</td>
+                        <td>Unstable, Min swap</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Insertion Sort</span></td>
+                        <td>Sisipkan ke posisi yang tepat</td>
+                        <td>O(n) / O(n²)</td>
+                        <td>Stable, Adaptive, Online</td>
+                    </tr>
+                </table>
+                <div class="fragment" style="margin-top: 1em;">
+                    <p class="small"><strong>Key Takeaway:</strong> Untuk data kecil atau hampir terurut, <span class="highlight">Insertion Sort</span> adalah pilihan terbaik!</p>
+                </div>
+            </section>
+
+            <!-- ==================== PRAKTIKUM ==================== -->
+            <section>
+                <h2>🔬 Tugas Praktikum</h2>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Implementasikan ketiga algoritma sorting dalam C++</li>
+                    <li class="fragment">Buat fungsi untuk menghitung jumlah perbandingan dan swap</li>
+                    <li class="fragment">Uji dengan berbagai ukuran data: 10, 100, 1000, 10000</li>
+                    <li class="fragment">Uji dengan berbagai kondisi: sorted, reverse, random</li>
+                    <li class="fragment">Buat tabel dan grafik perbandingan performa</li>
+                </ol>
+                <div class="fragment box-info" style="font-size: 0.8em; margin-top: 1em;">
+                    <p>💡 <strong>Hint:</strong> Gunakan <code>chrono</code> untuk mengukur waktu eksekusi!</p>
+                </div>
+            </section>
+
+            <!-- ==================== PERTANYAAN ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.2 | Weiss Ch.7.2 | Hubbard Ch.13
+                </p>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 09: Algoritma Sorting Dasar</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
