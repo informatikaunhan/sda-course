@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 10: Algoritma Sorting Lanjut - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="css/unhan-theme.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🔀 Algoritma Sorting Lanjut</h1>
+                <h3>Merge Sort & Quick Sort</h3>
+                <p class="institution">Pertemuan 10</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Menjelaskan prinsip <span class="highlight">divide-and-conquer</span></li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">merge sort</span> dengan benar</li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">quick sort</span> dengan berbagai strategi pivot</li>
+                    <li class="fragment">Membandingkan performa kedua algoritma</li>
+                    <li class="fragment">Memilih algoritma sorting yang tepat berdasarkan karakteristik data</li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Bagian 1</h3>
+                        <ol style="font-size: 0.8em;">
+                            <li>Review Sorting Dasar</li>
+                            <li>Paradigma Divide-and-Conquer</li>
+                            <li>Merge Sort</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3>Bagian 2</h3>
+                        <ol start="4" style="font-size: 0.8em;">
+                            <li>Quick Sort</li>
+                            <li>Perbandingan & Lower Bound</li>
+                            <li>Pemilihan Algoritma</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== REVIEW SORTING DASAR ==================== -->
+            <section>
+                <section>
+                    <h2>📖 1. Keterbatasan Sorting Dasar</h2>
+                    <p>Algoritma sorting dari Pertemuan 9:</p>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Algoritma</th>
+                            <th>Best</th>
+                            <th>Average</th>
+                            <th>Worst</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Bubble Sort</td>
+                            <td>O(n)</td>
+                            <td class="warning">O(n²)</td>
+                            <td class="warning">O(n²)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Selection Sort</td>
+                            <td class="warning">O(n²)</td>
+                            <td class="warning">O(n²)</td>
+                            <td class="warning">O(n²)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Insertion Sort</td>
+                            <td>O(n)</td>
+                            <td class="warning">O(n²)</td>
+                            <td class="warning">O(n²)</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 1em;">O(n²) tidak praktis untuk dataset besar!</p>
+                </section>
+
+                <section>
+                    <h2>⚠️ Masalah dengan O(n²)</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Jumlah Elemen</th>
+                            <th>O(n²) Operasi</th>
+                            <th>O(n log n) Operasi</th>
+                            <th>Rasio</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>1,000</td>
+                            <td class="warning">1,000,000</td>
+                            <td class="success">~10,000</td>
+                            <td>100×</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>10,000</td>
+                            <td class="warning">100,000,000</td>
+                            <td class="success">~133,000</td>
+                            <td>750×</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>1,000,000</td>
+                            <td class="warning">10¹²</td>
+                            <td class="success">~20,000,000</td>
+                            <td>50,000×</td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-info" style="margin-top: 1em; font-size: 0.8em;">
+                        <p>🎖️ <strong>Konteks Pertahanan:</strong> Sistem radar yang mendeteksi ribuan objek butuh O(n log n)!</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== DIVIDE AND CONQUER ==================== -->
+            <section>
+                <section>
+                    <h2>📖 2. Paradigma Divide-and-Conquer</h2>
+                    <div class="box-definition">
+                        <p><strong>Divide-and-Conquer</strong> adalah strategi memecah masalah besar menjadi sub-masalah lebih kecil, menyelesaikan secara rekursif, lalu menggabungkan solusinya.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Tiga Langkah D&C</h2>
+                    <div class="three-columns" style="font-size: 0.8em;">
+                        <div class="fragment box-danger" style="text-align: center; padding: 15px;">
+                            <p><strong>1️⃣ DIVIDE</strong></p>
+                            <p class="small">Pecah masalah menjadi sub-masalah lebih kecil</p>
+                        </div>
+                        <div class="fragment box-success" style="text-align: center; padding: 15px;">
+                            <p><strong>2️⃣ CONQUER</strong></p>
+                            <p class="small">Selesaikan sub-masalah secara rekursif</p>
+                        </div>
+                        <div class="fragment box-info" style="text-align: center; padding: 15px;">
+                            <p><strong>3️⃣ COMBINE</strong></p>
+                            <p class="small">Gabungkan solusi menjadi solusi akhir</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Visualisasi Divide-and-Conquer</h2>
+                    <img src="images/p10-01-divide-and-conquer.png" alt="Divide and Conquer" style="max-height: 380px;">
+                    <p class="small"><em>Gambar 10.1: Paradigma divide-and-conquer</em></p>
+                </section>
+
+                <section>
+                    <h2>Algoritma Sorting O(n log n)</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Algoritma</th>
+                            <th>Waktu</th>
+                            <th>Ruang</th>
+                            <th>Stable</th>
+                            <th>In-place</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Merge Sort</span></td>
+                            <td class="success">O(n log n)</td>
+                            <td class="warning">O(n)</td>
+                            <td>✅ Ya</td>
+                            <td>❌ Tidak</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Quick Sort</span></td>
+                            <td class="success">O(n log n)*</td>
+                            <td class="success">O(log n)</td>
+                            <td>❌ Tidak</td>
+                            <td>✅ Ya</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small">* rata-rata, worst case O(n²)</p>
+                </section>
+            </section>
+
+            <!-- ==================== MERGE SORT ==================== -->
+            <section>
+                <section>
+                    <h2>📖 3. Merge Sort</h2>
+                    <div class="box-definition">
+                        <p><strong>Merge Sort</strong> membagi array menjadi dua bagian, mengurutkan masing-masing secara rekursif, kemudian menggabungkan (<em>merge</em>) kedua bagian yang sudah terurut.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Langkah Merge Sort</h2>
+                    <ol style="font-size: 0.85em;">
+                        <li class="fragment"><strong>Divide:</strong> Bagi array menjadi 2 bagian sama besar</li>
+                        <li class="fragment"><strong>Conquer:</strong> Urutkan kedua bagian secara rekursif</li>
+                        <li class="fragment"><strong>Combine:</strong> Gabungkan (merge) kedua bagian terurut</li>
+                    </ol>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p class="small"><strong>Base case:</strong> Array dengan 0 atau 1 elemen sudah terurut</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Visualisasi Merge Sort</h2>
+                    <img src="images/p10-02-merge-sort-process.png" alt="Merge Sort Process" style="max-height: 400px;">
+                    <p class="small"><em>Gambar 10.2: Proses merge sort pada [38, 27, 43, 3, 9, 82, 10]</em></p>
+                </section>
+
+                <section>
+                    <h2>💻 Fungsi Merge</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|1-3|5-10|12-21" style="font-size: 0.45em;">
+void merge(int arr[], int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    int* L = new int[n1];
+    int* R = new int[n2];
+    
+    for (int i = 0; i < n1; i++) L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++) R[j] = arr[mid + 1 + j];
+    
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) arr[k++] = L[i++];
+        else arr[k++] = R[j++];
+    }
+    while (i < n1) arr[k++] = L[i++];
+    while (j < n2) arr[k++] = R[j++];
+    
+    delete[] L; delete[] R;
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Merge Sort</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2|4|6-7|9">
+void mergeSort(int arr[], int left, int right) {
+    if (left < right) {
+        // Cari titik tengah
+        int mid = left + (right - left) / 2;
+        
+        // Rekursi kiri dan kanan
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        
+        // Gabungkan
+        merge(arr, left, mid, right);
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Analisis Kompleksitas Merge Sort</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p><strong>Recurrence Relation:</strong></p>
+                        <p style="text-align: center; font-size: 1.2em;"><code>T(n) = 2T(n/2) + O(n)</code></p>
+                    </div>
+                    <table class="fragment" style="font-size: 0.75em; margin-top: 1em;">
+                        <tr>
+                            <th>Kasus</th>
+                            <th>Kompleksitas Waktu</th>
+                        </tr>
+                        <tr>
+                            <td>Best Case</td>
+                            <td class="success">O(n log n)</td>
+                        </tr>
+                        <tr>
+                            <td>Average Case</td>
+                            <td class="success">O(n log n)</td>
+                        </tr>
+                        <tr>
+                            <td>Worst Case</td>
+                            <td class="success">O(n log n)</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small"><strong>Ruang:</strong> O(n) untuk array temporary</p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Merge Sort</h2>
+                    <div class="quiz-question">
+                        <p><strong>Berapa jumlah operasi merge untuk mengurutkan array 8 elemen?</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban: 7 operasi merge</strong></p>
+                        <p class="small">Formula: n - 1 = 8 - 1 = 7</p>
+                        <p class="small">Level 2→1: 4 merge, Level 1→0: 2 merge, Level 0: 1 merge</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== QUICK SORT ==================== -->
+            <section>
+                <section>
+                    <h2>📖 4. Quick Sort</h2>
+                    <div class="box-definition">
+                        <p><strong>Quick Sort</strong> memilih elemen sebagai <span class="highlight">pivot</span>, mempartisi array sehingga elemen lebih kecil di kiri dan lebih besar di kanan, lalu rekursi.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Langkah Quick Sort</h2>
+                    <ol style="font-size: 0.85em;">
+                        <li class="fragment"><strong>Pilih Pivot:</strong> Pilih satu elemen sebagai pivot</li>
+                        <li class="fragment"><strong>Partition:</strong> Susun ulang array:
+                            <ul class="small">
+                                <li>Elemen &lt; pivot → kiri</li>
+                                <li>Elemen &gt; pivot → kanan</li>
+                            </ul>
+                        </li>
+                        <li class="fragment"><strong>Rekursi:</strong> Terapkan quick sort pada subarray kiri dan kanan</li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>Visualisasi Quick Sort</h2>
+                    <img src="images/p10-03-quick-sort-process.png" alt="Quick Sort Process" style="max-height: 380px;">
+                    <p class="small"><em>Gambar 10.3: Proses quick sort dengan pivot terakhir</em></p>
+                </section>
+
+                <section>
+                    <h2>💻 Fungsi Partition (Lomuto)</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2|3|5-10|12-13">
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];  // Pivot = elemen terakhir
+    int i = low - 1;
+    
+    for (int j = low; j < high; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    
+    swap(arr[i + 1], arr[high]);
+    return i + 1;  // Posisi pivot
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Proses Partition</h2>
+                    <img src="images/p10-04-partition-process.png" alt="Partition Process" style="max-height: 380px;">
+                    <p class="small"><em>Gambar 10.4: Langkah-langkah partition (Lomuto scheme)</em></p>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Quick Sort</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2|4|6-7">
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        // Partisi dan dapatkan posisi pivot
+        int pivotIndex = partition(arr, low, high);
+        
+        // Rekursi kiri dan kanan (tanpa pivot)
+        quickSort(arr, low, pivotIndex - 1);
+        quickSort(arr, pivotIndex + 1, high);
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Strategi Pemilihan Pivot</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Strategi</th>
+                            <th>Kelebihan</th>
+                            <th>Kekurangan</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>First/Last</strong></td>
+                            <td>Sederhana</td>
+                            <td class="warning">O(n²) pada data terurut</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Random</strong></td>
+                            <td>Menghindari worst case</td>
+                            <td>Butuh random generator</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Median-of-Three</span></td>
+                            <td>Balance yang baik</td>
+                            <td>Sedikit overhead</td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-success" style="margin-top: 1em; font-size: 0.8em;">
+                        <p>✅ <strong>Rekomendasi:</strong> Gunakan Median-of-Three atau Random</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Analisis Kompleksitas Quick Sort</h2>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Kasus</th>
+                            <th>Kompleksitas</th>
+                            <th>Kondisi</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Best Case</td>
+                            <td class="success">O(n log n)</td>
+                            <td>Pivot selalu di tengah</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Average Case</td>
+                            <td class="success">O(n log n)</td>
+                            <td>Pivot cukup seimbang</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Worst Case</td>
+                            <td class="warning">O(n²)</td>
+                            <td>Pivot selalu min/max</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 1em;"><strong>Ruang:</strong> O(log n) untuk call stack (rata-rata)</p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Quick Sort Partition</h2>
+                    <div class="quiz-question">
+                        <p><strong>Untuk array [7, 2, 1, 6, 8, 5, 3, 4] dengan pivot = 4 (terakhir), di posisi mana pivot setelah partition?</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban: Index 3</strong></p>
+                        <p class="small">Elemen &lt; 4: [2, 1, 3] → 3 elemen di kiri</p>
+                        <p class="small">Hasil: [2, 1, 3, <span class="highlight">4</span>, 8, 5, 7, 6]</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PERBANDINGAN ==================== -->
+            <section>
+                <section>
+                    <h2>📖 5. Merge Sort vs Quick Sort</h2>
+                    <img src="images/p10-05-merge-vs-quick.png" alt="Merge vs Quick Sort" style="max-height: 380px;">
+                    <p class="small"><em>Gambar 10.5: Perbandingan karakteristik merge sort dan quick sort</em></p>
+                </section>
+
+                <section>
+                    <h2>Tabel Perbandingan</h2>
+                    <table style="font-size: 0.6em;">
+                        <tr>
+                            <th>Aspek</th>
+                            <th>Merge Sort</th>
+                            <th>Quick Sort</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Worst Case</strong></td>
+                            <td class="success">O(n log n)</td>
+                            <td class="warning">O(n²)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Space</strong></td>
+                            <td class="warning">O(n)</td>
+                            <td class="success">O(log n)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Stable</strong></td>
+                            <td class="success">Ya</td>
+                            <td class="warning">Tidak</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>In-place</strong></td>
+                            <td class="warning">Tidak</td>
+                            <td class="success">Ya</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Cache</strong></td>
+                            <td>Kurang baik</td>
+                            <td class="success">Baik</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Kapan Menggunakan?</h2>
+                    <div class="two-columns" style="font-size: 0.8em;">
+                        <div class="fragment box-info">
+                            <p><strong>Pilih Merge Sort:</strong></p>
+                            <ul class="small">
+                                <li>Butuh <span class="highlight">stable sort</span></li>
+                                <li>Data di linked list</li>
+                                <li>External sorting (disk)</li>
+                                <li>Worst case O(n²) tidak boleh</li>
+                            </ul>
+                        </div>
+                        <div class="fragment box-success">
+                            <p><strong>Pilih Quick Sort:</strong></p>
+                            <ul class="small">
+                                <li>Memori terbatas</li>
+                                <li>Data di array (cache-friendly)</li>
+                                <li>Internal sorting</li>
+                                <li>Performa rata-rata penting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Lower Bound: Ω(n log n)</h2>
+                    <div class="box-definition" style="font-size: 0.85em;">
+                        <p>Untuk <strong>comparison-based sorting</strong>, tidak mungkin lebih cepat dari Ω(n log n) pada kasus terburuk.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;"><strong>Penjelasan (Decision Tree):</strong></p>
+                        <ul style="font-size: 0.8em;">
+                            <li>n! kemungkinan permutasi</li>
+                            <li>Butuh n! daun di decision tree</li>
+                            <li>Tinggi minimum: log₂(n!) = Ω(n log n)</li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== PEMILIHAN ALGORITMA ==================== -->
+            <section>
+                <section>
+                    <h2>📖 6. Pemilihan Algoritma</h2>
+                    <img src="images/p10-07-algorithm-selection.png" alt="Algorithm Selection Flowchart" style="max-height: 400px;">
+                    <p class="small"><em>Gambar 10.7: Flowchart pemilihan algoritma sorting</em></p>
+                </section>
+
+                <section>
+                    <h2>Panduan Praktis</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Kondisi</th>
+                            <th>Rekomendasi</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>n &lt; 50</td>
+                            <td><span class="highlight">Insertion Sort</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Data hampir terurut</td>
+                            <td><span class="highlight">Insertion Sort</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Butuh stable sort</td>
+                            <td><span class="highlight">Merge Sort</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Memori terbatas</td>
+                            <td><span class="highlight">Quick Sort</span> atau <span class="highlight">Heap Sort</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Worst case tidak boleh buruk</td>
+                            <td><span class="highlight">Merge Sort</span> atau <span class="highlight">Heap Sort</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Performa rata-rata optimal</td>
+                            <td><span class="highlight">Quick Sort</span></td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>🎖️ Aplikasi Pertahanan</h2>
+                    <div class="box-info" style="font-size: 0.8em;">
+                        <p><strong>Sistem Radar Tracking:</strong></p>
+                        <ul>
+                            <li>Ribuan objek terdeteksi per detik</li>
+                            <li>Harus diurutkan berdasarkan prioritas ancaman</li>
+                            <li><span class="highlight">Quick Sort</span> untuk kecepatan rata-rata</li>
+                            <li>Atau <span class="highlight">Merge Sort</span> jika butuh worst-case guarantee</li>
+                        </ul>
+                    </div>
+                    <div class="fragment box-warning" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>⚠️ Sistem kritis sebaiknya gunakan <strong>Introsort</strong> (hybrid quick+heap+insertion)</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Introsort: Algoritma Hybrid</h2>
+                    <div class="box-definition" style="font-size: 0.85em;">
+                        <p><strong>Introsort</strong> = Quick Sort + Heap Sort + Insertion Sort</p>
+                    </div>
+                    <ul style="font-size: 0.8em;" class="fragment">
+                        <li>Mulai dengan Quick Sort</li>
+                        <li>Jika rekursi terlalu dalam → switch ke Heap Sort</li>
+                        <li>Untuk partisi kecil → gunakan Insertion Sort</li>
+                    </ul>
+                    <p class="fragment small" style="margin-top: 1em;">Digunakan oleh: <code>std::sort()</code> di C++ STL</p>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Konsep</th>
+                        <th>Poin Penting</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Divide-and-Conquer</span></td>
+                        <td>Bagi → Taklukkan → Gabungkan</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Merge Sort</span></td>
+                        <td>O(n log n) selalu, O(n) ruang, stable</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Quick Sort</span></td>
+                        <td>O(n log n) rata-rata, O(log n) ruang, in-place</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Pivot Selection</span></td>
+                        <td>Median-of-three atau random untuk menghindari O(n²)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Lower Bound</span></td>
+                        <td>Comparison-based sorting minimal Ω(n log n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Introsort</span></td>
+                        <td>Hybrid: Quick + Heap + Insertion (C++ std::sort)</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== PERTANYAAN ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.7-8 | Weiss Ch.7.4-7.7 | Hubbard Ch.13
+                </p>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 10 — Algoritma Sorting Lanjut</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
