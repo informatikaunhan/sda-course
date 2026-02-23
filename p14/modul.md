@@ -72,7 +72,7 @@ table[key] = -1;  // atau nilai sentinel
 
 > **Definisi:** **Hashing** adalah teknik memetakan key dari domain yang besar ke domain yang lebih kecil menggunakan **fungsi hash** h(k).
 
-![Konsep Hashing](images/gambar-14-1.png)
+![Konsep Hashing](images/p14-01-konsep-hashing.png)
 
 *Gambar 14.1: Konsep dasar hashing — memetakan key ke index array*
 
@@ -387,7 +387,7 @@ int hashMult(int key, int m) {
 
 > **Definisi:** **Collision** terjadi ketika dua key berbeda k1 ≠ k2 menghasilkan hash value yang sama: h(k1) = h(k2).
 
-![Collision pada Hash Table](images/gambar-14-2.png)
+![Collision pada Hash Table](images/p14-02-collision-ilustrasi.png))
 
 *Gambar 14.2: Ilustrasi collision — dua key berbeda dipetakan ke slot yang sama*
 
@@ -490,7 +490,7 @@ P(collision) ≈ 1 - e^(-(10000)²/(2×10000))
 
 > **Definisi:** **Separate Chaining** menyimpan semua key yang memetakan ke slot yang sama dalam linked list di slot tersebut.
 
-![Separate Chaining](images/gambar-14-3.png)
+![Separate Chaining](images/p14-03-separate-chaining.png)
 
 *Gambar 14.3: Hash table dengan separate chaining*
 
@@ -794,7 +794,7 @@ h(k, i) = (h'(k) + i) mod m
 
 di mana i = 0, 1, 2, 3, ... (nomor percobaan)
 
-![Linear Probing](images/gambar-14-4.png)
+![Linear Probing](images/p14-04-linear-probing.png)
 
 *Gambar 14.4: Linear probing — mencari slot kosong secara sekuensial*
 
