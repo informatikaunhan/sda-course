@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 14: Hash Table - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="css/unhan-theme.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🗂️ Hash Table</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 14</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Menjelaskan konsep <span class="highlight">hashing</span> dan keunggulannya</li>
+                    <li class="fragment">Merancang <span class="highlight">fungsi hash</span> yang baik</li>
+                    <li class="fragment">Mengidentifikasi penyebab <span class="warning">collision</span></li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">separate chaining</span></li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">open addressing</span></li>
+                    <li class="fragment">Menganalisis kompleksitas operasi hash table</li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Bagian 1</h3>
+                        <ol style="font-size: 0.75em;">
+                            <li>Motivasi & Konsep Hashing</li>
+                            <li>Fungsi Hash</li>
+                            <li>Collision</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3>Bagian 2</h3>
+                        <ol start="4" style="font-size: 0.75em;">
+                            <li>Separate Chaining</li>
+                            <li>Open Addressing</li>
+                            <li>Load Factor & Rehashing</li>
+                            <li>Aplikasi</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== BAGIAN 1: MOTIVASI ==================== -->
+            <section>
+                <section>
+                    <h2>📖 1. Motivasi Hash Table</h2>
+                    <p>Permasalahan: Menyimpan & mengakses data personel berdasarkan NIK</p>
+                    <table style="font-size: 0.7em; margin-top: 1em;">
+                        <tr>
+                            <th>Struktur Data</th>
+                            <th>Search</th>
+                            <th>Masalah</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Array unsorted</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                            <td>Terlalu lambat</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Array sorted</td>
+                            <td><span class="complexity-badge ologn">O(log n)</span></td>
+                            <td>Insert/Delete lambat</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>BST balanced</td>
+                            <td><span class="complexity-badge ologn">O(log n)</span></td>
+                            <td>Bisa tidak seimbang</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Hash Table</span></td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td>✓ Ideal!</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Direct Addressing</h2>
+                    <p>Ide: Gunakan key sebagai index array langsung</p>
+                    <pre><code class="cpp" data-trim style="font-size: 0.55em;">
+int table[1000];
+
+// Insert
+table[key] = value;   // O(1)
+
+// Search
+return table[key];    // O(1)
+
+// Delete
+table[key] = -1;      // O(1)
+                    </code></pre>
+                    <div class="fragment box-danger" style="font-size: 0.8em; margin-top: 0.5em;">
+                        <p>⚠️ <strong>Masalah:</strong> NIK 16 digit → perlu array 10^16 slot!</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Konsep Hashing</h2>
+                    <div class="box-definition">
+                        <p><strong>Hashing</strong> adalah teknik memetakan key dari domain besar ke domain lebih kecil menggunakan <span class="highlight">fungsi hash</span> h(k).</p>
+                    </div>
+                    <img src="images/p14-01-konsep-hashing.png" alt="Konsep Hashing" style="max-height: 280px; margin-top: 0.5em;">
+                    <p class="small"><em>Gambar 14.1: Konsep dasar hashing</em></p>
+                </section>
+
+                <section>
+                    <h2>Komponen Hash Table</h2>
+                    <div class="three-columns" style="font-size: 0.8em;">
+                        <div class="fragment box-info" style="text-align: center; padding: 15px;">
+                            <p><strong>📦 Array</strong></p>
+                            <p class="small">Ukuran m (bucket/slot)</p>
+                        </div>
+                        <div class="fragment box-success" style="text-align: center; padding: 15px;">
+                            <p><strong>⚙️ Fungsi Hash</strong></p>
+                            <p class="small">h: U → {0,1,...,m-1}</p>
+                        </div>
+                        <div class="fragment box-warning" style="text-align: center; padding: 15px;">
+                            <p><strong>🔧 Collision Handling</strong></p>
+                            <p class="small">Jika h(k₁) = h(k₂)</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 2: FUNGSI HASH ==================== -->
+            <section>
+                <section>
+                    <h2>📖 2. Fungsi Hash</h2>
+                    <h3>Karakteristik Fungsi Hash yang Baik</h3>
+                    <ol style="font-size: 0.85em;">
+                        <li class="fragment"><strong>Deterministic:</strong> Key sama → hash sama</li>
+                        <li class="fragment"><strong>Uniform Distribution:</strong> Menyebar merata</li>
+                        <li class="fragment"><strong>Efficient:</strong> Cepat dihitung O(1)</li>
+                        <li class="fragment"><strong>Minimize Collision:</strong> Key berbeda → hash berbeda</li>
+                    </ol>
+                </section>
+
+                <section>
+                    <h2>Division Method</h2>
+                    <div class="box-definition">
+                        <p><strong>h(k) = k mod m</strong></p>
+                    </div>
+                    <pre><code class="cpp" data-trim>
+int hashDivision(int key, int m) {
+    return key % m;
+}
+
+// h(12345) dengan m = 97
+// = 12345 % 97 = 70
+                    </code></pre>
+                    <div class="fragment box-info" style="font-size: 0.8em; margin-top: 0.5em;">
+                        <p>💡 <strong>Tips:</strong> Pilih m = bilangan prima (97, 193, 389, ...)</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Multiplication Method</h2>
+                    <div class="box-definition">
+                        <p><strong>h(k) = floor(m × (k × A mod 1))</strong></p>
+                        <p class="small">A ≈ 0.618 (golden ratio)</p>
+                    </div>
+                    <pre><code class="cpp" data-trim style="font-size: 0.55em;">
+int hashMultiplication(int key, int m) {
+    const double A = 0.6180339887;
+    double temp = key * A;
+    temp = temp - (int)temp;  // Bagian fraksional
+    return (int)(m * temp);
+}
+                    </code></pre>
+                    <p class="fragment small">Keuntungan: Nilai m tidak kritis, bisa power of 2</p>
+                </section>
+
+                <section>
+                    <h2>Hash untuk String</h2>
+                    <p>Polynomial Rolling Hash:</p>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+unsigned long hashString(const string& key, int m) {
+    unsigned long hash = 0;
+    unsigned long base = 31;  // Bilangan prima
+    
+    for (char c : key) {
+        hash = (hash * base + c) % m;
+    }
+    
+    return hash;
+}
+
+// hash("abc", 100) = 54
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Fungsi Hash</h2>
+                    <div class="quiz-question">
+                        <p><strong>Mengapa m = 100 bukan pilihan baik untuk division method?</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p>Karena m = 100 = 10² hanya menggunakan <strong>2 digit terakhir</strong> key:</p>
+                        <ul class="small">
+                            <li>h(123456) = 56</li>
+                            <li>h(789456) = 56 → Collision!</li>
+                            <li>Tidak memanfaatkan informasi digit lain</li>
+                        </ul>
+                        <p class="highlight">Solusi: Gunakan bilangan prima (97, 101)</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 3: COLLISION ==================== -->
+            <section>
+                <section>
+                    <h2>📖 3. Collision</h2>
+                    <div class="box-definition">
+                        <p><strong>Collision</strong> terjadi ketika dua key berbeda k₁ ≠ k₂ menghasilkan hash value sama: <span class="warning">h(k₁) = h(k₂)</span></p>
+                    </div>
+                    <img src="images/p14-02-collision-ilustrasi.png" alt="Collision" style="max-height: 250px; margin-top: 0.5em;">
+                    <p class="small"><em>Gambar 14.2: Ilustrasi collision</em></p>
+                </section>
+
+                <section>
+                    <h2>Mengapa Collision Pasti Terjadi?</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p><strong>Pigeonhole Principle:</strong></p>
+                        <p>Jika n item dimasukkan ke m slot (n &gt; m), minimal satu slot berisi lebih dari satu item.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p><strong>Birthday Paradox:</strong></p>
+                        <p class="small">Dalam grup 23 orang, P(2 orang birthday sama) &gt; 50%!</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Dua Pendekatan Collision Handling</h2>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Pendekatan</th>
+                            <th>Teknik</th>
+                            <th>Ide Dasar</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Separate Chaining</span></td>
+                            <td>Linked List</td>
+                            <td>Chain di setiap slot</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="text-navy">Open Addressing</span></td>
+                            <td>Probing</td>
+                            <td>Cari slot kosong lain</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Contoh Collision</h2>
+                    <p>h(k) = k mod 7</p>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Key</th>
+                            <th>Hash</th>
+                            <th>Status</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>3</td>
+                            <td>3 mod 7 = <span class="highlight">3</span></td>
+                            <td>OK</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>10</td>
+                            <td>10 mod 7 = <span class="highlight">3</span></td>
+                            <td class="warning">Collision!</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>17</td>
+                            <td>17 mod 7 = <span class="highlight">3</span></td>
+                            <td class="warning">Collision!</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>24</td>
+                            <td>24 mod 7 = <span class="highlight">3</span></td>
+                            <td class="warning">Collision!</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small">Pola: Semua key bentuk 7k + 3 collision di slot 3</p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 4: SEPARATE CHAINING ==================== -->
+            <section>
+                <section>
+                    <h2>📖 4. Separate Chaining</h2>
+                    <div class="box-definition">
+                        <p><strong>Separate Chaining</strong> menyimpan semua key dengan hash sama dalam <span class="highlight">linked list</span> di slot tersebut.</p>
+                    </div>
+                    <img src="images/p14-03-separate-chaining.png" alt="Separate Chaining" style="max-height: 280px; margin-top: 0.5em;">
+                    <p class="small"><em>Gambar 14.3: Hash table dengan separate chaining</em></p>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Insert</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|4-5|7-12|14-15" style="font-size: 0.45em;">
+void insert(int key, const string& value) {
+    int index = hash(key);
+    
+    // Cek apakah key sudah ada
+    for (auto& pair : table[index]) {
+        if (pair.first == key) {
+            pair.second = value;  // Update
+            return;
+        }
+    }
+    
+    // Key belum ada, tambahkan
+    table[index].push_back({key, value});
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Search & Delete</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.45em;">
+// Search
+string* search(int key) {
+    int index = hash(key);
+    for (auto& pair : table[index]) {
+        if (pair.first == key) {
+            return &pair.second;
+        }
+    }
+    return nullptr;  // Not found
+}
+
+// Delete
+bool remove(int key) {
+    int index = hash(key);
+    for (auto it = table[index].begin(); it != table[index].end(); ++it) {
+        if (it->first == key) {
+            table[index].erase(it);
+            return true;
+        }
+    }
+    return false;
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Kompleksitas Separate Chaining</h2>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Average</th>
+                            <th>Worst Case</th>
+                        </tr>
+                        <tr>
+                            <td>Insert</td>
+                            <td><span class="complexity-badge o1">O(1)</span></td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td><span class="complexity-badge o1">O(1 + α)</span></td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Delete</td>
+                            <td><span class="complexity-badge o1">O(1 + α)</span></td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                        </tr>
+                    </table>
+                    <p class="fragment" style="margin-top: 0.5em;">α = n/m adalah <span class="highlight">load factor</span></p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 5: OPEN ADDRESSING ==================== -->
+            <section>
+                <section>
+                    <h2>📖 5. Open Addressing</h2>
+                    <div class="box-definition">
+                        <p><strong>Open Addressing</strong> menyimpan semua elemen dalam array. Jika slot terisi, cari slot kosong dengan <span class="highlight">probing</span>.</p>
+                    </div>
+                    <table style="font-size: 0.7em; margin-top: 1em;">
+                        <tr>
+                            <th>Aspek</th>
+                            <th>Separate Chaining</th>
+                            <th>Open Addressing</th>
+                        </tr>
+                        <tr>
+                            <td>Struktur tambahan</td>
+                            <td>Linked list</td>
+                            <td>Tidak ada</td>
+                        </tr>
+                        <tr>
+                            <td>Load factor max</td>
+                            <td>&gt; 1</td>
+                            <td>≤ 1</td>
+                        </tr>
+                        <tr>
+                            <td>Cache performance</td>
+                            <td>Buruk</td>
+                            <td>Baik</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Linear Probing</h2>
+                    <div class="box-definition">
+                        <p><strong>h(k, i) = (h'(k) + i) mod m</strong></p>
+                        <p class="small">i = 0, 1, 2, 3, ... (nomor percobaan)</p>
+                    </div>
+                    <img src="images/p14-04-linear-probing.png" alt="Linear Probing" style="max-height: 230px; margin-top: 0.5em;">
+                    <p class="small"><em>Gambar 14.4: Linear probing</em></p>
+                </section>
+
+                <section>
+                    <h2>💻 Insert dengan Linear Probing</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|5-7|9-13|15-17" style="font-size: 0.42em;">
+bool insert(int key, const string& value) {
+    int index = hash(key);
+    int i = 0;
+    
+    do {
+        int probeIndex = (index + i) % size;
+        
+        // Slot kosong - bisa insert
+        if (!occupied[probeIndex]) {
+            keys[probeIndex] = key;
+            values[probeIndex] = value;
+            occupied[probeIndex] = true;
+            return true;
+        }
+        
+        // Linear probe: cek slot berikutnya
+        i++;
+        
+    } while (i < size);
+    
+    return false;  // Table penuh
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Masalah: Primary Clustering</h2>
+                    <div class="box-danger" style="font-size: 0.85em;">
+                        <p><strong>Primary Clustering:</strong> Terbentuknya cluster (kelompok slot terisi berurutan) yang semakin besar.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p>Jika ada cluster panjang k:</p>
+                        <ul class="small">
+                            <li>Key baru yang hash ke salah satu slot → cluster jadi k+1</li>
+                            <li>Probe sequence makin panjang</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Quadratic Probing</h2>
+                    <div class="box-definition">
+                        <p><strong>h(k, i) = (h'(k) + c₁·i + c₂·i²) mod m</strong></p>
+                        <p class="small">Bentuk sederhana: h(k, i) = (h'(k) + i²) mod m</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p>Probe sequence untuk h'(k) = 5, m = 11:</p>
+                        <table style="font-size: 0.65em;">
+                            <tr>
+                                <th>i</th>
+                                <th>0</th>
+                                <th>1</th>
+                                <th>2</th>
+                                <th>3</th>
+                                <th>4</th>
+                            </tr>
+                            <tr>
+                                <td>Slot</td>
+                                <td>5</td>
+                                <td>6</td>
+                                <td>9</td>
+                                <td>3</td>
+                                <td>10</td>
+                            </tr>
+                        </table>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Double Hashing</h2>
+                    <div class="box-definition">
+                        <p><strong>h(k, i) = (h₁(k) + i · h₂(k)) mod m</strong></p>
+                    </div>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+int h1(int k) { return k % m; }
+int h2(int k) { return 1 + (k % (m-1)); }
+
+int doubleHash(int k, int i, int m) {
+    return (h1(k) + i * h2(k)) % m;
+}
+                    </code></pre>
+                    <p class="fragment small" style="margin-top: 0.5em;">
+                        ✓ Menghindari clustering<br>
+                        ✓ Distribusi probe lebih merata
+                    </p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Linear Probing</h2>
+                    <div class="quiz-question">
+                        <p><strong>Insert key 10, 22, 31, 4, 15 ke hash table m=11, h(k)=k mod 11.</strong></p>
+                        <p class="small">Di mana posisi akhir key 15?</p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <table style="font-size: 0.6em;">
+                            <tr>
+                                <th>Key</th>
+                                <th>h(k)</th>
+                                <th>Probes</th>
+                                <th>Position</th>
+                            </tr>
+                            <tr><td>10</td><td>10</td><td>10</td><td>10</td></tr>
+                            <tr><td>22</td><td>0</td><td>0</td><td>0</td></tr>
+                            <tr><td>31</td><td>9</td><td>9</td><td>9</td></tr>
+                            <tr><td>4</td><td>4</td><td>4</td><td>4</td></tr>
+                            <tr><td class="highlight">15</td><td>4</td><td>4→5</td><td class="highlight">5</td></tr>
+                        </table>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Lazy Deletion</h2>
+                    <div class="box-warning" style="font-size: 0.8em;">
+                        <p><strong>Masalah:</strong> Hard delete di open addressing merusak probe sequence!</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em; font-size: 0.8em;">
+                        <p><strong>Solusi:</strong> Tandai slot sebagai "DELETED" bukan "EMPTY"</p>
+                        <ul class="small">
+                            <li>Search: lanjut probing melewati DELETED</li>
+                            <li>Insert: bisa reuse DELETED slot</li>
+                            <li>Periodic rehashing untuk cleanup</li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 6: LOAD FACTOR ==================== -->
+            <section>
+                <section>
+                    <h2>📖 6. Load Factor & Rehashing</h2>
+                    <div class="box-definition">
+                        <p><strong>Load Factor (α)</strong> = n / m</p>
+                        <p class="small">Rasio jumlah elemen terhadap ukuran tabel</p>
+                    </div>
+                    <table style="font-size: 0.7em; margin-top: 1em;">
+                        <tr>
+                            <th>α</th>
+                            <th>Interpretasi</th>
+                            <th>Performa</th>
+                        </tr>
+                        <tr><td>0.25</td><td>25% terisi</td><td class="success">Sangat baik</td></tr>
+                        <tr><td>0.50</td><td>50% terisi</td><td class="success">Baik</td></tr>
+                        <tr><td class="highlight">0.75</td><td>75% terisi</td><td>Threshold standar</td></tr>
+                        <tr><td>0.90</td><td>90% terisi</td><td class="warning">Degradasi</td></tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Rehashing</h2>
+                    <div class="box-definition">
+                        <p><strong>Rehashing</strong> adalah proses membuat hash table baru lebih besar dan memindahkan semua elemen.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p><strong>Kapan rehashing?</strong></p>
+                        <ul style="font-size: 0.85em;">
+                            <li>Load factor &gt; threshold (0.75)</li>
+                            <li>Terlalu banyak slot DELETED</li>
+                        </ul>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p class="small"><strong>Contoh:</strong> α = 0.8 → rehash 2× → α baru = 0.4</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Expected Probes (Open Addressing)</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>α</th>
+                            <th>Unsuccessful</th>
+                            <th>Successful</th>
+                        </tr>
+                        <tr>
+                            <td>0.50</td>
+                            <td>2 probes</td>
+                            <td>1.39 probes</td>
+                        </tr>
+                        <tr>
+                            <td>0.75</td>
+                            <td>4 probes</td>
+                            <td>1.85 probes</td>
+                        </tr>
+                        <tr>
+                            <td>0.90</td>
+                            <td>10 probes</td>
+                            <td>2.56 probes</td>
+                        </tr>
+                        <tr>
+                            <td>0.95</td>
+                            <td class="warning">20 probes</td>
+                            <td>3.15 probes</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 0.5em;">Kesimpulan: Jaga α ≤ 0.75 untuk performa baik!</p>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 7: PERBANDINGAN ==================== -->
+            <section>
+                <h2>📊 Perbandingan Struktur Data</h2>
+                <table style="font-size: 0.65em;">
+                    <tr>
+                        <th>Struktur Data</th>
+                        <th>Search</th>
+                        <th>Insert</th>
+                        <th>Delete</th>
+                    </tr>
+                    <tr>
+                        <td>Array (unsorted)</td>
+                        <td><span class="complexity-badge on">O(n)</span></td>
+                        <td><span class="complexity-badge o1">O(1)</span></td>
+                        <td><span class="complexity-badge on">O(n)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Array (sorted)</td>
+                        <td><span class="complexity-badge ologn">O(log n)</span></td>
+                        <td><span class="complexity-badge on">O(n)</span></td>
+                        <td><span class="complexity-badge on">O(n)</span></td>
+                    </tr>
+                    <tr>
+                        <td>BST (balanced)</td>
+                        <td><span class="complexity-badge ologn">O(log n)</span></td>
+                        <td><span class="complexity-badge ologn">O(log n)</span></td>
+                        <td><span class="complexity-badge ologn">O(log n)</span></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td><strong>Hash Table</strong></td>
+                        <td><span class="complexity-badge o1">O(1) avg</span></td>
+                        <td><span class="complexity-badge o1">O(1) avg</span></td>
+                        <td><span class="complexity-badge o1">O(1) avg</span></td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== BAGIAN 8: APLIKASI ==================== -->
+            <section>
+                <section>
+                    <h2>📖 7. Aplikasi Hash Table</h2>
+                    <div class="two-columns" style="font-size: 0.85em;">
+                        <div>
+                            <h3>Umum</h3>
+                            <ul class="small">
+                                <li>Dictionary/Map</li>
+                                <li>Set (unique elements)</li>
+                                <li>Counting/Frequency</li>
+                                <li>Caching (LRU Cache)</li>
+                            </ul>
+                        </div>
+                        <div class="fragment">
+                            <h3>🎖️ Pertahanan</h3>
+                            <ul class="small">
+                                <li>Database Personel (NIK/NRP)</li>
+                                <li>Tracking Aset</li>
+                                <li>Authentication</li>
+                                <li>Activity Logging</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Contoh: Counting</h2>
+                    <pre><code class="cpp" data-trim>
+#include &lt;unordered_map&gt;
+
+// Menghitung frekuensi karakter
+string text = "hello world";
+unordered_map&lt;char, int&gt; freq;
+
+for (char c : text) {
+    freq[c]++;  // O(1) per karakter
+}
+
+// freq['l'] = 3, freq['o'] = 2, ...
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>💻 Contoh: Find Intersection</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.45em;">
+vector&lt;int&gt; findIntersection(const vector&lt;int&gt;& arr1, 
+                             const vector&lt;int&gt;& arr2) {
+    // Masukkan arr1 ke hash set - O(n)
+    unordered_set&lt;int&gt; set1(arr1.begin(), arr1.end());
+    
+    // Cek arr2 yang ada di set1 - O(m)
+    vector&lt;int&gt; result;
+    for (int num : arr2) {
+        if (set1.count(num)) {
+            result.push_back(num);
+            set1.erase(num);  // Avoid duplicates
+        }
+    }
+    
+    return result;  // Total: O(n + m)
+}
+                    </code></pre>
+                    <p class="small">Tanpa hash table: O(n × m)</p>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Konsep</th>
+                        <th>Deskripsi</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Hash Table</span></td>
+                        <td>Struktur data dengan O(1) average access</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Fungsi Hash</span></td>
+                        <td>Division (k mod m), Multiplication, Polynomial</td>
+                    </tr>
+                    <tr>
+                        <td><span class="warning">Collision</span></td>
+                        <td>h(k₁) = h(k₂), pasti terjadi (Pigeonhole)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Separate Chaining</span></td>
+                        <td>Linked list di setiap slot</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Open Addressing</span></td>
+                        <td>Linear, Quadratic, Double Hashing</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Load Factor</span></td>
+                        <td>α = n/m, threshold 0.75</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Rehashing</span></td>
+                        <td>Resize table saat α tinggi</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== QUIZ AKHIR ==================== -->
+            <section>
+                <h2>🧠 Quiz Akhir</h2>
+                <div class="quiz-question">
+                    <p><strong>Hash table dengan n = 600 elemen dan m = 800 slot.</strong></p>
+                    <ol style="font-size: 0.8em;">
+                        <li>Berapa load factor?</li>
+                        <li>Apakah perlu rehashing (threshold 0.75)?</li>
+                    </ol>
+                </div>
+                <div class="fragment quiz-answer">
+                    <p><strong>Jawaban:</strong></p>
+                    <ol style="font-size: 0.8em;">
+                        <li>α = n/m = 600/800 = <span class="highlight">0.75</span></li>
+                        <li>α = 0.75 tepat di threshold → <span class="warning">perlu rehashing</span> untuk insert berikutnya</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- ==================== PERTANYAAN ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.11 | Weiss Ch.5 | Hubbard Ch.8
+                </p>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 14</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
