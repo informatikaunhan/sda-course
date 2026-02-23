@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 11: Tree dan Binary Tree - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="css/unhan-theme.css">
+
+    <!-- Slide-specific styles -->
+    <style>
+        /* Tree visualization styles */
+        .tree-node {
+            display: inline-block;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            text-align: center;
+            line-height: 45px;
+            font-weight: bold;
+            margin: 5px;
+            border: 3px solid var(--unhan-gold);
+        }
+        .tree-node.root {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        .tree-node.leaf {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        .tree-node.highlight {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            animation: pulse 1s infinite;
+        }
+        .tree-visual {
+            text-align: center;
+            padding: 15px;
+        }
+        .tree-level {
+            margin: 8px 0;
+        }
+        .tree-connector {
+            color: var(--unhan-gold);
+            font-size: 1.2em;
+        }
+        .traversal-order {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .order-item {
+            background: rgba(212, 168, 75, 0.2);
+            border: 2px solid var(--unhan-gold);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .order-item.active {
+            background: var(--unhan-gold);
+            color: var(--unhan-navy-dark);
+        }
+        .formula-highlight {
+            background: rgba(37, 99, 235, 0.2);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: var(--font-code);
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🌳 Tree dan Binary Tree</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 11</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Menjelaskan <span class="highlight">terminologi dan konsep</span> dasar tree</li>
+                    <li class="fragment">Mengidentifikasi jenis-jenis <span class="highlight">binary tree</span></li>
+                    <li class="fragment">Membandingkan representasi <span class="text-navy">linked structure</span> dan <span class="text-navy">array</span></li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">traversal</span>: preorder, inorder, postorder</li>
+                    <li class="fragment">Menerapkan <span class="highlight">level-order traversal</span> menggunakan queue</li>
+                    <li class="fragment">Membangun <span class="highlight">expression tree</span></li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Bagian 1</h3>
+                        <ol style="font-size: 0.75em;">
+                            <li>Pengantar Tree</li>
+                            <li>Terminologi Tree</li>
+                            <li>Binary Tree</li>
+                            <li>Jenis-jenis Binary Tree</li>
+                            <li>Representasi Binary Tree</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3>Bagian 2</h3>
+                        <ol start="6" style="font-size: 0.75em;">
+                            <li>Preorder Traversal</li>
+                            <li>Inorder Traversal</li>
+                            <li>Postorder Traversal</li>
+                            <li>Level-order Traversal</li>
+                            <li>Expression Tree</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== BAGIAN 1: PENGANTAR TREE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 1. Pengantar Tree</h2>
+                    <div class="box-definition">
+                        <p><strong>Tree</strong> adalah struktur data <span class="highlight">non-linear</span> yang terdiri dari node-node yang terhubung secara <span class="highlight">hierarkis</span>.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;">Setiap tree memiliki:</p>
+                        <ul style="font-size: 0.8em;">
+                            <li>Satu node khusus: <span class="highlight">root</span> (akar)</li>
+                            <li>Setiap node dapat memiliki 0 atau lebih <span class="text-navy">child</span></li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🆚 Tree vs Struktur Linear</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Aspek</th>
+                            <th>Array/List</th>
+                            <th>Tree</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Struktur</strong></td>
+                            <td>Linear</td>
+                            <td>Hierarkis (non-linear)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Hubungan</strong></td>
+                            <td>Predecessor-Successor</td>
+                            <td>Parent-Child</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Searching</strong></td>
+                            <td>O(n) unsorted</td>
+                            <td><span class="highlight">O(log n)</span> BST seimbang</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Representasi</strong></td>
+                            <td>Flat</td>
+                            <td>Berlevel</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>🎖️ Aplikasi Tree</h2>
+                    <div class="three-columns" style="font-size: 0.75em;">
+                        <div class="fragment box-info" style="text-align: center; padding: 12px;">
+                            <p><strong>📁 File System</strong></p>
+                            <p class="small">Struktur folder & file</p>
+                        </div>
+                        <div class="fragment box-success" style="text-align: center; padding: 12px;">
+                            <p><strong>🏛️ Organisasi</strong></p>
+                            <p class="small">Hierarki komando militer</p>
+                        </div>
+                        <div class="fragment box-warning" style="text-align: center; padding: 12px;">
+                            <p><strong>🎯 Decision Tree</strong></p>
+                            <p class="small">Analisis ancaman taktis</p>
+                        </div>
+                    </div>
+                    <div class="three-columns" style="font-size: 0.75em; margin-top: 15px;">
+                        <div class="fragment box-info" style="text-align: center; padding: 12px;">
+                            <p><strong>💾 Database</strong></p>
+                            <p class="small">B-Tree indexing</p>
+                        </div>
+                        <div class="fragment box-success" style="text-align: center; padding: 12px;">
+                            <p><strong>🔧 Parsing</strong></p>
+                            <p class="small">Expression tree</p>
+                        </div>
+                        <div class="fragment box-warning" style="text-align: center; padding: 12px;">
+                            <p><strong>🤖 AI/ML</strong></p>
+                            <p class="small">Decision tree classifier</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 2: TERMINOLOGI TREE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 2. Terminologi Tree</h2>
+                    <div class="tree-visual">
+                        <div class="tree-level">
+                            <span class="tree-node root">A</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node">B</span>
+                            <span style="margin: 0 20px;"></span>
+                            <span class="tree-node">C</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲ &nbsp;&nbsp;&nbsp;&nbsp; ╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf">D</span>
+                            <span class="tree-node leaf">E</span>
+                            <span style="margin: 0 10px;"></span>
+                            <span class="tree-node leaf">F</span>
+                            <span class="tree-node leaf">G</span>
+                        </div>
+                    </div>
+                    <p class="small" style="margin-top: 0.5em;"><em>Contoh binary tree dengan 7 node</em></p>
+                </section>
+
+                <section>
+                    <h2>Komponen Dasar Tree</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Istilah</th>
+                            <th>Definisi</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Root</span></td>
+                            <td>Node paling atas tanpa parent</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Parent</span></td>
+                            <td>Node yang memiliki child di bawahnya</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Child</span></td>
+                            <td>Node yang memiliki parent di atasnya</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Sibling</span></td>
+                            <td>Node-node dengan parent yang sama</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Leaf</span></td>
+                            <td>Node tanpa child (terminal)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Internal Node</span></td>
+                            <td>Node yang bukan leaf (punya child)</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Properti Ukuran Tree</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Properti</th>
+                            <th>Definisi</th>
+                            <th>Contoh</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Depth</span></td>
+                            <td>Jumlah edge dari root ke node</td>
+                            <td>Depth(A)=0, Depth(D)=2</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Height</span></td>
+                            <td>Jumlah edge terpanjang ke leaf</td>
+                            <td>Height(A)=2, Height(D)=0</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Level</span></td>
+                            <td>Semua node dengan depth sama</td>
+                            <td>Level 0: {A}</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Degree</span></td>
+                            <td>Jumlah child dari node</td>
+                            <td>Degree(A)=2</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Terminologi</h2>
+                    <div class="quiz-question">
+                        <div class="tree-visual" style="font-size: 0.8em;">
+                            <div class="tree-level">
+                                <span class="tree-node root">10</span>
+                            </div>
+                            <div class="tree-connector">╱ ╲</div>
+                            <div class="tree-level">
+                                <span class="tree-node">5</span>
+                                <span style="margin: 0 15px;"></span>
+                                <span class="tree-node">15</span>
+                            </div>
+                            <div class="tree-connector">╱ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ╲</div>
+                            <div class="tree-level">
+                                <span class="tree-node leaf">3</span>
+                                <span style="margin: 0 60px;"></span>
+                                <span class="tree-node leaf">20</span>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85em;"><strong>Tentukan: leaves, height, depth node 15!</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer" style="font-size: 0.8em;">
+                        <ul>
+                            <li><strong>Leaves:</strong> 3, 20</li>
+                            <li><strong>Height tree:</strong> 2</li>
+                            <li><strong>Depth node 15:</strong> 1</li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 3: BINARY TREE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 3. Binary Tree</h2>
+                    <div class="box-definition">
+                        <p><strong>Binary Tree</strong> adalah tree di mana setiap node memiliki <span class="highlight">maksimal 2 child</span> — disebut <span class="text-navy">left child</span> dan <span class="text-navy">right child</span>.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <pre><code class="cpp" data-trim style="font-size: 0.55em;">
+struct Node {
+    int data;
+    Node* left;   // Pointer ke left child
+    Node* right;  // Pointer ke right child
+    
+    Node(int val) : data(val), left(nullptr), right(nullptr) {}
+};
+                        </code></pre>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Jenis-jenis Binary Tree</h2>
+                    <div class="two-columns" style="font-size: 0.75em;">
+                        <div class="fragment box-info" style="padding: 15px;">
+                            <p><strong>Full Binary Tree</strong></p>
+                            <p class="small">Setiap node punya 0 atau 2 child</p>
+                            <div class="tree-visual" style="font-size: 0.7em;">
+                                <div class="tree-level"><span class="tree-node" style="width:35px;height:35px;line-height:35px;">A</span></div>
+                                <div style="font-size:0.8em;">╱ ╲</div>
+                                <div class="tree-level">
+                                    <span class="tree-node" style="width:35px;height:35px;line-height:35px;">B</span>
+                                    <span class="tree-node leaf" style="width:35px;height:35px;line-height:35px;">C</span>
+                                </div>
+                                <div style="font-size:0.8em;">╱ ╲</div>
+                                <div class="tree-level">
+                                    <span class="tree-node leaf" style="width:35px;height:35px;line-height:35px;">D</span>
+                                    <span class="tree-node leaf" style="width:35px;height:35px;line-height:35px;">E</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fragment box-success" style="padding: 15px;">
+                            <p><strong>Complete Binary Tree</strong></p>
+                            <p class="small">Semua level penuh kecuali terakhir (kiri ke kanan)</p>
+                            <div class="tree-visual" style="font-size: 0.7em;">
+                                <div class="tree-level"><span class="tree-node" style="width:35px;height:35px;line-height:35px;">A</span></div>
+                                <div style="font-size:0.8em;">╱ ╲</div>
+                                <div class="tree-level">
+                                    <span class="tree-node" style="width:35px;height:35px;line-height:35px;">B</span>
+                                    <span class="tree-node" style="width:35px;height:35px;line-height:35px;">C</span>
+                                </div>
+                                <div style="font-size:0.8em;">╱ ╲</div>
+                                <div class="tree-level">
+                                    <span class="tree-node leaf" style="width:35px;height:35px;line-height:35px;">D</span>
+                                    <span class="tree-node leaf" style="width:35px;height:35px;line-height:35px;">E</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📊 Jenis Binary Tree (lanjutan)</h2>
+                    <div class="two-columns" style="font-size: 0.75em;">
+                        <div class="fragment box-warning" style="padding: 15px;">
+                            <p><strong>Perfect Binary Tree</strong></p>
+                            <p class="small">Semua level terisi penuh</p>
+                            <p class="small">n = 2<sup>h+1</sup> - 1</p>
+                            <div class="tree-visual" style="font-size: 0.7em;">
+                                <div class="tree-level"><span class="tree-node" style="width:35px;height:35px;line-height:35px;">A</span></div>
+                                <div style="font-size:0.8em;">╱ ╲</div>
+                                <div class="tree-level">
+                                    <span class="tree-node" style="width:35px;height:35px;line-height:35px;">B</span>
+                                    <span class="tree-node" style="width:35px;height:35px;line-height:35px;">C</span>
+                                </div>
+                                <div style="font-size:0.8em;">╱ ╲ ╱ ╲</div>
+                                <div class="tree-level">
+                                    <span class="tree-node leaf" style="width:30px;height:30px;line-height:30px;font-size:0.8em;">D</span>
+                                    <span class="tree-node leaf" style="width:30px;height:30px;line-height:30px;font-size:0.8em;">E</span>
+                                    <span class="tree-node leaf" style="width:30px;height:30px;line-height:30px;font-size:0.8em;">F</span>
+                                    <span class="tree-node leaf" style="width:30px;height:30px;line-height:30px;font-size:0.8em;">G</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="fragment box-danger" style="padding: 15px;">
+                            <p><strong>Skewed Binary Tree</strong></p>
+                            <p class="small">Semua node hanya punya satu child</p>
+                            <div class="tree-visual" style="font-size: 0.7em;">
+                                <div class="tree-level"><span class="tree-node" style="width:35px;height:35px;line-height:35px;">A</span></div>
+                                <div style="font-size:0.8em;">╲</div>
+                                <div class="tree-level" style="margin-left: 30px;"><span class="tree-node" style="width:35px;height:35px;line-height:35px;">B</span></div>
+                                <div style="font-size:0.8em; margin-left: 30px;">╲</div>
+                                <div class="tree-level" style="margin-left: 60px;"><span class="tree-node leaf" style="width:35px;height:35px;line-height:35px;">C</span></div>
+                            </div>
+                            <p class="small warning">Worst case: O(n)!</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>📐 Properti Matematis Binary Tree</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Properti</th>
+                            <th>Formula</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Max nodes di level <em>l</em></td>
+                            <td><span class="formula-highlight">2<sup>l</sup></span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Max nodes dengan height <em>h</em></td>
+                            <td><span class="formula-highlight">2<sup>h+1</sup> - 1</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Min height dengan <em>n</em> nodes</td>
+                            <td><span class="formula-highlight">⌈log₂(n+1)⌉ - 1</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Jumlah leaf (perfect tree)</td>
+                            <td><span class="formula-highlight">2<sup>h</sup></span></td>
+                        </tr>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 4: REPRESENTASI ==================== -->
+            <section>
+                <section>
+                    <h2>📖 4. Representasi Binary Tree</h2>
+                    <div class="two-columns">
+                        <div class="fragment">
+                            <h3 style="font-size: 0.9em;">🔗 Linked Structure</h3>
+                            <ul style="font-size: 0.75em;">
+                                <li>Menggunakan pointer</li>
+                                <li>Fleksibel</li>
+                                <li>Cocok untuk general tree</li>
+                            </ul>
+                        </div>
+                        <div class="fragment">
+                            <h3 style="font-size: 0.9em;">📊 Array</h3>
+                            <ul style="font-size: 0.75em;">
+                                <li>Index-based</li>
+                                <li>Efisien untuk complete tree</li>
+                                <li>Cocok untuk Heap</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Linked Structure Implementation</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|1-6|8-14|16-22" style="font-size: 0.5em;">
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+    Node(int val) : data(val), left(nullptr), right(nullptr) {}
+};
+
+class BinaryTree {
+private:
+    Node* root;
+public:
+    BinaryTree() : root(nullptr) {}
+    Node* getRoot() { return root; }
+    void setRoot(Node* node) { root = node; }
+};
+
+// Penggunaan
+int main() {
+    BinaryTree tree;
+    tree.setRoot(new Node(10));
+    tree.getRoot()->left = new Node(5);
+    tree.getRoot()->right = new Node(15);
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>📊 Array Representation</h2>
+                    <div class="tree-visual" style="font-size: 0.8em;">
+                        <div class="tree-level"><span class="tree-node root">10</span><span class="small" style="color: var(--unhan-gold);"> [0]</span></div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node">5</span><span class="small" style="color: var(--unhan-gold);"> [1]</span>
+                            <span style="margin: 0 10px;"></span>
+                            <span class="tree-node">15</span><span class="small" style="color: var(--unhan-gold);"> [2]</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲ &nbsp;&nbsp; ╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf">3</span><span class="small" style="color: var(--unhan-gold);"> [3]</span>
+                            <span class="tree-node leaf">7</span><span class="small" style="color: var(--unhan-gold);"> [4]</span>
+                            <span class="tree-node leaf">12</span><span class="small" style="color: var(--unhan-gold);"> [5]</span>
+                            <span class="tree-node leaf">20</span><span class="small" style="color: var(--unhan-gold);"> [6]</span>
+                        </div>
+                    </div>
+                    <p class="fragment" style="font-size: 0.8em; margin-top: 0.5em;">
+                        Array: <code class="highlight">[10, 5, 15, 3, 7, 12, 20]</code>
+                    </p>
+                </section>
+
+                <section>
+                    <h2>🔢 Formula Indexing (0-based)</h2>
+                    <table style="font-size: 0.8em;">
+                        <tr>
+                            <th>Relasi</th>
+                            <th>Formula</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Parent dari node <em>i</em></td>
+                            <td><span class="formula-highlight">(i - 1) / 2</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Left child dari node <em>i</em></td>
+                            <td><span class="formula-highlight">2 * i + 1</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Right child dari node <em>i</em></td>
+                            <td><span class="formula-highlight">2 * i + 2</span></td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-info" style="margin-top: 1em; font-size: 0.8em;">
+                        <p>💡 <strong>Contoh:</strong> Node index 2 (nilai 15)</p>
+                        <p class="small">Left child: 2*2+1 = <strong>5</strong> → arr[5] = 12</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>⚖️ Perbandingan Representasi</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Aspek</th>
+                            <th>Linked</th>
+                            <th>Array</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Memory</strong></td>
+                            <td>Fleksibel</td>
+                            <td>Fixed/resize</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Akses parent</strong></td>
+                            <td>Perlu pointer tambahan</td>
+                            <td><span class="success">O(1) formula</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Insertion</strong></td>
+                            <td><span class="success">Mudah</span></td>
+                            <td>Sulit jika tidak complete</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Wasted space</strong></td>
+                            <td><span class="success">Tidak ada</span></td>
+                            <td>Ada jika sparse</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Best for</strong></td>
+                            <td>General tree</td>
+                            <td><span class="highlight">Complete tree, Heap</span></td>
+                        </tr>
+                    </table>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 5: TREE TRAVERSAL ==================== -->
+            <section>
+                <section>
+                    <h2>📖 5. Tree Traversal</h2>
+                    <div class="box-definition">
+                        <p><strong>Traversal</strong> adalah proses <span class="highlight">mengunjungi semua node</span> dalam tree dengan urutan tertentu.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <h3 style="font-size: 0.9em;">Jenis Traversal:</h3>
+                        <div class="two-columns" style="font-size: 0.8em;">
+                            <div>
+                                <p><strong>Depth-First (DFS):</strong></p>
+                                <ul class="small">
+                                    <li>Preorder</li>
+                                    <li>Inorder</li>
+                                    <li>Postorder</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p><strong>Breadth-First (BFS):</strong></p>
+                                <ul class="small">
+                                    <li>Level-order</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🔄 Preorder Traversal</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p><strong>Urutan:</strong> <span class="highlight">Root</span> → Left → Right</p>
+                    </div>
+                    <div class="tree-visual" style="font-size: 0.8em;">
+                        <div class="tree-level"><span class="tree-node root">A</span></div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node">B</span>
+                            <span style="margin: 0 15px;"></span>
+                            <span class="tree-node">C</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲ &nbsp;&nbsp; ╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf">D</span>
+                            <span class="tree-node leaf">E</span>
+                            <span class="tree-node leaf">F</span>
+                            <span class="tree-node leaf">G</span>
+                        </div>
+                    </div>
+                    <div class="traversal-order fragment">
+                        <span class="order-item active">A</span>
+                        <span class="order-item">B</span>
+                        <span class="order-item">D</span>
+                        <span class="order-item">E</span>
+                        <span class="order-item">C</span>
+                        <span class="order-item">F</span>
+                        <span class="order-item">G</span>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Preorder Implementation</h2>
+                    <div class="two-columns">
+                        <div>
+                            <h4 style="font-size: 0.8em;">Rekursif</h4>
+                            <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+void preorder(Node* root) {
+    if (root == nullptr) return;
+    
+    cout << root->data << " ";
+    preorder(root->left);
+    preorder(root->right);
+}
+                            </code></pre>
+                        </div>
+                        <div class="fragment">
+                            <h4 style="font-size: 0.8em;">Iteratif (Stack)</h4>
+                            <pre><code class="cpp" data-trim style="font-size: 0.45em;">
+void preorderIterative(Node* root) {
+    if (!root) return;
+    stack<Node*> s;
+    s.push(root);
+    
+    while (!s.empty()) {
+        Node* curr = s.top();
+        s.pop();
+        cout << curr->data << " ";
+        
+        if (curr->right) s.push(curr->right);
+        if (curr->left) s.push(curr->left);
+    }
+}
+                            </code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🔄 Inorder Traversal</h2>
+                    <div class="box-success" style="font-size: 0.85em;">
+                        <p><strong>Urutan:</strong> Left → <span class="highlight">Root</span> → Right</p>
+                        <p class="small">📌 Untuk BST: menghasilkan urutan <strong>terurut!</strong></p>
+                    </div>
+                    <div class="tree-visual" style="font-size: 0.8em;">
+                        <div class="tree-level"><span class="tree-node root">A</span></div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node">B</span>
+                            <span style="margin: 0 15px;"></span>
+                            <span class="tree-node">C</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲ &nbsp;&nbsp; ╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf">D</span>
+                            <span class="tree-node leaf">E</span>
+                            <span class="tree-node leaf">F</span>
+                            <span class="tree-node leaf">G</span>
+                        </div>
+                    </div>
+                    <div class="traversal-order fragment">
+                        <span class="order-item">D</span>
+                        <span class="order-item">B</span>
+                        <span class="order-item">E</span>
+                        <span class="order-item active">A</span>
+                        <span class="order-item">F</span>
+                        <span class="order-item">C</span>
+                        <span class="order-item">G</span>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Inorder Implementation</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2|4|5|6" style="font-size: 0.55em;">
+void inorder(Node* root) {
+    if (root == nullptr) return;
+    
+    inorder(root->left);         // Traverse subtree kiri
+    cout << root->data << " ";   // Kunjungi root
+    inorder(root->right);        // Traverse subtree kanan
+}
+                    </code></pre>
+                    <div class="fragment box-info" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>💡 <strong>Kegunaan Inorder:</strong></p>
+                        <ul class="small">
+                            <li>Mendapatkan elemen BST secara terurut</li>
+                            <li>Evaluasi ekspresi infix</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🔄 Postorder Traversal</h2>
+                    <div class="box-warning" style="font-size: 0.85em;">
+                        <p><strong>Urutan:</strong> Left → Right → <span class="highlight">Root</span></p>
+                        <p class="small">📌 Berguna untuk <strong>menghapus tree</strong> (delete children dulu)</p>
+                    </div>
+                    <div class="tree-visual" style="font-size: 0.8em;">
+                        <div class="tree-level"><span class="tree-node root">A</span></div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node">B</span>
+                            <span style="margin: 0 15px;"></span>
+                            <span class="tree-node">C</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲ &nbsp;&nbsp; ╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf">D</span>
+                            <span class="tree-node leaf">E</span>
+                            <span class="tree-node leaf">F</span>
+                            <span class="tree-node leaf">G</span>
+                        </div>
+                    </div>
+                    <div class="traversal-order fragment">
+                        <span class="order-item">D</span>
+                        <span class="order-item">E</span>
+                        <span class="order-item">B</span>
+                        <span class="order-item">F</span>
+                        <span class="order-item">G</span>
+                        <span class="order-item">C</span>
+                        <span class="order-item active">A</span>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Postorder Implementation</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers style="font-size: 0.55em;">
+void postorder(Node* root) {
+    if (root == nullptr) return;
+    
+    postorder(root->left);       // Traverse subtree kiri
+    postorder(root->right);      // Traverse subtree kanan
+    cout << root->data << " ";   // Kunjungi root
+}
+
+// Untuk menghapus tree dengan aman
+void deleteTree(Node* root) {
+    if (root == nullptr) return;
+    
+    deleteTree(root->left);
+    deleteTree(root->right);
+    delete root;  // Hapus setelah children dihapus
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🔄 Level-order Traversal (BFS)</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p><strong>Urutan:</strong> Level by level, kiri ke kanan</p>
+                        <p class="small">📌 Menggunakan <span class="highlight">Queue</span></p>
+                    </div>
+                    <div class="tree-visual" style="font-size: 0.8em;">
+                        <div class="tree-level"><span class="tree-node root">A</span> <span class="small" style="color: var(--unhan-gold);">Level 0</span></div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node">B</span>
+                            <span class="tree-node">C</span> <span class="small" style="color: var(--unhan-gold);">Level 1</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲ &nbsp;&nbsp; ╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf">D</span>
+                            <span class="tree-node leaf">E</span>
+                            <span class="tree-node leaf">F</span>
+                            <span class="tree-node leaf">G</span> <span class="small" style="color: var(--unhan-gold);">Level 2</span>
+                        </div>
+                    </div>
+                    <div class="traversal-order fragment">
+                        <span class="order-item active">A</span>
+                        <span class="order-item">B</span>
+                        <span class="order-item">C</span>
+                        <span class="order-item">D</span>
+                        <span class="order-item">E</span>
+                        <span class="order-item">F</span>
+                        <span class="order-item">G</span>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Level-order Implementation</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|4-5|7-15" style="font-size: 0.5em;">
+#include <queue>
+
+void levelOrder(Node* root) {
+    if (root == nullptr) return;
+    queue<Node*> q;
+    q.push(root);
+    
+    while (!q.empty()) {
+        Node* current = q.front();
+        q.pop();
+        
+        cout << current->data << " ";
+        
+        if (current->left) q.push(current->left);
+        if (current->right) q.push(current->right);
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>📊 Perbandingan Traversal</h2>
+                    <table style="font-size: 0.6em;">
+                        <tr>
+                            <th>Traversal</th>
+                            <th>Urutan</th>
+                            <th>Kegunaan</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Preorder</span></td>
+                            <td>Root → L → R</td>
+                            <td>Copy tree, prefix notation</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Inorder</span></td>
+                            <td>L → Root → R</td>
+                            <td>BST sorted, infix notation</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Postorder</span></td>
+                            <td>L → R → Root</td>
+                            <td>Delete tree, postfix notation</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Level-order</span></td>
+                            <td>Level by level</td>
+                            <td>Print by level, BFS</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 0.5em;">
+                        <strong>Kompleksitas:</strong> Semua O(n) waktu, O(h) atau O(w) ruang
+                    </p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Traversal</h2>
+                    <div class="quiz-question">
+                        <div class="tree-visual" style="font-size: 0.75em;">
+                            <div class="tree-level"><span class="tree-node root">1</span></div>
+                            <div class="tree-connector">╱ ╲</div>
+                            <div class="tree-level">
+                                <span class="tree-node">2</span>
+                                <span style="margin: 0 10px;"></span>
+                                <span class="tree-node">3</span>
+                            </div>
+                            <div class="tree-connector">╱ ╲ &nbsp;&nbsp;&nbsp; ╲</div>
+                            <div class="tree-level">
+                                <span class="tree-node leaf">4</span>
+                                <span class="tree-node leaf">5</span>
+                                <span style="margin: 0 30px;"></span>
+                                <span class="tree-node leaf">6</span>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85em;"><strong>Tuliskan hasil Preorder, Inorder, dan Postorder!</strong></p>
+                    </div>
+                    <div class="fragment quiz-answer" style="font-size: 0.8em;">
+                        <ul>
+                            <li><strong>Preorder:</strong> 1, 2, 4, 5, 3, 6</li>
+                            <li><strong>Inorder:</strong> 4, 2, 5, 1, 3, 6</li>
+                            <li><strong>Postorder:</strong> 4, 5, 2, 6, 3, 1</li>
+                        </ul>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 6: EXPRESSION TREE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 6. Expression Tree</h2>
+                    <div class="box-definition">
+                        <p><strong>Expression Tree</strong> adalah binary tree yang merepresentasikan <span class="highlight">ekspresi matematika</span>.</p>
+                    </div>
+                    <ul class="fragment" style="font-size: 0.8em;">
+                        <li><strong>Leaf nodes:</strong> Operand (angka/variabel)</li>
+                        <li><strong>Internal nodes:</strong> Operator (+, -, *, /)</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <h2>Contoh: (3 + 5) * 2</h2>
+                    <div class="tree-visual">
+                        <div class="tree-level"><span class="tree-node root">*</span></div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node">+</span>
+                            <span style="margin: 0 20px;"></span>
+                            <span class="tree-node leaf">2</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf">3</span>
+                            <span class="tree-node leaf">5</span>
+                        </div>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em; font-size: 0.8em;">
+                        <table>
+                            <tr>
+                                <td><strong>Preorder (Prefix):</strong></td>
+                                <td><code>* + 3 5 2</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Inorder (Infix):</strong></td>
+                                <td><code>3 + 5 * 2</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Postorder (Postfix):</strong></td>
+                                <td><code>3 5 + 2 *</code></td>
+                            </tr>
+                        </table>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Build Expression Tree dari Postfix</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.45em;">
+Node* buildExpressionTree(string postfix) {
+    stack<Node*> st;
+    
+    for (char c : postfix) {
+        if (c == ' ') continue;
+        
+        Node* node = new Node(c);
+        
+        if (isdigit(c) || isalpha(c)) {
+            // Operand: langsung push
+            st.push(node);
+        } else {
+            // Operator: pop 2 operand sebagai children
+            node->right = st.top(); st.pop();
+            node->left = st.top(); st.pop();
+            st.push(node);
+        }
+    }
+    
+    return st.top();  // Root dari expression tree
+}
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 7: APLIKASI PERTAHANAN ==================== -->
+            <section>
+                <section>
+                    <h2>🎖️ 7. Aplikasi Pertahanan</h2>
+                    <h3>Decision Tree untuk Analisis Ancaman</h3>
+                    <div class="tree-visual" style="font-size: 0.7em;">
+                        <div class="tree-level"><span class="tree-node root" style="width:auto; padding:5px 10px; border-radius:8px;">Kecepatan > 500?</span></div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node" style="width:auto; padding:5px 10px; border-radius:8px;">Ketinggian<br>> 10km?</span>
+                            <span style="margin: 0 20px;"></span>
+                            <span class="tree-node leaf" style="width:auto; padding:5px 10px; border-radius:8px; background:linear-gradient(135deg, #10b981, #059669);">Sipil</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf" style="width:auto; padding:5px 8px; border-radius:8px; background:linear-gradient(135deg, #f59e0b, #d97706);">Jet Tempur</span>
+                            <span class="tree-node leaf" style="width:auto; padding:5px 8px; border-radius:8px; background:linear-gradient(135deg, #ef4444, #dc2626);">Rudal!</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>🎖️ Hierarki Komando</h2>
+                    <div class="tree-visual" style="font-size: 0.75em;">
+                        <div class="tree-level"><span class="tree-node root" style="width:auto; padding:5px 10px; border-radius:8px;">Panglima</span></div>
+                        <div class="tree-connector">╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node" style="width:auto; padding:5px 10px; border-radius:8px;">Kodam A</span>
+                            <span style="margin: 0 20px;"></span>
+                            <span class="tree-node" style="width:auto; padding:5px 10px; border-radius:8px;">Kodam B</span>
+                        </div>
+                        <div class="tree-connector">╱ ╲ &nbsp;&nbsp;&nbsp;&nbsp; ╱ ╲</div>
+                        <div class="tree-level">
+                            <span class="tree-node leaf" style="width:auto; padding:3px 8px; border-radius:8px; font-size:0.9em;">Brigif 1</span>
+                            <span class="tree-node leaf" style="width:auto; padding:3px 8px; border-radius:8px; font-size:0.9em;">Brigif 2</span>
+                            <span class="tree-node leaf" style="width:auto; padding:3px 8px; border-radius:8px; font-size:0.9em;">Brigif 3</span>
+                            <span class="tree-node leaf" style="width:auto; padding:3px 8px; border-radius:8px; font-size:0.9em;">Brigif 4</span>
+                        </div>
+                    </div>
+                    <p class="fragment small" style="margin-top: 1em;">
+                        <strong>Kegunaan:</strong> Representasi struktur organisasi, distribusi perintah, analisis jalur komando
+                    </p>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Konsep</th>
+                        <th>Deskripsi</th>
+                        <th>Kompleksitas</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Tree</span></td>
+                        <td>Struktur hierarkis dengan root, parent, child</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Binary Tree</span></td>
+                        <td>Max 2 children per node</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Preorder</span></td>
+                        <td>Root → Left → Right</td>
+                        <td>O(n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Inorder</span></td>
+                        <td>Left → Root → Right (sorted for BST)</td>
+                        <td>O(n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Postorder</span></td>
+                        <td>Left → Right → Root (delete tree)</td>
+                        <td>O(n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Level-order</span></td>
+                        <td>BFS menggunakan Queue</td>
+                        <td>O(n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Expression Tree</span></td>
+                        <td>Representasi ekspresi matematika</td>
+                        <td>O(n)</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== PERTANYAAN ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.12 | Weiss Ch.4 | Hubbard Ch.9-10
+                </p>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 11: Tree dan Binary Tree</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
