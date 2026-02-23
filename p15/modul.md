@@ -34,7 +34,7 @@ Setelah menyelesaikan modul ini, mahasiswa diharapkan mampu:
 
 Sepanjang semester ini, kita telah mempelajari berbagai struktur data yang dapat diklasifikasikan sebagai berikut:
 
-![Peta Struktur Data SDA201](images/gambar-15-1.png)
+![Peta Struktur Data SDA201](images/p15-01-peta-struktur-data.png)
 
 *Gambar 15.1: Peta komprehensif struktur data yang dipelajari dalam SDA201*
 
@@ -126,7 +126,7 @@ Sepanjang semester ini, kita telah mempelajari berbagai struktur data yang dapat
 
 > **Trade-off Fundamental:** Array unggul dalam akses random, Linked List unggul dalam insert/delete dinamis.
 
-![Array vs Linked List Comparison](images/gambar-15-2.png)
+![Array vs Linked List Comparison](images/p15-02-array-vs-linkedlist.png)
 
 *Gambar 15.2: Perbandingan visual Array dan Linked List*
 
@@ -253,7 +253,7 @@ c) BST
 
 Saat memilih struktur data, pertimbangkan kriteria berikut:
 
-![Decision Framework](images/gambar-15-3.png)
+![Decision Framework](images/p15-03-decision-framework.png)
 
 *Gambar 15.3: Framework pemilihan struktur data*
 
@@ -419,7 +419,7 @@ public:
 
 ### 4.3 Implementasi
 
-![LRU Cache Structure](images/gambar-15-4.png)
+![LRU Cache Structure](images/p15-04-lru-cache.png)
 
 *Gambar 15.4: Struktur LRU Cache menggunakan Hash Table + Doubly Linked List*
 
@@ -591,7 +591,7 @@ Text editor memerlukan fitur:
 
 > **Pattern:** Gunakan dua stack — undo stack untuk operasi yang dilakukan, redo stack untuk operasi yang di-undo.
 
-![Text Editor Undo Redo](images/gambar-15-5.png)
+![Text Editor Undo Redo](images/p15-05-text-editor-undo-redo.png)
 
 *Gambar 15.5: Mekanisme Undo/Redo dengan dua Stack*
 
@@ -811,7 +811,7 @@ public:
 
 Untuk memenuhi kebutuhan di atas, kita perlu kombinasi beberapa struktur data:
 
-![Multi-Index System](images/gambar-15-6.png)
+![Multi-Index System](images/p15-06-multi-index-system.png)
 
 *Gambar 15.6: Arsitektur sistem multi-index untuk manajemen aset pertahanan*
 
