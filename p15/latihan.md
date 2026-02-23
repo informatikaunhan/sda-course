@@ -792,33 +792,6 @@ function getTop10Threats():
 
 *Gambar 15.7: Arsitektur multi-index untuk sistem logistik militer*
 
-**[GEMINI IMAGE PROMPT]**
-<prompt>
-SUBJECT: Multi-index data architecture for military logistics system
-STYLE: Clean flat vector illustration, educational computer science diagram, textbook quality, minimal design
-LAYOUT: Vertical hierarchy showing data flow
-
-COLORS:
-- Primary: #2563eb (blue) for main structures
-- Secondary: #10b981 (green) for indexes
-- Accent: #f59e0b (orange) for data items
-- Warning: #ef4444 (red) for alerts
-- Background: #ffffff (white)
-
-ELEMENTS:
-1. Top layer: "Primary Storage" box containing "Hash Table (by kode_item)"
-2. Middle layer: Three index boxes:
-   - "Category Index (Hash Table)"
-   - "Expiry Min-Heap (by date)"
-   - "Low Stock List"
-3. Bottom layer: "Item Data" records connected to all structures via arrows
-4. Arrows showing bidirectional references
-
-LABELS: "O(1) by kode", "O(1) by kategori", "O(1) expiry check", "Multi-index Architecture"
-SIZE: 750x500 pixels
-FORMAT: PNG, white background
-NEGATIVE: No gradients, no 3D effects
-</prompt>
 
 **Struktur:**
 1. **Primary Hash Table**: key = kode_item → Item data lengkap
