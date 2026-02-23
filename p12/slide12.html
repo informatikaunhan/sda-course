@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 12: Binary Search Tree (BST) - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="css/unhan-theme.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🌳 Binary Search Tree (BST)</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 12</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Menjelaskan <span class="highlight">properti BST</span></li>
+                    <li class="fragment">Mengimplementasikan operasi <span class="highlight">search</span> pada BST</li>
+                    <li class="fragment">Mengimplementasikan operasi <span class="highlight">insert</span> pada BST</li>
+                    <li class="fragment">Mengimplementasikan operasi <span class="highlight">delete</span> (3 kasus)</li>
+                    <li class="fragment">Menganalisis <span class="highlight">kompleksitas</span> BST</li>
+                    <li class="fragment">Memahami dampak <span class="warning">BST tidak seimbang</span></li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Bagian 1</h3>
+                        <ol style="font-size: 0.8em;">
+                            <li>Review Binary Tree</li>
+                            <li>Properti BST</li>
+                            <li>Operasi Search</li>
+                            <li>Operasi Insert</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3>Bagian 2</h3>
+                        <ol start="5" style="font-size: 0.8em;">
+                            <li>findMin & findMax</li>
+                            <li>Operasi Delete</li>
+                            <li>Analisis Kompleksitas</li>
+                            <li>Balanced BST</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== REVIEW BINARY TREE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 Review: Binary Tree</h2>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <p>Pada Pertemuan 11, kita mempelajari:</p>
+                        <ul>
+                            <li class="fragment">Binary Tree: setiap node punya <span class="highlight">maksimal 2 anak</span></li>
+                            <li class="fragment">Traversal: Preorder, Inorder, Postorder, Level-order</li>
+                            <li class="fragment">Pencarian pada Binary Tree biasa: <span class="warning">O(n)</span></li>
+                        </ul>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p class="highlight">Bagaimana membuat pencarian lebih efisien?</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== DEFINISI BST ==================== -->
+            <section>
+                <section>
+                    <h2>📖 Binary Search Tree (BST)</h2>
+                    <div class="box-definition">
+                        <p><strong>Binary Search Tree (BST)</strong> adalah Binary Tree dimana untuk setiap node:</p>
+                        <ul style="font-size: 0.9em;">
+                            <li class="fragment">Semua nilai di <span class="text-success">left subtree</span> <strong>&lt;</strong> nilai node</li>
+                            <li class="fragment">Semua nilai di <span class="text-gold">right subtree</span> <strong>&gt;</strong> nilai node</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Ilustrasi Properti BST</h2>
+                    <img src="images/p12-01-bst-property.png" alt="BST Property" style="max-height: 350px;">
+                    <p class="small"><em>Gambar 12.1: Properti Binary Search Tree</em></p>
+                    <div class="img-fallback" style="display: none;">
+                        <span class="icon">🌳</span>
+                        <span class="title">BST Property</span>
+                        <span class="description">Left subtree < Root < Right subtree</span>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Struktur Node BST</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|1-4|6-7">
+struct BSTNode {
+    int data;
+    BSTNode* left;
+    BSTNode* right;
+    
+    // Constructor
+    BSTNode(int value) : data(value), left(nullptr), right(nullptr) {}
+};
+                    </code></pre>
+                    <p class="fragment small">Sama dengan Binary Tree, tapi dengan <span class="highlight">aturan pengurutan</span></p>
+                </section>
+            </section>
+
+            <!-- ==================== KEUNGGULAN BST ==================== -->
+            <section>
+                <h2>📊 BST vs Binary Tree Biasa</h2>
+                <table style="font-size: 0.7em;">
+                    <tr>
+                        <th>Aspek</th>
+                        <th>Binary Tree</th>
+                        <th>BST</th>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Pengurutan</td>
+                        <td>Tidak ada aturan</td>
+                        <td><span class="highlight">Terurut</span></td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Search</td>
+                        <td class="warning">O(n)</td>
+                        <td class="text-success">O(log n) avg</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Insert</td>
+                        <td class="warning">O(n)</td>
+                        <td class="text-success">O(log n) avg</td>
+                    </tr>
+                    <tr class="fragment">
+                        <td>Inorder Traversal</td>
+                        <td>Urutan acak</td>
+                        <td><span class="highlight">Terurut ascending!</span></td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== QUIZ 1: VALID BST ==================== -->
+            <section>
+                <h2>🧠 Quiz 1: Valid BST?</h2>
+                <div class="quiz-question">
+                    <p><strong>Apakah tree berikut adalah BST yang valid?</strong></p>
+                    <pre style="font-size: 0.6em; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
+        10
+       /  \
+      5    15
+     / \
+    3   12
+                    </pre>
+                </div>
+                <div class="fragment quiz-answer">
+                    <p><strong>Jawaban:</strong> <span class="warning">TIDAK VALID!</span></p>
+                    <p class="small">Node 12 berada di left subtree dari root 10, tapi 12 > 10.</p>
+                    <p class="small">Semua node di left subtree harus &lt; root.</p>
+                </div>
+            </section>
+
+            <!-- ==================== OPERASI SEARCH ==================== -->
+            <section>
+                <section>
+                    <h2>🔍 Operasi Search</h2>
+                    <div class="box-info">
+                        <p><strong>Algoritma:</strong></p>
+                        <ol style="font-size: 0.85em;">
+                            <li class="fragment">Mulai dari root</li>
+                            <li class="fragment">Jika nilai == node saat ini → <span class="text-success">ditemukan!</span></li>
+                            <li class="fragment">Jika nilai <strong>&lt;</strong> node → ke <span class="text-success">kiri</span></li>
+                            <li class="fragment">Jika nilai <strong>&gt;</strong> node → ke <span class="highlight">kanan</span></li>
+                            <li class="fragment">Jika nullptr → <span class="warning">tidak ditemukan</span></li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Visualisasi Search</h2>
+                    <img src="images/p12-02-bst-search.png" alt="BST Search" style="max-height: 320px;">
+                    <p class="small"><em>Gambar 12.2: Proses pencarian pada BST</em></p>
+                    <div class="fragment box-success" style="font-size: 0.8em; margin-top: 0.5em;">
+                        <p>Setiap langkah mengeliminasi <strong>setengah</strong> dari tree!</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Search (Rekursif)</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-4|6-8|10-11">
+BSTNode* search(BSTNode* root, int key) {
+    // Base case
+    if (root == nullptr || root->data == key) {
+        return root;
+    }
+    
+    // Key lebih kecil, cari di kiri
+    if (key < root->data) {
+        return search(root->left, key);
+    }
+    
+    // Key lebih besar, cari di kanan
+    return search(root->right, key);
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Search (Iteratif)</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3-12">
+BSTNode* searchIterative(BSTNode* root, int key) {
+    BSTNode* current = root;
+    
+    while (current != nullptr) {
+        if (key == current->data) {
+            return current;  // Ditemukan
+        } else if (key < current->data) {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+    
+    return nullptr;  // Tidak ditemukan
+}
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== OPERASI INSERT ==================== -->
+            <section>
+                <section>
+                    <h2>➕ Operasi Insert</h2>
+                    <div class="box-info">
+                        <p><strong>Algoritma:</strong></p>
+                        <ol style="font-size: 0.85em;">
+                            <li class="fragment">Jika tree kosong → node baru jadi root</li>
+                            <li class="fragment">Bandingkan dengan node saat ini</li>
+                            <li class="fragment">Jika <strong>&lt;</strong> → rekursi ke kiri</li>
+                            <li class="fragment">Jika <strong>&gt;</strong> → rekursi ke kanan</li>
+                            <li class="fragment">Sisipkan di posisi nullptr</li>
+                        </ol>
+                    </div>
+                    <p class="fragment small warning">Catatan: BST standar tidak mengizinkan nilai duplikat</p>
+                </section>
+
+                <section>
+                    <h2>Visualisasi Insert</h2>
+                    <img src="images/p12-04-bst-insert.png" alt="BST Insert" style="max-height: 320px;">
+                    <p class="small"><em>Gambar 12.4: Proses penyisipan nilai pada BST</em></p>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Insert</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-4|6-11">
+BSTNode* insert(BSTNode* root, int value) {
+    // Base case: posisi ditemukan
+    if (root == nullptr) {
+        return new BSTNode(value);
+    }
+    
+    // Rekursi ke subtree yang sesuai
+    if (value < root->data) {
+        root->left = insert(root->left, value);
+    } else if (value > root->data) {
+        root->right = insert(root->right, value);
+    }
+    // Jika value == root->data, diabaikan
+    
+    return root;
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Contoh: Membangun BST</h2>
+                    <p style="font-size: 0.85em;">Insert: <span class="highlight">50, 30, 70, 20, 40, 60, 80</span></p>
+                    <div class="two-columns" style="font-size: 0.75em;">
+                        <div>
+                            <ol>
+                                <li class="fragment">50 → root</li>
+                                <li class="fragment">30 &lt; 50 → kiri</li>
+                                <li class="fragment">70 &gt; 50 → kanan</li>
+                                <li class="fragment">20 &lt; 50, &lt; 30 → kiri-kiri</li>
+                            </ol>
+                        </div>
+                        <div>
+                            <ol start="5">
+                                <li class="fragment">40 &lt; 50, &gt; 30 → kiri-kanan</li>
+                                <li class="fragment">60 &gt; 50, &lt; 70 → kanan-kiri</li>
+                                <li class="fragment">80 &gt; 50, &gt; 70 → kanan-kanan</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <pre class="fragment" style="font-size: 0.5em; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-top: 0.5em;">
+        50
+       /  \
+      30   70
+     / \   / \
+    20 40 60  80
+                    </pre>
+                </section>
+            </section>
+
+            <!-- ==================== FINDMIN & FINDMAX ==================== -->
+            <section>
+                <section>
+                    <h2>🔢 findMin & findMax</h2>
+                    <div class="two-columns">
+                        <div class="fragment box-success">
+                            <h3>findMin</h3>
+                            <p class="small">Traverse ke <strong>left-most</strong> node</p>
+                            <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+BSTNode* findMin(BSTNode* root) {
+    if (root == nullptr) 
+        return nullptr;
+    while (root->left != nullptr)
+        root = root->left;
+    return root;
+}
+                            </code></pre>
+                        </div>
+                        <div class="fragment box-warning">
+                            <h3>findMax</h3>
+                            <p class="small">Traverse ke <strong>right-most</strong> node</p>
+                            <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+BSTNode* findMax(BSTNode* root) {
+    if (root == nullptr) 
+        return nullptr;
+    while (root->right != nullptr)
+        root = root->right;
+    return root;
+}
+                            </code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Contoh findMin/findMax</h2>
+                    <pre style="font-size: 0.6em; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
+        50
+       /  \
+      30   70
+     / \   / \
+    20 40 60  80
+   /
+  15
+                    </pre>
+                    <div class="two-columns" style="margin-top: 1em;">
+                        <div class="fragment">
+                            <p class="text-success"><strong>findMin:</strong></p>
+                            <p class="small">50 → 30 → 20 → 15</p>
+                            <p class="highlight">Min = 15</p>
+                        </div>
+                        <div class="fragment">
+                            <p class="text-gold"><strong>findMax:</strong></p>
+                            <p class="small">50 → 70 → 80</p>
+                            <p class="highlight">Max = 80</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== OPERASI DELETE ==================== -->
+            <section>
+                <section>
+                    <h2>🗑️ Operasi Delete</h2>
+                    <p>Tiga kasus yang perlu ditangani:</p>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Kasus</th>
+                            <th>Kondisi</th>
+                            <th>Solusi</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="text-success">1</span></td>
+                            <td>Node adalah <strong>leaf</strong></td>
+                            <td>Hapus langsung</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">2</span></td>
+                            <td>Node punya <strong>1 anak</strong></td>
+                            <td>Ganti dengan anaknya</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="warning">3</span></td>
+                            <td>Node punya <strong>2 anak</strong></td>
+                            <td>Ganti dengan inorder successor</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Kasus 1: Delete Leaf</h2>
+                    <img src="images/p12-05-bst-delete-leaf.png" alt="Delete Leaf" style="max-height: 280px;">
+                    <p class="small"><em>Gambar 12.5: Penghapusan leaf node</em></p>
+                    <div class="fragment box-success" style="font-size: 0.8em;">
+                        <p>Cukup set parent→child = nullptr</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Kasus 2: Delete Node dengan 1 Anak</h2>
+                    <img src="images/p12-06-bst-delete-one-child.png" alt="Delete One Child" style="max-height: 280px;">
+                    <p class="small"><em>Gambar 12.6: Penghapusan node dengan satu anak</em></p>
+                    <div class="fragment box-info" style="font-size: 0.8em;">
+                        <p><strong>Bypass:</strong> Hubungkan parent langsung ke child</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Kasus 3: Delete Node dengan 2 Anak</h2>
+                    <img src="images/p12-07-bst-delete-two-children.png" alt="Delete Two Children" style="max-height: 280px;">
+                    <p class="small"><em>Gambar 12.7: Penghapusan node dengan dua anak</em></p>
+                </section>
+
+                <section>
+                    <h2>Inorder Successor</h2>
+                    <div class="box-definition">
+                        <p><strong>Inorder Successor</strong> adalah node dengan nilai <span class="highlight">terkecil yang lebih besar</span> dari node yang dihapus.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;"><strong>Cara mencari:</strong></p>
+                        <p class="text-success">findMin(right subtree)</p>
+                    </div>
+                    <div class="fragment box-warning" style="font-size: 0.8em; margin-top: 1em;">
+                        <p><strong>Langkah:</strong> Copy nilai successor → Hapus node successor</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Delete</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|5-7|9-11|13-20" style="font-size: 0.45em;">
+BSTNode* deleteNode(BSTNode* root, int key) {
+    if (root == nullptr) return nullptr;
+    
+    // Cari node yang akan dihapus
+    if (key < root->data) {
+        root->left = deleteNode(root->left, key);
+    } else if (key > root->data) {
+        root->right = deleteNode(root->right, key);
+    } else {
+        // Kasus 1 & 2: Leaf atau satu anak
+        if (root->left == nullptr) {
+            BSTNode* temp = root->right;
+            delete root;
+            return temp;
+        } else if (root->right == nullptr) {
+            BSTNode* temp = root->left;
+            delete root;
+            return temp;
+        }
+        // Kasus 3: Dua anak
+        BSTNode* successor = findMin(root->right);
+        root->data = successor->data;
+        root->right = deleteNode(root->right, successor->data);
+    }
+    return root;
+}
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== QUIZ 2: DELETE ==================== -->
+            <section>
+                <h2>🧠 Quiz 2: Delete Operation</h2>
+                <div class="quiz-question">
+                    <p><strong>Pada BST berikut, apa yang terjadi saat delete(50)?</strong></p>
+                    <pre style="font-size: 0.55em; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
+        50
+       /  \
+      30   70
+     / \   / \
+    20 40 60  80
+                    </pre>
+                </div>
+                <div class="fragment quiz-answer">
+                    <p><strong>Jawaban:</strong></p>
+                    <ol style="font-size: 0.75em;">
+                        <li>Inorder successor = <span class="highlight">60</span> (min di right subtree)</li>
+                        <li>Copy 60 ke posisi root</li>
+                        <li>Hapus node 60 yang asli (leaf)</li>
+                    </ol>
+                    <pre style="font-size: 0.5em; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
+        60
+       /  \
+      30   70
+     / \     \
+    20 40    80
+                    </pre>
+                </div>
+            </section>
+
+            <!-- ==================== ANALISIS KOMPLEKSITAS ==================== -->
+            <section>
+                <section>
+                    <h2>📊 Analisis Kompleksitas</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Best</th>
+                            <th>Average</th>
+                            <th>Worst</th>
+                        </tr>
+                        <tr>
+                            <td>Search</td>
+                            <td class="text-success">O(1)</td>
+                            <td class="highlight">O(log n)</td>
+                            <td class="warning">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>Insert</td>
+                            <td class="text-success">O(1)</td>
+                            <td class="highlight">O(log n)</td>
+                            <td class="warning">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>Delete</td>
+                            <td class="text-success">O(1)</td>
+                            <td class="highlight">O(log n)</td>
+                            <td class="warning">O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>findMin/Max</td>
+                            <td class="text-success">O(1)</td>
+                            <td class="highlight">O(log n)</td>
+                            <td class="warning">O(n)</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 1em;">Kompleksitas bergantung pada <span class="highlight">bentuk tree</span></p>
+                </section>
+
+                <section>
+                    <h2>Balanced vs Skewed BST</h2>
+                    <img src="images/p12-03-bst-complexity.png" alt="BST Complexity" style="max-height: 300px;">
+                    <p class="small"><em>Gambar 12.3: Perbandingan BST seimbang dan tidak seimbang</em></p>
+                </section>
+
+                <section>
+                    <h2>Dampak BST Tidak Seimbang</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Bentuk Tree</th>
+                            <th>Tinggi</th>
+                            <th>Operasi</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="text-success">Perfectly Balanced</span></td>
+                            <td>⌊log₂(n)⌋</td>
+                            <td>O(log n)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Reasonably Balanced</span></td>
+                            <td>O(log n)</td>
+                            <td>O(log n)</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="warning">Skewed/Degenerate</span></td>
+                            <td>n - 1</td>
+                            <td>O(n)</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>⚠️ Penyebab BST Tidak Seimbang</h2>
+                    <div class="two-columns" style="font-size: 0.85em;">
+                        <div>
+                            <p><strong>Insert: 1, 2, 3, 4, 5</strong></p>
+                            <pre style="font-size: 0.5em; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px;">
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+                            </pre>
+                        </div>
+                        <div class="fragment">
+                            <div class="box-danger">
+                                <p><strong>Masalah:</strong></p>
+                                <ul class="small">
+                                    <li>Tinggi = n - 1</li>
+                                    <li>Search = O(n)</li>
+                                    <li>Tidak lebih baik dari Linked List!</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== QUIZ 3: COMPLEXITY ==================== -->
+            <section>
+                <h2>🧠 Quiz 3: Kompleksitas</h2>
+                <div class="quiz-question">
+                    <p><strong>Berapa perbandingan untuk mencari 75?</strong></p>
+                    <div class="two-columns" style="font-size: 0.7em;">
+                        <div>
+                            <p><strong>BST A (Balanced):</strong></p>
+                            <pre style="font-size: 0.5em; background: rgba(0,0,0,0.3); padding: 5px;">
+      50
+     /  \
+   25    75
+  / \   /  \
+10  30 60  90
+                            </pre>
+                        </div>
+                        <div>
+                            <p><strong>BST B (Skewed):</strong></p>
+                            <pre style="font-size: 0.5em; background: rgba(0,0,0,0.3); padding: 5px;">
+10-25-30-50-60-75
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="fragment quiz-answer">
+                    <div class="two-columns">
+                        <div>
+                            <p class="text-success"><strong>BST A: 2</strong></p>
+                            <p class="small">75 > 50 → 75 == 75 ✓</p>
+                        </div>
+                        <div>
+                            <p class="warning"><strong>BST B: 6</strong></p>
+                            <p class="small">10→25→30→50→60→75 ✓</p>
+                        </div>
+                    </div>
+                    <p class="fragment highlight" style="margin-top: 0.5em;">BST balanced 3x lebih efisien!</p>
+                </div>
+            </section>
+
+            <!-- ==================== BALANCED BST ==================== -->
+            <section>
+                <section>
+                    <h2>⚖️ Solusi: Balanced BST</h2>
+                    <p style="font-size: 0.9em;">Self-balancing BST <span class="highlight">menjamin O(log n)</span></p>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Tipe</th>
+                            <th>Mekanisme</th>
+                            <th>Kompleksitas</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">AVL Tree</span></td>
+                            <td>Balance factor + rotasi</td>
+                            <td>O(log n) guaranteed</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="text-red">Red-Black Tree</span></td>
+                            <td>Pewarnaan + rotasi</td>
+                            <td>O(log n) guaranteed</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Splay Tree</td>
+                            <td>Splaying</td>
+                            <td>Amortized O(log n)</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 1em;">Detail implementasi: materi lanjutan/pengayaan</p>
+                </section>
+
+                <section>
+                    <h2>Strategi Membangun BST Seimbang</h2>
+                    <p style="font-size: 0.85em;">Untuk data {1, 2, 3, 4, 5, 6, 7}:</p>
+                    <div class="two-columns" style="font-size: 0.8em;">
+                        <div class="fragment box-danger">
+                            <p><strong>❌ Urutan: 1,2,3,4,5,6,7</strong></p>
+                            <p class="small">Hasil: Skewed tree</p>
+                        </div>
+                        <div class="fragment box-success">
+                            <p><strong>✅ Urutan: 4,2,6,1,3,5,7</strong></p>
+                            <p class="small">Hasil: Balanced tree</p>
+                            <p class="small">(Insert median dulu!)</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== APLIKASI BST ==================== -->
+            <section>
+                <section>
+                    <h2>🎖️ Aplikasi BST: Pertahanan</h2>
+                    <div class="box-info">
+                        <p><strong>Sistem Radar dengan Range Query</strong></p>
+                        <p class="small">Mencari semua objek dalam jarak tertentu</p>
+                    </div>
+                    <pre class="fragment"><code class="cpp" data-trim style="font-size: 0.5em;">
+void rangeSearch(BSTNode* root, int low, int high, vector&lt;int&gt;& result) {
+    if (root == nullptr) return;
+    
+    if (root->data > low)
+        rangeSearch(root->left, low, high, result);
+    
+    if (root->data >= low && root->data <= high)
+        result.push_back(root->data);
+    
+    if (root->data < high)
+        rangeSearch(root->right, low, high, result);
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Contoh: Range Query</h2>
+                    <p style="font-size: 0.85em;">Objek pada jarak: 50, 75, 120, 150, 180, 200, 250 km</p>
+                    <p style="font-size: 0.85em;">Query: Cari objek jarak <span class="highlight">100-200 km</span></p>
+                    <div class="fragment box-success" style="margin-top: 1em;">
+                        <p><strong>Hasil:</strong> 120, 150, 180, 200 km</p>
+                        <p class="small">Kompleksitas: O(h + k), h=tinggi, k=hasil</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Aplikasi BST Lainnya</h2>
+                    <ul style="font-size: 0.85em;">
+                        <li class="fragment"><strong>Database Index</strong> — pencarian cepat berdasarkan key</li>
+                        <li class="fragment"><strong>Symbol Table</strong> — compiler dan interpreter</li>
+                        <li class="fragment"><strong>Auto-complete</strong> — suggest kata berdasarkan prefix</li>
+                        <li class="fragment"><strong>File System</strong> — organisasi direktori</li>
+                        <li class="fragment"><strong>Priority Scheduling</strong> — sistem operasi</li>
+                    </ul>
+                </section>
+            </section>
+
+            <!-- ==================== INORDER = SORTED ==================== -->
+            <section>
+                <h2>🔑 Properti Penting: Inorder</h2>
+                <div class="box-definition">
+                    <p><strong>Inorder traversal</strong> pada BST menghasilkan elemen <span class="highlight">terurut ascending</span></p>
+                </div>
+                <pre style="font-size: 0.55em; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">
+        50
+       /  \
+      30   70
+     / \   / \
+    20 40 60  80
+                </pre>
+                <p class="fragment">Inorder: <span class="highlight">20, 30, 40, 50, 60, 70, 80</span></p>
+                <p class="fragment small">Gunakan untuk: verifikasi BST, print sorted, find k-th element</p>
+            </section>
+
+            <!-- ==================== CLASS BST LENGKAP ==================== -->
+            <section>
+                <h2>💻 Class BST Lengkap</h2>
+                <pre><code class="cpp" data-trim style="font-size: 0.4em;">
+class BST {
+private:
+    struct Node {
+        int data;
+        Node *left, *right;
+        Node(int val) : data(val), left(nullptr), right(nullptr) {}
+    };
+    Node* root;
+    
+    // Helper functions...
+    
+public:
+    BST() : root(nullptr) {}
+    ~BST() { /* destroy tree */ }
+    
+    void insert(int value);
+    bool search(int key);
+    void remove(int key);
+    int findMin();
+    int findMax();
+    void inorderTraversal();
+};
+                </code></pre>
+                <p class="small">Implementasi lengkap: lihat modul12.md</p>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.6em;">
+                    <tr>
+                        <th>Konsep</th>
+                        <th>Deskripsi</th>
+                        <th>Kompleksitas</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">BST Property</span></td>
+                        <td>Left &lt; Parent &lt; Right</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Search</td>
+                        <td>Binary search pada tree</td>
+                        <td>O(log n) avg</td>
+                    </tr>
+                    <tr>
+                        <td>Insert</td>
+                        <td>Cari posisi, sisipkan</td>
+                        <td>O(log n) avg</td>
+                    </tr>
+                    <tr>
+                        <td>Delete (leaf)</td>
+                        <td>Hapus langsung</td>
+                        <td>O(log n) avg</td>
+                    </tr>
+                    <tr>
+                        <td>Delete (2 anak)</td>
+                        <td>Inorder successor</td>
+                        <td>O(log n) avg</td>
+                    </tr>
+                    <tr>
+                        <td><span class="warning">Worst Case</span></td>
+                        <td>Skewed tree</td>
+                        <td>O(n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="text-success">Balanced BST</span></td>
+                        <td>AVL, Red-Black</td>
+                        <td>O(log n) guaranteed</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== PERTANYAAN ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.12 | Weiss Ch.4.3 | Hubbard Ch.11
+                </p>
+            </section>
+
+            <!-- ==================== TUGAS ==================== -->
+            <section>
+                <h2>📚 Tugas</h2>
+                <ol style="font-size: 0.85em;">
+                    <li class="fragment">Pelajari <strong>modul12.md</strong> dan kerjakan Supplementary Problems</li>
+                    <li class="fragment">Implementasikan class BST dengan semua operasi</li>
+                    <li class="fragment">Kerjakan <strong>latihan12.md</strong></li>
+                    <li class="fragment">Eksplorasi: Bagaimana AVL Tree melakukan rotasi?</li>
+                </ol>
+                <div class="fragment box-info" style="margin-top: 1.5em; font-size: 0.85em;">
+                    <p><strong>Pertemuan berikutnya:</strong> Heap dan Priority Queue</p>
+                </div>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 12: Binary Search Tree</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
