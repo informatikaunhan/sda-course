@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pertemuan 13: Heap dan Priority Queue - Struktur Data dan Algoritma</title>
+    
+    <!-- Reveal.js CSS (wajib) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/league.min.css">
+    
+    <!-- Highlight.js untuk syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css">
+    
+    <!-- UNHAN Custom Theme -->
+    <link rel="stylesheet" href="css/unhan-theme.css">
+    
+    <!-- Slide-specific styles for heap visualizations -->
+    <style>
+        .heap-node {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 5px;
+            border: 3px solid var(--unhan-gold);
+        }
+        .heap-node.root {
+            background: linear-gradient(135deg, #10b981, #059669);
+            width: 60px;
+            height: 60px;
+            font-size: 1.3em;
+        }
+        .heap-node.highlight {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            animation: pulse 1s infinite;
+        }
+        .heap-node.new {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .heap-array {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 15px 0;
+        }
+        .heap-array-cell {
+            width: 45px;
+            height: 45px;
+            border: 2px solid var(--unhan-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background: rgba(37, 99, 235, 0.3);
+            border-radius: 5px;
+        }
+        .heap-array-cell.active {
+            background: rgba(245, 158, 11, 0.5);
+            border-color: #f59e0b;
+        }
+        .index-label {
+            font-size: 0.6em;
+            color: var(--unhan-gray);
+            text-align: center;
+        }
+        .formula-highlight {
+            background: rgba(212, 168, 75, 0.2);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: var(--font-code);
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==================== TITLE SLIDE ==================== -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>🏔️ Heap dan Priority Queue</h1>
+                <h3>Struktur Data dan Algoritma</h3>
+                <p class="institution">Pertemuan 13</p>
+                <p class="instructor" style="margin-top: 2em;">
+                    <span style="color: var(--unhan-gold);">Universitas Pertahanan RI</span>
+                </p>
+            </section>
+
+            <!-- ==================== TUJUAN PEMBELAJARAN ==================== -->
+            <section>
+                <h2>🎯 Tujuan Pembelajaran</h2>
+                <p>Setelah pertemuan ini, mahasiswa mampu:</p>
+                <ol style="font-size: 0.8em;">
+                    <li class="fragment">Menjelaskan konsep <span class="highlight">heap</span> dan membedakan max-heap vs min-heap</li>
+                    <li class="fragment">Mengidentifikasi properti heap (<span class="highlight">complete binary tree + heap property</span>)</li>
+                    <li class="fragment">Menerapkan representasi heap menggunakan <span class="highlight">array</span></li>
+                    <li class="fragment">Mengimplementasikan operasi <span class="highlight">insert</span> dan <span class="highlight">extract</span></li>
+                    <li class="fragment">Membangun heap dari array dengan kompleksitas <span class="highlight">O(n)</span></li>
+                    <li class="fragment">Mengimplementasikan <span class="highlight">Priority Queue</span> dan <span class="highlight">Heap Sort</span></li>
+                </ol>
+            </section>
+
+            <!-- ==================== AGENDA ==================== -->
+            <section>
+                <h2>📋 Agenda</h2>
+                <div class="two-columns">
+                    <div>
+                        <h3>Bagian 1</h3>
+                        <ol style="font-size: 0.75em;">
+                            <li>Konsep Heap</li>
+                            <li>Representasi Array</li>
+                            <li>Operasi Insert (Percolate Up)</li>
+                            <li>Operasi Extract (Percolate Down)</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3>Bagian 2</h3>
+                        <ol start="5" style="font-size: 0.75em;">
+                            <li>Build Heap</li>
+                            <li>Priority Queue</li>
+                            <li>Heap Sort</li>
+                            <li>Perbandingan & Aplikasi</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== BAGIAN 1: KONSEP HEAP ==================== -->
+            <section>
+                <section>
+                    <h2>📖 1. Konsep Heap</h2>
+                    <div class="box-definition">
+                        <p><strong>Heap</strong> adalah struktur data berbentuk <span class="highlight">complete binary tree</span> yang memenuhi <span class="highlight">heap property</span>.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;">Heap menyediakan akses ke elemen dengan prioritas tertinggi/terendah dalam <span class="complexity-badge o1">O(1)</span></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Max-Heap vs Min-Heap</h2>
+                    <div class="two-columns" style="font-size: 0.85em;">
+                        <div class="fragment box-success" style="text-align: center; padding: 15px;">
+                            <p><strong>🔺 Max-Heap</strong></p>
+                            <p class="small">Parent ≥ semua children</p>
+                            <p class="small"><span class="highlight">Root = Maximum</span></p>
+                            <div style="margin-top: 10px;">
+                                <span class="heap-node root">90</span><br>
+                                <span class="heap-node">85</span>
+                                <span class="heap-node">70</span>
+                            </div>
+                        </div>
+                        <div class="fragment box-info" style="text-align: center; padding: 15px;">
+                            <p><strong>🔻 Min-Heap</strong></p>
+                            <p class="small">Parent ≤ semua children</p>
+                            <p class="small"><span class="text-navy">Root = Minimum</span></p>
+                            <div style="margin-top: 10px;">
+                                <span class="heap-node root" style="background: linear-gradient(135deg, #f59e0b, #d97706);">10</span><br>
+                                <span class="heap-node">20</span>
+                                <span class="heap-node">30</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Complete Binary Tree</h2>
+                    <div class="box-definition" style="font-size: 0.85em;">
+                        <p>Semua level terisi penuh <strong>kecuali mungkin level terakhir</strong>, dan level terakhir diisi dari <strong>kiri ke kanan</strong>.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <table style="font-size: 0.7em;">
+                            <tr>
+                                <th>Properti</th>
+                                <th>Nilai</th>
+                            </tr>
+                            <tr>
+                                <td>Tinggi tree (n node)</td>
+                                <td><code>⌊log₂ n⌋</code></td>
+                            </tr>
+                            <tr>
+                                <td>Jumlah node level h</td>
+                                <td><code>2^h</code></td>
+                            </tr>
+                            <tr>
+                                <td>Selalu balanced</td>
+                                <td>✅ Ya</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <p class="fragment small" style="margin-top: 0.5em;">Properti ini memungkinkan representasi efisien dengan <span class="highlight">array</span>!</p>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Valid Heap?</h2>
+                    <div class="quiz-question">
+                        <p><strong>Manakah yang merupakan max-heap yang valid?</strong></p>
+                        <div class="two-columns" style="font-size: 0.85em; margin-top: 1em;">
+                            <div style="text-align: center;">
+                                <p><strong>A.</strong> [50, 40, 30, 35, 25]</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <p><strong>B.</strong> [50, 60, 30, 35, 25]</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Jawaban: A</strong></p>
+                        <p class="small">B tidak valid karena 60 > 50 (child > parent)</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 2: REPRESENTASI ARRAY ==================== -->
+            <section>
+                <section>
+                    <h2>📖 2. Representasi Array</h2>
+                    <p style="font-size: 0.85em;">Heap dapat disimpan dalam array dengan formula navigasi sederhana:</p>
+                    <div class="heap-array fragment">
+                        <div>
+                            <div class="heap-array-cell active">90</div>
+                            <div class="index-label">0</div>
+                        </div>
+                        <div>
+                            <div class="heap-array-cell">85</div>
+                            <div class="index-label">1</div>
+                        </div>
+                        <div>
+                            <div class="heap-array-cell">70</div>
+                            <div class="index-label">2</div>
+                        </div>
+                        <div>
+                            <div class="heap-array-cell">40</div>
+                            <div class="index-label">3</div>
+                        </div>
+                        <div>
+                            <div class="heap-array-cell">50</div>
+                            <div class="index-label">4</div>
+                        </div>
+                        <div>
+                            <div class="heap-array-cell">30</div>
+                            <div class="index-label">5</div>
+                        </div>
+                        <div>
+                            <div class="heap-array-cell">20</div>
+                            <div class="index-label">6</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Formula Navigasi</h2>
+                    <table style="font-size: 0.8em;">
+                        <tr>
+                            <th>Operasi</th>
+                            <th>Formula (index 0-based)</th>
+                            <th>Contoh (i = 1)</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Parent</strong></td>
+                            <td><code class="formula-highlight">(i - 1) / 2</code></td>
+                            <td>Parent(1) = 0</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Left Child</strong></td>
+                            <td><code class="formula-highlight">2 * i + 1</code></td>
+                            <td>Left(1) = 3</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Right Child</strong></td>
+                            <td><code class="formula-highlight">2 * i + 2</code></td>
+                            <td>Right(1) = 4</td>
+                        </tr>
+                    </table>
+                    <div class="fragment box-info" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>💡 <strong>Tidak perlu pointer!</strong> Navigasi tree hanya dengan kalkulasi indeks.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Implementasi Dasar</h2>
+                    <pre><code class="cpp" data-trim style="font-size: 0.5em;">
+class MaxHeap {
+private:
+    vector&lt;int&gt; heap;
+    
+    int parent(int i) { return (i - 1) / 2; }
+    int leftChild(int i) { return 2 * i + 1; }
+    int rightChild(int i) { return 2 * i + 2; }
+    
+public:
+    bool isEmpty() { return heap.empty(); }
+    int size() { return heap.size(); }
+    
+    int getMax() {
+        if (isEmpty()) throw runtime_error("Heap kosong!");
+        return heap[0];  // Root = maximum
+    }
+};
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 3: INSERT ==================== -->
+            <section>
+                <section>
+                    <h2>📖 3. Operasi Insert</h2>
+                    <h3 style="color: var(--unhan-gold);">Percolate Up (Bubble Up)</h3>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <ol>
+                            <li class="fragment">Tambahkan elemen baru di <strong>posisi terakhir</strong></li>
+                            <li class="fragment"><strong>Percolate up:</strong> Bandingkan dengan parent, swap jika perlu</li>
+                            <li class="fragment">Ulangi sampai heap property terpenuhi</li>
+                        </ol>
+                    </div>
+                    <p class="fragment" style="margin-top: 1em;">Kompleksitas: <span class="complexity-badge ologn">O(log n)</span></p>
+                </section>
+
+                <section>
+                    <h2>Insert: Contoh Visual</h2>
+                    <p style="font-size: 0.8em;">Insert <span class="highlight">95</span> ke max-heap [90, 85, 70]</p>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p><strong>Step 1:</strong> Tambah 95 di akhir → [90, 85, 70, <span style="color: #ef4444;">95</span>]</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p><strong>Step 2:</strong> 95 > 85 (parent)? ✅ Swap → [90, <span style="color: #f59e0b;">95</span>, 70, 85]</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p><strong>Step 3:</strong> 95 > 90 (parent)? ✅ Swap → [<span style="color: #10b981;">95</span>, 90, 70, 85]</p>
+                    </div>
+                    <div class="fragment box-success" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>✅ <strong>Selesai!</strong> 95 menjadi root baru</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Kode Insert</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-3|5-9|11" style="font-size: 0.5em;">
+void insert(int value) {
+    // 1. Tambah di akhir
+    heap.push_back(value);
+    
+    // 2. Percolate up
+    int index = heap.size() - 1;
+    while (index > 0 && heap[index] > heap[parent(index)]) {
+        swap(heap[index], heap[parent(index)]);
+        index = parent(index);
+    }
+}  // Kompleksitas: O(log n)
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 4: EXTRACT ==================== -->
+            <section>
+                <section>
+                    <h2>📖 4. Operasi Extract</h2>
+                    <h3 style="color: var(--unhan-gold);">Percolate Down (Bubble Down)</h3>
+                    <div class="box-info" style="font-size: 0.85em;">
+                        <ol>
+                            <li class="fragment">Simpan nilai root (yang akan dikembalikan)</li>
+                            <li class="fragment">Pindahkan <strong>elemen terakhir ke root</strong></li>
+                            <li class="fragment"><strong>Percolate down:</strong> Swap dengan child terbesar jika perlu</li>
+                            <li class="fragment">Ulangi sampai heap property terpenuhi</li>
+                        </ol>
+                    </div>
+                    <p class="fragment" style="margin-top: 1em;">Kompleksitas: <span class="complexity-badge ologn">O(log n)</span></p>
+                </section>
+
+                <section>
+                    <h2>Extract: Contoh Visual</h2>
+                    <p style="font-size: 0.8em;">ExtractMax dari [90, 85, 70, 40, 50]</p>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p><strong>Step 1:</strong> Simpan max = <span class="highlight">90</span></p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p><strong>Step 2:</strong> Pindah 50 ke root → [<span style="color: #ef4444;">50</span>, 85, 70, 40]</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p><strong>Step 3:</strong> 50 < 85? ✅ Swap dengan child terbesar → [<span style="color: #10b981;">85</span>, 50, 70, 40]</p>
+                    </div>
+                    <div class="fragment box-success" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>✅ <strong>Return 90</strong> | Heap valid: [85, 50, 70, 40]</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Kode Extract</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|2-5|7-9|11-22" style="font-size: 0.45em;">
+int extractMax() {
+    if (isEmpty()) throw runtime_error("Heap kosong!");
+    
+    int maxVal = heap[0];           // Simpan max
+    heap[0] = heap.back();          // Pindah last ke root
+    heap.pop_back();
+    
+    if (!heap.empty()) {
+        percolateDown(0);           // Fix heap property
+    }
+    return maxVal;
+}
+
+void percolateDown(int index) {
+    int n = heap.size();
+    int largest = index;
+    int left = leftChild(index), right = rightChild(index);
+    
+    if (left < n && heap[left] > heap[largest]) largest = left;
+    if (right < n && heap[right] > heap[largest]) largest = right;
+    
+    if (largest != index) {
+        swap(heap[index], heap[largest]);
+        percolateDown(largest);     // Rekursi
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>🧠 Quiz: Percolate Down</h2>
+                    <div class="quiz-question">
+                        <p><strong>Setelah extractMax dari [100, 90, 80, 70, 60, 50, 40], apa hasilnya?</strong></p>
+                        <p class="small" style="margin-top: 0.5em;">Hint: Pindah 40 ke root, lalu percolate down</p>
+                    </div>
+                    <div class="fragment quiz-answer">
+                        <p><strong>Hasil:</strong> <code>[90, 70, 80, 40, 60, 50]</code></p>
+                        <p class="small">40 → swap dengan 90 → swap dengan 70 → selesai</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 5: BUILD HEAP ==================== -->
+            <section>
+                <section>
+                    <h2>📖 5. Build Heap</h2>
+                    <h3 style="color: var(--unhan-gold);">Algoritma Floyd (Bottom-Up)</h3>
+                    <table style="font-size: 0.75em;">
+                        <tr>
+                            <th>Pendekatan</th>
+                            <th>Metode</th>
+                            <th>Kompleksitas</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td>Top-down</td>
+                            <td>Insert satu per satu</td>
+                            <td><span class="complexity-badge onlogn">O(n log n)</span></td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><span class="highlight">Bottom-up (Floyd)</span></td>
+                            <td>Heapify dari node internal terakhir</td>
+                            <td><span class="complexity-badge on">O(n)</span></td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Insight Algoritma Floyd</h2>
+                    <div class="box-definition" style="font-size: 0.85em;">
+                        <p>💡 Semua <strong>leaf node</strong> sudah merupakan heap yang valid (heap dengan 1 elemen). Kita hanya perlu memperbaiki <strong>node internal</strong>.</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <p style="font-size: 0.85em;">Mulai dari node internal terakhir: <code class="formula-highlight">i = n/2 - 1</code></p>
+                        <p style="font-size: 0.85em;">Heapify mundur sampai root: <code class="formula-highlight">i = 0</code></p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Kode Build Heap</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3-5|7-18" style="font-size: 0.5em;">
+void buildHeap(vector&lt;int&gt;& arr) {
+    int n = arr.size();
+    // Mulai dari node internal terakhir
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+}
+
+void heapify(vector&lt;int&gt;& arr, int n, int index) {
+    int largest = index;
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
+    
+    if (left < n && arr[left] > arr[largest]) largest = left;
+    if (right < n && arr[right] > arr[largest]) largest = right;
+    
+    if (largest != index) {
+        swap(arr[index], arr[largest]);
+        heapify(arr, n, largest);
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Contoh Build Heap</h2>
+                    <p style="font-size: 0.8em;">Array: <code>[4, 10, 3, 5, 1]</code> → Build max-heap</p>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p>n=5, mulai dari i = 5/2 - 1 = <strong>1</strong></p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p><strong>Heapify(1):</strong> 10 > 5, 10 > 1 ✅ tidak berubah</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.75em;">
+                        <p><strong>Heapify(0):</strong> 4 < 10? Swap! → [<span style="color: #10b981;">10</span>, 4, 3, 5, 1]</p>
+                        <p class="small">Rekursi: 4 < 5? Swap! → [10, <span style="color: #10b981;">5</span>, 3, 4, 1]</p>
+                    </div>
+                    <div class="fragment box-success" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>✅ <strong>Hasil:</strong> [10, 5, 3, 4, 1]</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Mengapa O(n)?</h2>
+                    <div style="font-size: 0.8em;">
+                        <p class="fragment">📊 Node di level h dari bawah: ~<code>n/2^(h+1)</code></p>
+                        <p class="fragment">📊 Operasi per node level h: maksimal <code>h</code> swap</p>
+                        <p class="fragment">📊 Total: Σ (h × n/2^(h+1)) = <strong>O(n)</strong></p>
+                    </div>
+                    <div class="fragment box-info" style="font-size: 0.8em; margin-top: 1em;">
+                        <p>💡 Lebih banyak node di level bawah dengan jarak pendek ke posisi final!</p>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 6: PRIORITY QUEUE ==================== -->
+            <section>
+                <section>
+                    <h2>📖 6. Priority Queue</h2>
+                    <div class="box-definition">
+                        <p><strong>Priority Queue</strong> adalah ADT di mana setiap elemen memiliki <span class="highlight">prioritas</span>, dan elemen dengan prioritas tertinggi selalu diakses lebih dulu.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>ADT Priority Queue</h2>
+                    <pre><code class="plaintext" data-trim style="font-size: 0.55em;">
+ADT PriorityQueue:
+  Data:
+    - Kumpulan elemen dengan prioritas
+    
+  Operasi:
+    - insert(item, priority): Tambah elemen dengan prioritas
+    - extractMax(): Hapus & kembalikan elemen prioritas tertinggi
+    - peek(): Lihat elemen prioritas tertinggi tanpa hapus
+    - isEmpty(): Cek apakah kosong
+    
+  Implementasi:
+    - Array tidak terurut: Insert O(1), Extract O(n)
+    - Array terurut: Insert O(n), Extract O(1)
+    - HEAP: Insert O(log n), Extract O(log n) ← OPTIMAL!
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Queue vs Priority Queue</h2>
+                    <table style="font-size: 0.7em;">
+                        <tr>
+                            <th>Aspek</th>
+                            <th>Queue (FIFO)</th>
+                            <th>Priority Queue</th>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Urutan keluar</strong></td>
+                            <td>First In First Out</td>
+                            <td>Berdasarkan prioritas</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Dequeue</strong></td>
+                            <td>Elemen tertua</td>
+                            <td>Elemen prioritas tertinggi</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Insert</strong></td>
+                            <td>O(1)</td>
+                            <td>O(log n) dengan heap</td>
+                        </tr>
+                        <tr class="fragment">
+                            <td><strong>Contoh</strong></td>
+                            <td>Antrian kasir</td>
+                            <td>Sistem scheduling task</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>🎖️ Aplikasi Pertahanan</h2>
+                    <div class="box-info" style="font-size: 0.8em;">
+                        <p><strong>Sistem Alert Prioritas</strong></p>
+                        <ul class="small">
+                            <li>Prioritas 10: Serangan siber kritis</li>
+                            <li>Prioritas 7: Intrusi terdeteksi</li>
+                            <li>Prioritas 3: Anomali minor</li>
+                        </ul>
+                    </div>
+                    <pre class="fragment"><code class="cpp" data-trim style="font-size: 0.5em;">
+pq.insert(Task("Serangan DDoS", 10));
+pq.insert(Task("Login mencurigakan", 7));
+pq.insert(Task("Traffic anomaly", 3));
+
+// Proses berdasarkan prioritas
+pq.extractMax(); // → "Serangan DDoS" (prioritas 10)
+                    </code></pre>
+                </section>
+            </section>
+
+            <!-- ==================== BAGIAN 7: HEAP SORT ==================== -->
+            <section>
+                <section>
+                    <h2>📖 7. Heap Sort</h2>
+                    <div class="box-definition" style="font-size: 0.9em;">
+                        <p><strong>Heap Sort</strong> = Build max-heap + Extract max berulang kali</p>
+                    </div>
+                    <div class="fragment" style="margin-top: 1em;">
+                        <ol style="font-size: 0.85em;">
+                            <li><strong>Phase 1:</strong> Build max-heap dari array → O(n)</li>
+                            <li><strong>Phase 2:</strong> Extract max n kali, tempatkan di akhir → O(n log n)</li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Heap Sort: Visualisasi</h2>
+                    <p style="font-size: 0.75em;">Array: [4, 10, 3, 5, 1]</p>
+                    <div class="fragment" style="font-size: 0.7em;">
+                        <p><strong>Phase 1 (Build):</strong> → [10, 5, 3, 4, 1]</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.7em;">
+                        <p><strong>Phase 2 (Extract):</strong></p>
+                        <p class="small">Swap 10↔1, heapify: [5, 4, 3, 1 | <span style="color: #10b981;">10</span>]</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.7em;">
+                        <p class="small">Swap 5↔1, heapify: [4, 1, 3 | <span style="color: #10b981;">5, 10</span>]</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.7em;">
+                        <p class="small">Swap 4↔3, heapify: [3, 1 | <span style="color: #10b981;">4, 5, 10</span>]</p>
+                    </div>
+                    <div class="fragment" style="font-size: 0.7em;">
+                        <p class="small">Swap 3↔1: [1 | <span style="color: #10b981;">3, 4, 5, 10</span>]</p>
+                    </div>
+                    <div class="fragment box-success" style="font-size: 0.8em;">
+                        <p>✅ <strong>Hasil:</strong> [1, 3, 4, 5, 10]</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>💻 Kode Heap Sort</h2>
+                    <pre><code class="cpp" data-trim data-line-numbers="|3-5|7-12" style="font-size: 0.5em;">
+void heapSort(vector&lt;int&gt;& arr) {
+    int n = arr.size();
+    
+    // Phase 1: Build max-heap
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+    
+    // Phase 2: Extract elements one by one
+    for (int i = n - 1; i > 0; i--) {
+        swap(arr[0], arr[i]);   // Pindah max ke akhir
+        heapify(arr, i, 0);     // Heapify reduced heap
+    }
+}
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Heap Sort vs Lainnya</h2>
+                    <table style="font-size: 0.65em;">
+                        <tr>
+                            <th>Algoritma</th>
+                            <th>Best</th>
+                            <th>Average</th>
+                            <th>Worst</th>
+                            <th>Space</th>
+                            <th>Stable</th>
+                        </tr>
+                        <tr>
+                            <td>Heap Sort</td>
+                            <td>O(n log n)</td>
+                            <td>O(n log n)</td>
+                            <td><span class="complexity-good">O(n log n)</span></td>
+                            <td><span class="complexity-good">O(1)</span></td>
+                            <td>❌</td>
+                        </tr>
+                        <tr>
+                            <td>Merge Sort</td>
+                            <td>O(n log n)</td>
+                            <td>O(n log n)</td>
+                            <td>O(n log n)</td>
+                            <td><span class="complexity-bad">O(n)</span></td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td>Quick Sort</td>
+                            <td>O(n log n)</td>
+                            <td>O(n log n)</td>
+                            <td><span class="complexity-bad">O(n²)</span></td>
+                            <td>O(log n)</td>
+                            <td>❌</td>
+                        </tr>
+                    </table>
+                    <p class="fragment small" style="margin-top: 1em;">Heap Sort: <span class="highlight">worst-case O(n log n)</span> + <span class="highlight">in-place O(1)</span></p>
+                </section>
+
+                <section>
+                    <h2>Kapan Gunakan Heap Sort?</h2>
+                    <div class="two-columns" style="font-size: 0.8em;">
+                        <div class="box-success">
+                            <p><strong>✅ Gunakan ketika:</strong></p>
+                            <ul class="small">
+                                <li>Memori terbatas (in-place)</li>
+                                <li>Perlu jaminan O(n log n)</li>
+                                <li>Data besar & random</li>
+                            </ul>
+                        </div>
+                        <div class="box-warning">
+                            <p><strong>⚠️ Pertimbangkan lain:</strong></p>
+                            <ul class="small">
+                                <li>Perlu stable sort → Merge</li>
+                                <li>Data hampir terurut → Insertion</li>
+                                <li>Praktik umum → Quick Sort</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ==================== RINGKASAN ==================== -->
+            <section>
+                <h2>📝 Ringkasan</h2>
+                <table style="font-size: 0.55em;">
+                    <tr>
+                        <th>Konsep</th>
+                        <th>Deskripsi</th>
+                        <th>Kompleksitas</th>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Heap</span></td>
+                        <td>Complete binary tree + heap property</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Max/Min-Heap</span></td>
+                        <td>Parent ≥/≤ children, root = max/min</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Insert</span></td>
+                        <td>Tambah di akhir + percolate up</td>
+                        <td>O(log n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Extract</span></td>
+                        <td>Ambil root, last→root + percolate down</td>
+                        <td>O(log n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Peek</span></td>
+                        <td>Lihat root tanpa hapus</td>
+                        <td>O(1)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Build Heap</span></td>
+                        <td>Floyd's algorithm (bottom-up)</td>
+                        <td>O(n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Priority Queue</span></td>
+                        <td>ADT dengan akses berdasarkan prioritas</td>
+                        <td>Insert/Extract: O(log n)</td>
+                    </tr>
+                    <tr>
+                        <td><span class="highlight">Heap Sort</span></td>
+                        <td>Build heap + extract n kali</td>
+                        <td>O(n log n), in-place</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ==================== PERTANYAAN ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 100%)">
+                <h1>❓ Pertanyaan?</h1>
+                <p style="margin-top: 2em;">Silakan bertanya atau diskusi</p>
+                <p class="small" style="margin-top: 3em; color: var(--unhan-gray);">
+                    Referensi: Cormen Ch.6 | Weiss Ch.6 | Hubbard Ch.12
+                </p>
+            </section>
+
+            <!-- ==================== PENUTUP ==================== -->
+            <section data-background="linear-gradient(135deg, #0f2444 0%, #1a3a6e 50%, #2a5298 100%)">
+                <h1>Terima Kasih! 🙏</h1>
+                <p style="margin-top: 1em;">Struktur Data dan Algoritma</p>
+                <p>Pertemuan 13</p>
+                <p class="small" style="margin-top: 2em; color: var(--unhan-gold);">
+                    © 2026 - CC BY 4.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/notes/notes.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1200,
+            height: 700,
+            margin: 0.1,
+            minScale: 0.2,
+            maxScale: 1.5,
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>
