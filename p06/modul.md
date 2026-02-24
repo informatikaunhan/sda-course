@@ -312,7 +312,7 @@ int main() {
 
 **Penyelesaian:**
 
-![Solved Problem 3 - False Overflow](images/p06-04-solved-problem-3-false-overflow.png)
+![Solved Problem 3 - False Overflow](images/p06-03-false-overflow-problem.png)
 
 *Gambar: Ilustrasi False Overflow pada Array Linear Queue*
 
@@ -370,7 +370,7 @@ void enqueueWithShift(const T& item) {
 
 > **Circular Queue** adalah implementasi queue menggunakan array di mana indeks "melingkar" kembali ke awal ketika mencapai akhir array, sehingga memanfaatkan slot yang sudah kosong.
 
-![Konsep Circular Queue](images/p06-05-circular-queue-concept.png)
+![Konsep Circular Queue](images/p06-04-circular-queue-concept.png)
 
 *Gambar 4.1: Konsep circular queue sebagai array melingkar*
 
@@ -514,7 +514,7 @@ int main() {
 
 ### 4.4 Visualisasi Operasi Circular Queue
 
-![Operasi Circular Queue](images/p06-06-circular-queue-operations.png)
+![Operasi Circular Queue](images/p06-05-circular-queue-operations.png)
 
 *Gambar 4.2: Langkah-langkah operasi pada circular queue*
 
@@ -614,7 +614,7 @@ Ini lebih jelas dan tidak membuang slot.
 
 > Queue dengan linked list menggunakan pointer `front` menunjuk ke node pertama dan pointer `rear` menunjuk ke node terakhir. Enqueue dilakukan di rear, dequeue dilakukan di front.
 
-![Queue dengan Linked List](images/p06-07-queue-linked-list.png)
+![Queue dengan Linked List](images/p06-06-queue-linked-list.png)
 
 *Gambar 5.1: Representasi queue dengan linked list*
 
@@ -972,7 +972,7 @@ Pointer rear adalah **trade-off** yang baik: sedikit memori tambahan (1 pointer)
 
 > **Deque** (dibaca "deck") adalah struktur data yang memungkinkan penyisipan dan penghapusan dari **kedua ujung** (front dan rear).
 
-![Konsep Deque](images/p06-08-deque-concept.png)
+![Konsep Deque](images/p06-07-deque-concept.png)
 
 *Gambar 6.1: Ilustrasi operasi pada deque*
 
