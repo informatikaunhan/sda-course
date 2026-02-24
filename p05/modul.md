@@ -531,7 +531,7 @@ Jika menggunakan **tail**:
 - Push di tail: O(1) jika ada tail pointer
 - Pop di tail: **O(n)** karena harus traverse untuk menemukan node sebelum tail
 
-![Mengapa Pop di Tail Membutuhkan O(n)](images/p05-05-pop-tail-on-complexity.png)
+![Mengapa Pop di Tail Membutuhkan O(n)](images/p05-09-pop-tail-on-complexity.png)
 
 *Gambar 4.2: Mengapa Operasi Pop di Tail Membutuhkan O(n)*
 
@@ -670,7 +670,7 @@ int main() {
 {[()]}  : Balanced
 ```
 
-![Trace Algoritma Balanced Parentheses](images/p05-06-balanced-parentheses-trace.png)
+![Trace Algoritma Balanced Parentheses](images/p05-05-balanced-parentheses-trace.png)
 
 *Gambar 6.1: Trace Algoritma Balanced Parentheses untuk "{[()]}"*
 
@@ -895,7 +895,7 @@ A+B*C-D/E  -> ABC*+DE/-
 A^B^C      -> ABC^^
 ```
 
-![Langkah-langkah Konversi Infix ke Postfix](images/p05-07-infix-to-postfix.png)
+![Langkah-langkah Konversi Infix ke Postfix](images/p05-06-infix-to-postfix.png)
 
 *Gambar 7.1: Trace Konversi Infix ke Postfix untuk "(A+B)*C"*
 
@@ -1122,7 +1122,7 @@ Setiap kali fungsi dipanggil, sistem membuat **stack frame** yang berisi:
 
 Stack frame di-push saat fungsi dipanggil dan di-pop saat fungsi selesai (return).
 
-![Function Call Stack untuk Rekursi](images/p05-09-function-call-stack.png)
+![Function Call Stack untuk Rekursi](images/p05-08-function-call-stack.png)
 
 *Gambar 9.1: Function Call Stack untuk Rekursi factorial(4)*
 
