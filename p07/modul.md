@@ -202,7 +202,7 @@ Langkah-langkah:
 
 ![Recursion Tree](images/p07-02-recursion-tree.png)
 
-*Gambar 2.1: Pohon rekursi untuk T(n) = 2T(n/2) + n*
+Gambar 2.1: Pohon rekursi untuk T(n) = 2T(n/2) + n
 
 
 ---
